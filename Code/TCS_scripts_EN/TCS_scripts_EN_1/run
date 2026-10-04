@@ -1,20 +1,37 @@
 #!/usr/bin/env bash
 # Code Ocean run script for the TCS reproducibility capsule.
-# Runs all analysis scripts in sequence and collects outputs into /results.
+# Runs all analysis scripts in sequence and collects outputs into the results folder.
 set -uo pipefail
 
-mkdir -p ../results
+# Always work from the directory containing this script, regardless of caller CWD
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
+
+# Code Ocean capsules collect outputs from /results; fall back to ../results locally
+if [ -d /results ]; then
+  RESULTS_DIR=/results
+else
+  RESULTS_DIR="$SCRIPT_DIR/../results"
+fi
+mkdir -p "$RESULTS_DIR"
+
+# Conda starter environments provide python; fall back to python3
+PY="$(command -v python || command -v python3)"
 
 for f in *.py; do
   echo "================================================"
   echo "Running $f"
   echo "================================================"
-  python "$f" || echo "WARNING: $f exited with an error; continuing."
+  "$PY" "$f" || echo "WARNING: $f exited with an error; continuing."
 done
 
-# Collect generated artifacts into /results
+# Collect generated artifacts into the results folder (skip capsule config files)
 for ext in pdf png svg xlsx csv txt; do
-  ls *."$ext" >/dev/null 2>&1 && mv -f *."$ext" ../results/ || true
+  for f in *."$ext"; do
+    [ -e "$f" ] || continue
+    [ "$f" = "requirements.txt" ] && continue
+    mv -f "$f" "$RESULTS_DIR/"
+  done
 done
 
-echo "All scripts finished. Outputs collected in /results."
+echo "All scripts finished. Outputs collected in $RESULTS_DIR"
