@@ -1,6 +1,6 @@
 # Target-Capture Scaling (TCS) v4.0
 
-Analysis code, data workbooks, and machine-verified proofs accompanying the manuscript **"Scale degeneracy: the physical basis of calibration and absolute quantitation in molecular binding"** (preprint: ChemRxiv, DOI: [10.26434/chemrxiv-2024-19rj6](https://chemrxiv.org/doi/full/10.26434/chemrxiv-2024-19rj6/v10)).
+Analysis code, data workbooks, and machine-verified proofs accompanying the manuscript **"Scale degeneracy: the physical basis of calibration and absolute quantification in molecular binding"** (preprint: ChemRxiv, DOI: [10.26434/chemrxiv-2024-19rj6](https://chemrxiv.org/doi/full/10.26434/chemrxiv-2024-19rj6)).
 
 The TCS framework derives the exact equation of state for equilibrium finite-site binding from the canonical partition function, reducing every binding-based assay to two dimensionless quantities: the normalized target feed (xi) and the binding-regime parameter (kappa). All platforms, from the 1960 radioimmunoassay to digital PCR and single-molecule arrays, appear as kappa-regime limits of this single equation.
 
