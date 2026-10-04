@@ -83,12 +83,10 @@ theorem occupancyNumerator_eq (Ω : ℕ) (x : ℝ) :
     have hZ : (∑ k ∈ Finset.range (n + 1), (((n.choose k : ℕ)) : ℝ) * x ^ k)
         = (1 + x) ^ n :=
       partitionFunction_factorizes n x
-    have hz : (fun k : ℕ => (k : ℝ) * (((n + 1).choose k : ℕ) : ℝ) * x ^ k) 0
-        = 0 := by
-      simp
     simp only [occupancyNumerator]
-    rw [Finset.sum_range_succ', hz, add_zero,
-      show n + 1 - 1 = n from Nat.add_sub_cancel n 1]
+    rw [Finset.sum_range_succ']
+    simp only [Nat.cast_zero, zero_mul, add_zero]
+    rw [show n + 1 - 1 = n from Nat.add_sub_cancel n 1]
     show (∑ k ∈ Finset.range (n + 1),
         ((k + 1 : ℕ) : ℝ) * (((n + 1).choose (k + 1) : ℕ) : ℝ) * x ^ (k + 1))
         = (((n + 1 : ℕ)) : ℝ) * x * (1 + x) ^ n
