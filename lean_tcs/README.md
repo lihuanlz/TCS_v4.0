@@ -2,12 +2,12 @@
 
 Machine-checked proofs of the mathematical core of the manuscript's
 Supplementary Information ("Supplementary and additional Material"),
-organized into 12 files, one per SI section or topic.
+organized into 13 files, one per SI section or topic.
 
 ## 1. How to run
 
 Case A: you already have a Lean 4 project with mathlib on your machine.
-Copy the 12 `.lean` files inside `TCS/` into it (do NOT copy the lakefile
+Copy the 13 `.lean` files inside `TCS/` into it (do NOT copy the lakefile
 or the toolchain file, to avoid clashing with your local versions), open
 them in VS Code, and check that no red squiggles appear.
 
@@ -23,7 +23,7 @@ the matching Lean automatically.
 
 ## 2. Verification status
 
-Full build from a clean state: **all 13 modules compile with 0 errors and
+Full build from a clean state: **all 14 modules compile with 0 errors and
 0 warnings** (`Build completed successfully.`), no `sorry` anywhere.
 Every theorem below has been machine-checked, line by line, by the Lean
 kernel. The suite contains 100+ checked declarations: the original core
@@ -34,6 +34,7 @@ theorem of the SI and the platform reductions.
 
 | SI source | File | Theorem | Statement |
 |---|---|---|---|
+| S1c combinatorics | S1c_PartitionFunction.lean | partitionFunction_factorizes, occupancyNumerator_eq, mean_occupancy, occupancy_pmf, activity_from_occupancy | Z = (1+x)^Ω; Σ k·C(Ω,k)xᵏ = Ωx(1+x)^(Ω−1); p = x/(1+x); binomial PMF; Langmuir inversion x = p/(1−p) |
 | Theorem S2e.1 | S1c_MasterEquation.lean | theorem_S2e1 | Eliminating C_free from the Langmuir relation and mass conservation gives M = Ωp + KW·p/(1−p) |
 | Eq. (S2e.4)/(S1c.12) | S1c_MasterEquation.lean | master_dimensionless, kappa_form | Dimensionless master equation ξ = p/(1−p) + p/κ |
 | Finite-Ω correction | S1c_MasterEquation.lean | finite_omega_correction | ξ = p/(1−p) + (p/κ)(1−1/Ω) |
@@ -89,9 +90,13 @@ theorem of the SI and the platform reductions.
    large workload; the innermost binomial fluctuation, its identity, and
    the m-subset generalisation at PMF-weight level (S2b Lemma 1) are
    formalized here.
-3. The partition-function derivation in S1c is a statistical-physics
-   modelling assumption, not a purely mathematical theorem, so it is
-   not formalized.
+3. In S1c, the correspondence between the binding experiment and the
+   canonical ensemble (Boltzmann weights, equilibrium statistical
+   mechanics) remains a modelling assumption rather than a theorem.
+   Its combinatorial content IS formalized (S1c_PartitionFunction.lean):
+   the partition-function factorization Z = (1+x)^Ω, the first-moment
+   sum, the mean occupancy p = x/(1+x), the binomial PMF of the
+   occupied-site count, and the Langmuir inversion x = p/(1−p).
 
 ## 5. How to convince yourself (without reading any proof)
 

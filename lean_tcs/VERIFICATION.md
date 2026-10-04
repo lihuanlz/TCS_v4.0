@@ -85,6 +85,16 @@ separate number. Everything after `:= by` is the proof; ignore it.
 | `master_strictMono` | For κ>0, f(p) = p/(1−p) + p/κ is strictly increasing on (0,1). | Monotonicity lemma behind the uniqueness claim below |
 | `theorem_S2e5` | For κ>0, ξ>0: a unique p∈(0,1) satisfies the master equation. | Existence and uniqueness of the solution of Eq. (S2e.4); used implicitly throughout the SI, not separately numbered there (SI Theorem S2e.5 itself is `master_dimensionless` above) |
 
+### S1c_PartitionFunction.lean — combinatorial core of the partition function
+
+| Theorem | Plain-math statement | Manuscript anchor |
+|---|---|---|
+| `partitionFunction_factorizes` | For Ω independent two-state sites at activity x: Σₖ C(Ω,k)·xᵏ = (1+x)^Ω (binomial theorem). | S1c, grand partition function |
+| `occupancyNumerator_eq` | Σₖ k·C(Ω,k)·xᵏ = Ω·x·(1+x)^(Ω−1). | S1c, first-moment sum |
+| `mean_occupancy` | For Ω≥1 and 1+x≠0: [Ω·x·(1+x)^(Ω−1)] / [Ω·(1+x)^Ω] = x/(1+x), i.e. mean occupancy p = x/(1+x). | S1c, mean occupancy (the ∂lnZ/∂x relation, proved algebraically) |
+| `occupancy_pmf` | With p = x/(1+x): C(Ω,k)·xᵏ/(1+x)^Ω = C(Ω,k)·pᵏ·(1−p)^(Ω−k), i.e. the occupied-site count is Binomial(Ω, p). | S1c, site-count distribution |
+| `activity_from_occupancy` | x/(1+x) = p inverts to x = p/(1−p). | Langmuir relation (Axiom S2e.1); the κ→∞ limit of Eq. (S1c.12) |
+
 ### S1d_ScaleGroup.lean — the scale group and (ξ, κ) orthogonality
 
 | Theorem | Plain-math statement | Manuscript anchor |
