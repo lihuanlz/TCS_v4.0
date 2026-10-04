@@ -1,4 +1,5 @@
 import TCS.S1c_MasterEquation
+import TCS.S1c_PartitionFunction
 import TCS.S1d_ScaleGroup
 import TCS.S2e_ScaleDegeneracy
 import TCS.S2b_DigitalStatistics
