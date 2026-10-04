@@ -1,0 +1,30 @@
+name: Lean 4 verification
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  lean-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: lean_tcs
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install elan (Lean toolchain manager)
+        run: curl -sSfL https://raw.githubusercontent.com/leanprover/elan/master/elan-init.sh | sh -s -- -y --default-toolchain none
+
+      - name: Install pinned toolchain and fetch mathlib cache
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake exe cache get
+
+      - name: Build all proofs (lake build)
+        run: |
+          export PATH="$HOME/.elan/bin:$PATH"
+          lake build
+
+      - name: Verify no unproven steps remain (no sorry)
+        run: "! grep -rEn '\\bsorry\\b' TCS.lean TCS/"
