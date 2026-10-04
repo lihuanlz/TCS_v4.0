@@ -58,10 +58,9 @@ theorem occupancyNumerator_eq (Ω : ℕ) (x : ℝ) :
   cases Ω with
   | zero => simp [occupancyNumerator]
   | succ n =>
-    simp only [Nat.succ_eq_add_one]
     have hterm : ∀ k : ℕ,
         ((k + 1 : ℕ) : ℝ) * (((n + 1).choose (k + 1) : ℕ) : ℝ) * x ^ (k + 1)
-          = (((n + 1 : ℕ)) : ℝ) * x * (((n.choose k : ℕ)) : ℝ) * x ^ k := by
+          = (((n + 1 : ℕ)) : ℝ) * x * ((((n.choose k : ℕ)) : ℝ) * x ^ k) := by
       intro k
       have h := congrArg (fun m : ℕ => (m : ℝ)) (Nat.succ_mul_choose_eq n k)
       simp only [Nat.cast_mul, Nat.succ_eq_add_one, Nat.cast_add,
@@ -126,11 +125,11 @@ theorem occupancy_pmf {Ω k : ℕ} {x p : ℝ} (hx : (1 : ℝ) + x ≠ 0) (hk : 
   have h1p : (1 : ℝ) - p = 1 / (1 + x) := by
     rw [hp]
     field_simp
-    ring
   have hpow : ((1 + x)⁻¹) ^ k * ((1 + x)⁻¹) ^ (Ω - k) = ((1 + x)⁻¹) ^ Ω := by
     rw [← pow_add, Nat.add_sub_cancel' hk]
-  rw [h1p, hp, div_pow, one_pow, one_div, div_pow, div_eq_mul_inv,
-    ← inv_pow, ← inv_pow, div_eq_mul_inv, ← inv_pow]
-  rw [mul_assoc, mul_assoc (x ^ k), ← mul_assoc, hpow]
+  rw [h1p, hp, div_pow, div_pow, one_pow, one_div, div_eq_mul_inv,
+    div_eq_mul_inv, ← inv_pow, ← inv_pow, ← inv_pow]
+  conv_lhs => rw [← hpow]
+  ring
 
 end TCS
