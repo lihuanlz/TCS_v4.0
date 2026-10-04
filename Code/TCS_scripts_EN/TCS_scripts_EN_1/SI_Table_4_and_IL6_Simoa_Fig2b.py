@@ -1312,72 +1312,13 @@ print(f"Relative error Bland-Altman (exclude mean<=0.01): bias = {bias_rel:.2f}%
 
 
 
-# ====================================================================
-# Save clinical back-calculation results to SI_Table_4.xlsx
-# ====================================================================
-try:
-    from openpyxl import load_workbook as _lwb
-    _wb_clin = _lwb("SI_Table_4.xlsx")
-    if "18_Clinical_BackCalc" in _wb_clin.sheetnames:
-        del _wb_clin["18_Clinical_BackCalc"]
-    _ws_clin = _wb_clin.create_sheet("18_Clinical_BackCalc")
-
-    _ws_clin.append(['Clinical validation: back-calculation from test_AEB (34 samples, QC excluded)'])
-    _ws_clin.append(['Dilution: first 26 samples = 4x, last 8 = 1x; all × 1.25 (100→125 μL)'])
-    _ws_clin.append([])
-    _ws_clin.append(['Sample', 'AEB_mean', 'P_pos', 'Dilution',
-                     '4PL (pg/mL)', 'R2 (pg/mL)', 'R3 (pg/mL)', 'R1 (pg/mL)',
-                     'Roche (pg/mL)'])
-    from openpyxl.styles import Font, PatternFill
-    _bold = Font(bold=True)
-    _hdr = PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
-    for cell in _ws_clin[4]:
-        cell.font = _bold; cell.fill = _hdr
-
-    for i in range(n_clin_samples):
-        _ws_clin.append([
-            i+1,
-            round(aeb_mean[i], 4),
-            round(P_pos_mean[i], 6),
-            dilution_clin[i],
-            round(conc_4pl[i], 4) if not np.isnan(conc_4pl[i]) else 'NaN',
-            round(conc_R2[i], 4) if not np.isnan(conc_R2[i]) else 'NaN',
-            round(conc_R3[i], 4) if not np.isnan(conc_R3[i]) else 'NaN',
-            round(conc_R1[i], 4) if not np.isnan(conc_R1[i]) else 'NaN',
-            roche[i],
-        ])
-
-    _ws_clin.append([])
-    _ws_clin.append(['Summary Statistics'])
-    _ws_clin.append(['Comparison', 'n', 'Slope', '95% CI', 'R²', 'Spearman ρ', 'BA bias %', 'BA LoA lower %', 'BA LoA upper %'])
-
-    # R2 vs 4PL
-    _ws_clin.append(['R2 vs 4PL', n, round(slope, 4), f'{slope_ci[0]:.4f}-{slope_ci[1]:.4f}',
-                     round(r2, 4), round(rho, 4), round(bias_rel, 2),
-                     round(loa_rel_lower, 2), round(loa_rel_upper, 2)])
-
-    # vs Roche comparisons
-    for name, arr in [('4PL vs Roche', conc_4pl), ('R2 vs Roche', conc_R2),
-                       ('R1 vs Roche', conc_R1)]:
-        mask = ~np.isnan(arr) & (arr > 0) & (roche > 0)
-        n_r = np.sum(mask)
-        if n_r >= 3:
-            s_r, _, r_r, _, se_r = stats.linregress(roche[mask], arr[mask])
-            rho_r, p_r = stats.spearmanr(roche[mask], arr[mask])
-            mv = (arr[mask] + roche[mask]) / 2
-            dr = (arr[mask] - roche[mask]) / mv * 100
-            mb = mv > 0.01
-            br = np.mean(dr[mb])
-            lr = br - 1.96 * np.std(dr[mb], ddof=1)
-            ur = br + 1.96 * np.std(dr[mb], ddof=1)
-            _ws_clin.append([name, n_r, round(s_r, 4), '', round(r_r**2, 4),
-                             round(rho_r, 4), round(br, 2), round(lr, 2), round(ur, 2)])
-
-    _wb_clin.save("SI_Table_4.xlsx")
-    print(f"\n[OK] Sheet 18_Clinical_BackCalc added to SI_Table_4.xlsx (now {len(_wb_clin.sheetnames)} sheets)")
-except Exception as e_clin:
-    print(f"\n[FAIL] Clinical sheet: {e_clin}")
-    import traceback; traceback.print_exc()
+# NOTE: the clinical back-calculation sheet (18_Clinical_BackCalc) is written
+# further below, right after SI_Table_4.xlsx is first created. In a clean
+# environment the file does not exist yet at this point, so the write block
+# lives after the workbook-creation block. The variables it uses
+# (n_clin_samples, aeb_mean, P_pos_mean, dilution_clin, conc_4pl, conc_R2,
+# conc_R3, conc_R1, roche, n, slope, slope_ci, r2, rho, bias_rel,
+# loa_rel_lower, loa_rel_upper) are not reassigned in between.
 
 
 
@@ -2349,6 +2290,77 @@ try:
     print("  6. Model_Comparison    - logL, AICc, BIC, R², Shapiro-Wilk")
     print("  7. LOO_Stats           - Leave-one-out with paired t-test")
     print("  8. Clinical_Reference  - manufacturer LOD, plasma normal range")
+
+    # ====================================================================
+    # Save clinical back-calculation results to SI_Table_4.xlsx
+    # (must run AFTER the workbook is first created above; in a clean
+    # environment the file does not exist earlier in this script)
+    # ====================================================================
+    try:
+        # Reuse the in-memory workbook from the creation block above: the
+        # extension block below keeps saving that same object, so writing to a
+        # separately loaded copy would be silently overwritten.
+        _wb_clin = wb
+        if "18_Clinical_BackCalc" in _wb_clin.sheetnames:
+            del _wb_clin["18_Clinical_BackCalc"]
+        _ws_clin = _wb_clin.create_sheet("18_Clinical_BackCalc")
+
+        _ws_clin.append(['Clinical validation: back-calculation from test_AEB (34 samples, QC excluded)'])
+        _ws_clin.append(['Dilution: first 26 samples = 4x, last 8 = 1x; all × 1.25 (100→125 μL)'])
+        _ws_clin.append([])
+        _ws_clin.append(['Sample', 'AEB_mean', 'P_pos', 'Dilution',
+                         '4PL (pg/mL)', 'R2 (pg/mL)', 'R3 (pg/mL)', 'R1 (pg/mL)',
+                         'Roche (pg/mL)'])
+        from openpyxl.styles import Font as _Font, PatternFill as _PatternFill
+        _bold = _Font(bold=True)
+        _hdr = _PatternFill(start_color="D9E1F2", end_color="D9E1F2", fill_type="solid")
+        for cell in _ws_clin[4]:
+            cell.font = _bold; cell.fill = _hdr
+
+        for i in range(n_clin_samples):
+            _ws_clin.append([
+                i+1,
+                round(aeb_mean[i], 4),
+                round(P_pos_mean[i], 6),
+                dilution_clin[i],
+                round(conc_4pl[i], 4) if not np.isnan(conc_4pl[i]) else 'NaN',
+                round(conc_R2[i], 4) if not np.isnan(conc_R2[i]) else 'NaN',
+                round(conc_R3[i], 4) if not np.isnan(conc_R3[i]) else 'NaN',
+                round(conc_R1[i], 4) if not np.isnan(conc_R1[i]) else 'NaN',
+                roche[i],
+            ])
+
+        _ws_clin.append([])
+        _ws_clin.append(['Summary Statistics'])
+        _ws_clin.append(['Comparison', 'n', 'Slope', '95% CI', 'R²', 'Spearman ρ', 'BA bias %', 'BA LoA lower %', 'BA LoA upper %'])
+
+        # R2 vs 4PL
+        _ws_clin.append(['R2 vs 4PL', n, round(slope, 4), f'{slope_ci[0]:.4f}-{slope_ci[1]:.4f}',
+                         round(r2, 4), round(rho, 4), round(bias_rel, 2),
+                         round(loa_rel_lower, 2), round(loa_rel_upper, 2)])
+
+        # vs Roche comparisons
+        for name, arr in [('4PL vs Roche', conc_4pl), ('R2 vs Roche', conc_R2),
+                           ('R1 vs Roche', conc_R1)]:
+            mask = ~np.isnan(arr) & (arr > 0) & (roche > 0)
+            n_r = np.sum(mask)
+            if n_r >= 3:
+                s_r, _, r_r, _, se_r = stats.linregress(roche[mask], arr[mask])
+                rho_r, p_r = stats.spearmanr(roche[mask], arr[mask])
+                mv = (arr[mask] + roche[mask]) / 2
+                dr = (arr[mask] - roche[mask]) / mv * 100
+                mb = mv > 0.01
+                br = np.mean(dr[mb])
+                lr = br - 1.96 * np.std(dr[mb], ddof=1)
+                ur = br + 1.96 * np.std(dr[mb], ddof=1)
+                _ws_clin.append([name, n_r, round(s_r, 4), '', round(r_r**2, 4),
+                                 round(rho_r, 4), round(br, 2), round(lr, 2), round(ur, 2)])
+
+        _wb_clin.save("SI_Table_4.xlsx")
+        print(f"\n[OK] Sheet 18_Clinical_BackCalc added to SI_Table_4.xlsx (now {len(_wb_clin.sheetnames)} sheets)")
+    except Exception as e_clin:
+        print(f"\n[FAIL] Clinical sheet: {e_clin}")
+        import traceback; traceback.print_exc()
 
 
 
