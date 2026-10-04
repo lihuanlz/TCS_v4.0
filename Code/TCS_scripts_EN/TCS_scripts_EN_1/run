@@ -18,20 +18,24 @@ mkdir -p "$RESULTS_DIR"
 # Conda starter environments provide python; fall back to python3
 PY="$(command -v python || command -v python3)"
 
+# Move generated artifacts into the results folder (runs after EVERY script,
+# so partial progress survives an interrupted run). Also sweeps one level of
+# subdirectories (Main_Fig_1_and_ED_Fig_1_ab.py writes omega_kappa_figures/).
+collect() {
+  find . -mindepth 1 -maxdepth 2 -type f \
+    \( -name '*.pdf' -o -name '*.png' -o -name '*.svg' \
+       -o -name '*.xlsx' -o -name '*.csv' -o -name '*.txt' \) \
+    ! -name 'requirements.txt' \
+    -exec mv -f {} "$RESULTS_DIR/" \;
+  find . -mindepth 1 -maxdepth 1 -type d -empty -delete
+}
+
 for f in *.py; do
   echo "================================================"
   echo "Running $f"
   echo "================================================"
-  "$PY" "$f" || echo "WARNING: $f exited with an error; continuing."
-done
-
-# Collect generated artifacts into the results folder (skip capsule config files)
-for ext in pdf png svg xlsx csv txt; do
-  for f in *."$ext"; do
-    [ -e "$f" ] || continue
-    [ "$f" = "requirements.txt" ] && continue
-    mv -f "$f" "$RESULTS_DIR/"
-  done
+  "$PY" -u "$f" || echo "WARNING: $f exited with an error; continuing."
+  collect
 done
 
 echo "All scripts finished. Outputs collected in $RESULTS_DIR"
