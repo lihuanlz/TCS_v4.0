@@ -1442,8 +1442,14 @@ for (conc, Pobs, Mhat, cv, Plow, Pup) in plot_tcs_data:
         cnt = conc_count[conc]
         y_shift = 0.025 if cnt % 2 == 0 else -0.025
         conc_count[conc] += 1
+        ha_lab = 'center'
+        # saturated-plateau labels (conc >= 15): right-anchored so they stay
+        # inside the axes, plus extra vertical stagger from the conc = 8 pair
+        if conc >= 15:
+            y_shift = 0.08 if (cnt - 1) % 2 == 0 else -0.08
+            ha_lab = 'right'
         ax.text(conc, Pobs + y_shift, f'T:{cv:.2f}%',
-                fontsize=12, color='darkred', alpha=0.8, ha='center', va='bottom' if y_shift>0 else 'top')
+                fontsize=11, color='darkred', alpha=0.8, ha=ha_lab, va='bottom' if y_shift>0 else 'top')
 
 ax.axvline(r2_lob_range[0], color='green', linestyle=':', linewidth=1.2, alpha=0.8)
 ax.axvline(r2_lob_range[1], color='green', linestyle=':', linewidth=1.2, alpha=0.8)
@@ -1484,9 +1490,20 @@ for data, color, label in kde_specs:
 
 ax2.set_ylabel('Density', fontsize=14)
 ax2.set_ylim(0, 20)
-ax2.legend(loc='lower right', fontsize=10, framealpha=0.9, ncol=1)
+# --- Fig. 2b layout fix (PDF-safe): legend pinned fully inside the axes ---
+ax2.legend(loc='lower right', bbox_to_anchor=(0.985, 0.02), fontsize=9,
+           framealpha=0.95, ncol=1, borderaxespad=0.6, handlelength=1.6,
+           labelspacing=0.35, handletextpad=0.6)
 if ax.get_legend() is not None:
     ax.get_legend().remove()
+# --- Fig. 2b layout fix: right-margin headroom so LoQ_high line/KDE stay
+# clear of the right spine after SVG->PDF font-metric changes ---
+_x0, _x1 = ax.get_xlim()
+ax.set_xlim(_x0, _x1 * 1.28)
+# --- Fig. 2b layout fix: generous top headroom (spine at 1.20, labels reach
+# at most ~1.12) so converter font-metric shifts cannot push text outside;
+# bottom kept slightly below 0 so the lowest T: label stays inside ---
+ax.set_ylim(-0.06, 1.20)
 
 ax.set_xlabel('Concentration (pg/mL)', fontsize=14)
 ax.set_ylabel(r'$P_{\mathrm{pos}}$', fontsize=14)
@@ -1722,7 +1739,11 @@ ax.text(0.05, 0.95, loa_text, transform=ax.transAxes, verticalalignment='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.8), fontsize=14)
 
 plt.tight_layout()
-fig_core.savefig('Fig_2b.svg', dpi=300, bbox_inches='tight')
+# pad_inches adds a uniform margin around the tight bbox so that downstream
+# SVG->PDF converters with different font metrics cannot clip edge elements;
+# a direct PDF export is also written so the conversion step can be skipped
+fig_core.savefig('Fig_2b.svg', dpi=300, bbox_inches='tight', pad_inches=0.15)
+fig_core.savefig('Fig_2b.pdf', bbox_inches='tight', pad_inches=0.15)
 print("\nCore figure saved: Fig_2b.svg")
 
 # ============================================================================
@@ -2921,7 +2942,7 @@ print("R1 least-squares initialization...")
 #                       args=(mu_R1_all, k_R1_all, n_R1_all),
 #                       bounds=bounds_R1, method='L-BFGS-B',
 #                       options={'maxiter': 5000, 'eps': 1e-8})
-# Global optimization: differential_evolution (does not rely on a single starting point)
+# 全局优化：differential_evolution（不依赖单一起点）
 from scipy.optimize import differential_evolution
 res_R1 = differential_evolution(
     neg_loglik_R1,
@@ -2930,10 +2951,10 @@ res_R1 = differential_evolution(
     seed=42,
     maxiter=1000,
     tol=1e-10,
-    popsize=30,       # population size = 30 × number of parameters = 90
+    popsize=30,       # 种群大小=30×参数数=90
     mutation=(0.5, 1.5),
     recombination=0.9,
-    polish=True,      # final refinement with L-BFGS-B
+    polish=True,      # 最后自动用L-BFGS-B精细优化
     workers=1,
 )
 

@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# Code Ocean run script for the TCS reproducibility capsule.
+# Runs all analysis scripts in sequence and collects outputs into /results.
+set -uo pipefail
+
+mkdir -p ../results
+
+for f in *.py; do
+  echo "================================================"
+  echo "Running $f"
+  echo "================================================"
+  python "$f" || echo "WARNING: $f exited with an error; continuing."
+done
+
+# Collect generated artifacts into /results
+for ext in pdf png svg xlsx csv txt; do
+  ls *."$ext" >/dev/null 2>&1 && mv -f *."$ext" ../results/ || true
+done
+
+echo "All scripts finished. Outputs collected in /results."

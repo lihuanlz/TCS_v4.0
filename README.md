@@ -18,6 +18,10 @@ Immunofluorescence and Simoa IL-6 measurements were performed in the authors' la
 
 Python 3.13 (tested with Python 3.13.9, Anaconda distribution) with standard scientific packages (NumPy, SciPy, pandas, Matplotlib); no proprietary or non-standard dependencies. Each script runs standalone and writes its figure and console output directly. The Lean 4 project builds with the current stable Lean toolchain (`lake build` in `lean_tcs/`).
 
+## Code Ocean capsule
+
+The Python code directory is Code Ocean ready: `Code/TCS_scripts_EN/TCS_scripts_EN_1/` contains a `requirements.txt` pinning all third-party packages, an executable `run` script that executes every analysis script in sequence and collects all generated figures, workbooks and CSV summaries into `../results`, and a `README.md` mapping each script to the figure, table or in-text numerical result it reproduces.
+
 ## Citation
 
 If you use this framework, please cite the manuscript and the preprint (DOI: 10.26434/chemrxiv-2024-19rj6). Correspondence: HL@liangtabio.com.
