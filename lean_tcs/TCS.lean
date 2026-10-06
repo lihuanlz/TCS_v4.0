@@ -11,3 +11,4 @@ import TCS.S10_MasterEquation
 import TCS.S3_S7_Platforms
 import TCS.S8_S11_Platforms
 import TCS.S2e10_Temperature
+import TCS.S2e10_Jacobian

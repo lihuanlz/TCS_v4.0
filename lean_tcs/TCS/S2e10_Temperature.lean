@@ -13,10 +13,9 @@ version, S2e.10.1–S2e.10.3):
     invariant. Algebraic cores: ΔH = 0 ⇒ g = 1 at every temperature
     (degeneracy persists); two-temperature inversion recovers M in
     closed form; κ₀ = 0 recovers the dPCR limit of Theorem S2c.4.1
-  - The analytic content of the determinant condition (Eq. S2e.10b) —
-    strict monotonicity of exp with distinct temperatures implies
-    det J ≠ 0 — is deliberately NOT formalized here (analysis-level
-    statement; everything below is fully checked by the kernel).
+  - The determinant condition of S2e.10.2 (Eq. S2e.10b) — det J ≠ 0 for
+    κ₀ > 0, ΔH ≠ 0 and distinct temperatures — is formalized in
+    `S2e10_Jacobian.lean` (`tempJacDet_ne_zero`, `jacobian_full_ne_zero`).
 
 Lean 4 + Mathlib, toolchain leanprover/lean4:v4.15.0
 -/
