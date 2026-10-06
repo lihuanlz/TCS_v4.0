@@ -95,6 +95,16 @@ separate number. Everything after `:= by` is the proof; ignore it.
 | `occupancy_pmf` | With p = x/(1+x): C(Ω,k)·xᵏ/(1+x)^Ω = C(Ω,k)·pᵏ·(1−p)^(Ω−k), i.e. the occupied-site count is Binomial(Ω, p). | S1c, site-count distribution |
 | `activity_from_occupancy` | x/(1+x) = p inverts to x = p/(1−p). | Langmuir relation (Axiom S2e.1); the κ→∞ limit of Eq. (S1c.12) |
 
+### S1c_SecondMoment.lean — second moment and finite-size variance
+
+| Theorem | Plain-math statement | Manuscript anchor |
+|---|---|---|
+| `succ_succ_mul_choose` | (k+2)(k+1)·C(n+2,k+2) = (n+2)(n+1)·C(n,k) (double absorption identity). | Combinatorial step of the S1c.5 derivation |
+| `secondMoment_eq` | Σₖ k²·C(Ω,k)·xᵏ = Ω·x·(1+x)^(Ω−1) + Ω·(Ω−1)·x²·(1+x)^(Ω−2). | S1c, second-moment sum |
+| `cross_moment` | For Ω≥1, 1+x≠0: E[N²] = Ω·p + Ω·(Ω−1)·p² at p = x/(1+x); since N is simultaneously M_L and Ω_R, this is the cross-correlation ⟨M_L Ω_R⟩. | Eq. (S1c.5) |
+| `mean_occupancy_ratio` | S₁/Z = Ω·x/(1+x) (unnormalized-ratio form of the mean occupancy). | S1c, mean occupancy |
+| `occupancy_variance` | Var(N) = E[N²] − E[N]² = Ω·p·(1−p): the exact finite-size binomial fluctuation, no saddle-point approximation. | Eq. (S1c.6) |
+
 ### S1d_ScaleGroup.lean — the scale group and (ξ, κ) orthogonality
 
 | Theorem | Plain-math statement | Manuscript anchor |
@@ -134,6 +144,21 @@ count is unchanged.
 | `kappa0_recovery` | Once M is known: κ₀ = M/Y₀ − 1. | S2e.10.2 κ₀ recovery |
 | `kappa_zero_limit` | At κ₀ = 0, Y = M at every temperature. | S2e.10.2, dPCR limit (consistency with Theorem S2c.4.1) |
 | `vantHoff_gt_one` | If ΔH > 0 and T > T₀ then g > 1. | Eq. (S2e.10a) monotonicity |
+
+### S2e10_Jacobian.lean — the three-temperature determinant condition
+
+Eq. (S2e.10b) is a Remark-level determinant condition; like the
+temperature entries above it adds no new numbered theorem, so the "76
+numbered statements" count is unchanged.
+
+| Theorem | Plain-math statement | Manuscript anchor |
+|---|---|---|
+| `deplU`, `tempJacDet` | Depletion share u = κ₀·e^(hx)/(1+κ₀·e^(hx)); reduced determinant D = u₁u₂(x₂−x₁) + u₂u₃(x₃−x₂) + u₁u₃(x₁−x₃) (definitions). | Eq. (S2e.10b), ingredients |
+| `jacobian_expansion` | The 3×3 log-parameter Jacobian of (Y₁,Y₂,Y₃) with Y_j = M/(1+κ₀g_j) expands as Y₁·Y₂·Y₃·D (cofactor expansion, pure algebra). | Eq. (S2e.10b), determinant form |
+| `tempJacDet_zero_of_dH_zero` | ΔH = 0 ⟹ all u_j coincide ⟹ D = 0: the degeneracy persists. | S2e.10.2 failure mode (ΔH = 0) |
+| `deplU_injective`, `rolle_linear_vanishing` | For κ₀>0, h≠0 the depletion share is injective in x; and an exponential times a linear function that vanishes at two distinct Rolle points must have zero slope (proof lemmas). | Machinery behind the nonvanishing claim |
+| `tempJacDet_ne_zero` | κ₀ > 0, ΔH ≠ 0 and pairwise distinct temperatures ⟹ D ≠ 0 (Rolle's theorem applied twice to N(x) = α + κ₀(α+β+γx)·e^(hx)). | Eq. (S2e.10b): "nonzero whenever ΔH ≠ 0 and the temperatures are distinct" |
+| `jacobian_full_ne_zero` | With M ≠ 0 as well, the full determinant Y₁·Y₂·Y₃·D is nonzero: (M, κ₀, ΔH) are structurally identifiable from three temperatures. | S2e.10.2 identifiability claim |
 
 ### S2b_DigitalStatistics.lean — the digital platform
 
@@ -281,11 +306,11 @@ checks it).
 
 | SI item | Content | Status |
 |---|---|---|
-| S1c.2–S1c.8 (exact finite-size part) | exact canonical Q, cross-correlation ⟨M_L Ω_R⟩, Var(C) correction, saddle-point variance, thermodynamic limit | Combinatorial core formalized (`S1c_PartitionFunction.lean`); the exact finite-size corrections are checked numerically (`SI_Fig_S1c_1_error_scan.py`) |
+| S1c.2–S1c.8 (exact finite-size part) | exact canonical Q, cross-correlation ⟨M_L Ω_R⟩, Var(C) correction, saddle-point variance, thermodynamic limit | Partition-function factorization and first moment formalized (`S1c_PartitionFunction.lean`); second moment, cross-correlation ⟨M_L Ω_R⟩ = E[N²] and exact variance Var(N) = Ωp(1−p) formalized (`S1c_SecondMoment.lean`); the saddle-point variance asymptotics and the thermodynamic limit are checked numerically (`SI_Fig_S1c_1_error_scan.py`) |
 | S2a (analog noise model) | y = D + (A−D)p + ε and the LoB/LoD/LoQ coefficients 1.645/3.29/5 | Not formalized; `S2a_AnalogStatistics.lean` formalizes the *binomial sampling* statistics underlying S2a/S2b. The analog metrics are computed and verified in Python (`SI_S2f_b_uncertainty_verification.py`, `SI_Table_4_and_IL6_Simoa_Fig2b.py`) |
 | S2b (four-layer stochastic model) | full Poisson→Poisson→Poisson→Binomial mixed-moment computation behind F₀+F₁=1 | Innermost binomial fluctuation and Lemma 1/2 formalized (`S2b_Lemmas.lean`); the full model is Monte-Carlo verified (`SI_Fig_S2b_2_excess_variance.py`, `SD_5_and_ED_Fig_4_dpcr.py`) |
 | S2c.5.4 | explicit Fisher element scalings (∂p/∂ξ, ∂p/∂κ, I_ξ ~ κ², I_κ ~ κ⁻⁴) | Determinant identity and limit theorems formalized (`S2c_Fisher.lean`); element-wise scalings verified numerically (`SI_S2c_5_5_fisher_verification.py`) |
-| S2e.10.2 | three-temperature identifiability, det J ≠ 0 | Deliberately not formalized (analysis-level Jacobian); two-temperature inversion formalized (`S2e10_Temperature.lean`), the rest computed in `SI_S2e_10_temperature_identifiability.py` |
+| S2e.10.2 | three-temperature identifiability, det J ≠ 0 | The determinant condition IS formalized (`S2e10_Jacobian.lean`): cofactor expansion det J = Y₁Y₂Y₃·D, ΔH = 0 degeneracy, and D ≠ 0 for κ₀ > 0, ΔH ≠ 0 and pairwise distinct temperatures (double Rolle argument); the two-temperature inversion is formalized (`S2e10_Temperature.lean`); the numerical identifiability scans are computed in `SI_S2e_10_temperature_identifiability.py` |
 | S2f | exact R1 forward/inverse model, h′(P_pos), h″(P_pos), Clopper–Pearson, Cramér–Rao, Edgeworth correction, digital LoB/LoD/LoQ | Not formalized; verified in Python (`SI_S2f_b_uncertainty_verification.py`, `SI_Table_4_and_IL6_Simoa_Fig2b.py`) |
 | S3 (numeric error ranges) | 4PL/5PL concentration-error ranges quoted in main-text Table 1 | Numeric verification (`SI_S3_4pl_5pl_verification.py`); the 5PL inverse and constraint identities are formalized (`S3_S7_Platforms.lean`) |
 | S12 | Mars regolith adsorption reinterpretation | Data reanalysis, not a numbered theorem (Python) |

@@ -23,7 +23,7 @@ the matching Lean automatically.
 
 ## 2. Verification status
 
-Full build from a clean state: **all 14 modules compile with 0 errors and
+Full build from a clean state: **all 16 modules compile with 0 errors and
 0 warnings** (`Build completed successfully.`), no `sorry` anywhere.
 Every theorem below has been machine-checked, line by line, by the Lean
 kernel. The suite contains 100+ checked declarations: the original core
@@ -39,6 +39,7 @@ see `VERIFICATION.md` §5 for the explicit coverage/gap list.
 | SI source | File | Theorem | Statement |
 |---|---|---|---|
 | S1c combinatorics | S1c_PartitionFunction.lean | partitionFunction_factorizes, occupancyNumerator_eq, mean_occupancy, occupancy_pmf, activity_from_occupancy | Z = (1+x)^Ω; Σ k·C(Ω,k)xᵏ = Ωx(1+x)^(Ω−1); p = x/(1+x); binomial PMF; Langmuir inversion x = p/(1−p) |
+| S1c finite-size corrections | S1c_SecondMoment.lean | secondMoment_eq, cross_moment, mean_occupancy_ratio, occupancy_variance, succ_succ_mul_choose | Σ k²·C(Ω,k)xᵏ = Ωx(1+x)^(Ω−1) + Ω(Ω−1)x²(1+x)^(Ω−2); cross-correlation ⟨M_LΩ_R⟩ = E[N²] = Ωp + Ω(Ω−1)p² (S1c.5); exact variance Var(N) = Ωp(1−p) (S1c.6) |
 | Theorem S2e.1 | S1c_MasterEquation.lean | theorem_S2e1 | Eliminating C_free from the Langmuir relation and mass conservation gives M = Ωp + KW·p/(1−p) |
 | Eq. (S2e.4)/(S1c.12) | S1c_MasterEquation.lean | master_dimensionless, kappa_form | Dimensionless master equation ξ = p/(1−p) + p/κ |
 | Finite-Ω correction | S1c_MasterEquation.lean | finite_omega_correction | ξ = p/(1−p) + (p/κ)(1−1/Ω) |
@@ -56,6 +57,7 @@ see `VERIFICATION.md` §5 for the explicit coverage/gap list.
 | Theorem S2e.4 (algebraic core) | S2e_ScaleDegeneracy.lean | theorem_S2e4_core | Same p but different κ ⟹ different ξ: raw readouts are not cross-platform comparable |
 | Only knowable combination | S2e_ScaleDegeneracy.lean | only_combination | ξ − p/κ = p/(1−p) |
 | Remark S2e.10 (temperature protocols) | S2e10_Temperature.lean | vantHoff, Ydig, analog_temperature_invariance, degeneracy_dH_zero, two_temp_inversion, kappa0_recovery, kappa_zero_limit, vantHoff_gt_one | (ξ, κ) invariance holds at any temperature factor g; ΔH=0 ⇒ g=1 (degeneracy persists); two-temperature closed-form inversion for M; κ₀ = M/Y₀ − 1; κ₀=0 recovers the dPCR limit |
+| Eq. (S2e.10b) Jacobian condition | S2e10_Jacobian.lean | jacobian_expansion, tempJacDet_zero_of_dH_zero, tempJacDet_ne_zero, jacobian_full_ne_zero | det J = Y₁Y₂Y₃·D by cofactor expansion; ΔH=0 ⇒ D=0; κ₀>0, ΔH≠0 and distinct temperatures ⇒ det J ≠ 0 (double Rolle argument) |
 | S2b main equation | S2b_DigitalStatistics.lean | P_pos, poisson_limit, correction_factor | P_pos formula; κ=0 reduces to dPCR; γ=1/(1+κ) |
 | S2b estimator | S2b_DigitalStatistics.lean | estimator_inversion, estimator_dPCR_limit | Legitimacy of the inversion μ̂ = −(1+κ)ln(1−(P−b)/(1−b)) |
 | S2b Lemma 1, Lemma 2 | S2b_Lemmas.lean | lemma1_binomial_subset, lemma2_choose_identity | m-subset binomial weight identity; C(N,r)C(r,n) = C(N,n)C(N−n,r−n) |
