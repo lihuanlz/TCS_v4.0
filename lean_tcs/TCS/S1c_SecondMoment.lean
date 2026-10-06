@@ -41,12 +41,25 @@ two successive applications of Nat.succ_mul_choose_eq. -/
 theorem succ_succ_mul_choose (n k : ℕ) :
     ((k + 2 : ℕ) : ℝ) * ((k + 1 : ℕ) : ℝ) * (((n + 2).choose (k + 2) : ℕ) : ℝ)
       = ((n + 2 : ℕ) : ℝ) * ((n + 1 : ℕ) : ℝ) * ((n.choose k : ℕ) : ℝ) := by
-  have h1 := congrArg (fun m : ℕ => (m : ℝ)) (Nat.succ_mul_choose_eq (n + 1) (k + 1))
-  have h2 := congrArg (fun m : ℕ => (m : ℝ)) (Nat.succ_mul_choose_eq n k)
-  simp only [Nat.succ_eq_add_one, Nat.cast_mul, Nat.cast_add, Nat.cast_one] at h1 h2
-  -- h1 : (n+2)·C(n+1,k+1) = C(n+2,k+2)·(k+2);  h2 : (n+1)·C(n,k) = C(n+1,k+1)·(k+1)
-  -- goal follows from −(k+1)·h1 − (n+2)·h2
-  linear_combination (-((k : ℝ) + 1)) * h1 + (-((n : ℝ) + 2)) * h2
+  have h1 : ((n + 2 : ℕ) : ℝ) * (((n + 1).choose (k + 1) : ℕ) : ℝ)
+      = (((n + 2).choose (k + 2) : ℕ) : ℝ) * ((k + 2 : ℕ) : ℝ) := by
+    have h := congrArg (fun m : ℕ => (m : ℝ)) (Nat.succ_mul_choose_eq (n + 1) (k + 1))
+    simp only [Nat.succ_eq_add_one, Nat.cast_mul] at h
+    exact h
+  have h2 : ((n + 1 : ℕ) : ℝ) * ((n.choose k : ℕ) : ℝ)
+      = (((n + 1).choose (k + 1) : ℕ) : ℝ) * ((k + 1 : ℕ) : ℝ) := by
+    have h := congrArg (fun m : ℕ => (m : ℝ)) (Nat.succ_mul_choose_eq n k)
+    simp only [Nat.succ_eq_add_one, Nat.cast_mul] at h
+    exact h
+  calc ((k + 2 : ℕ) : ℝ) * ((k + 1 : ℕ) : ℝ) * (((n + 2).choose (k + 2) : ℕ) : ℝ)
+      = ((k + 1 : ℕ) : ℝ)
+          * ((((n + 2).choose (k + 2) : ℕ) : ℝ) * ((k + 2 : ℕ) : ℝ)) := by ring
+    _ = ((k + 1 : ℕ) : ℝ)
+          * (((n + 2 : ℕ) : ℝ) * (((n + 1).choose (k + 1) : ℕ) : ℝ)) := by rw [← h1]
+    _ = ((n + 2 : ℕ) : ℝ)
+          * ((((n + 1).choose (k + 1) : ℕ) : ℝ) * ((k + 1 : ℕ) : ℝ)) := by ring
+    _ = ((n + 2 : ℕ) : ℝ) * (((n + 1 : ℕ) : ℝ) * ((n.choose k : ℕ) : ℝ)) := by rw [← h2]
+    _ = ((n + 2 : ℕ) : ℝ) * ((n + 1 : ℕ) : ℝ) * ((n.choose k : ℕ) : ℝ) := by ring
 
 /-- Second-moment sum: Σ_k k²·C(Ω,k)·x^k
 = Ω·x·(1+x)^(Ω−1) + Ω·(Ω−1)·x²·(1+x)^(Ω−2).
@@ -64,19 +77,29 @@ theorem secondMoment_eq (Ω : ℕ) (x : ℝ) :
   rw [secondMoment, Finset.sum_congr rfl (fun k _ => hsplit k), Finset.sum_add_distrib]
   rw [show (∑ k ∈ Finset.range (Ω + 1), (k : ℝ) * (Ω.choose k : ℝ) * x ^ k)
         = occupancyNumerator Ω x from rfl, occupancyNumerator_eq Ω x]
-  congr 1
-  -- Remaining: Σ_k k(k−1)·C(Ω,k)·x^k = Ω·(Ω−1)·x²·(1+x)^(Ω−2)
+  -- Goal: S + T = T + D with S the k(k−1) sum, T = Ω·x·(1+x)^(Ω−1),
+  -- D = Ω·(Ω−1)·x²·(1+x)^(Ω−2).  We prove S = D per case and close
+  -- by commutativity.
   cases Ω with
   | zero => simp [Finset.sum_range_succ]
   | succ n =>
     cases n with
-    | zero =>
-      simp [Finset.sum_range_succ]
+    | zero => simp [Finset.sum_range_succ]
     | succ m =>
-      -- Ω = m + 2; peel the k = 0 and k = 1 terms (both zero)
+      -- Normalize the goal to (m+2)-form so all cast atoms match.
+      show (∑ k ∈ Finset.range (m + 2 + 1), (k : ℝ) * ((k : ℝ) - 1)
+              * ((m + 2).choose k : ℝ) * x ^ k)
+            + ((m + 2 : ℕ) : ℝ) * x * (1 + x) ^ (m + 2 - 1)
+          = ((m + 2 : ℕ) : ℝ) * x * (1 + x) ^ (m + 2 - 1)
+            + ((m + 2 : ℕ) : ℝ) * (((m + 2 : ℕ) : ℝ) - 1) * x ^ 2 * (1 + x) ^ (m + 2 - 2)
+      -- Peel the k = 0 and k = 1 terms (both vanish since k(k−1) = 0).
       rw [Finset.sum_range_succ', Finset.sum_range_succ']
-      simp only [Nat.cast_zero, Nat.cast_one, sub_self, zero_mul, mul_zero,
-        zero_sub, add_zero]
+      have hf0 : ((0 : ℕ) : ℝ) * (((0 : ℕ) : ℝ) - 1)
+          * (((m + 2).choose 0 : ℕ) : ℝ) * x ^ 0 = 0 := by simp
+      have hf1 : ((0 + 1 : ℕ) : ℝ) * (((0 + 1 : ℕ) : ℝ) - 1)
+          * (((m + 2).choose (0 + 1) : ℕ) : ℝ) * x ^ (0 + 1) = 0 := by simp
+      rw [hf0, hf1]
+      simp only [add_zero]
       have hterm : ∀ k : ℕ,
           (((k + 2 : ℕ) : ℝ) * (((k + 2 : ℕ) : ℝ) - 1))
             * (((m + 2).choose (k + 2) : ℕ) : ℝ) * x ^ (k + 2)
@@ -84,16 +107,16 @@ theorem secondMoment_eq (Ω : ℕ) (x : ℝ) :
               * (((m.choose k : ℕ) : ℝ) * x ^ k) := by
         intro k
         have h := succ_succ_mul_choose m k
-        have e1 : ((k + 2 : ℕ) : ℝ) = (k : ℝ) + 2 := by simp
-        have e2 : ((k + 2 : ℕ) : ℝ) - 1 = (k : ℝ) + 1 := by simp
-        have e3 : ((m + 2 : ℕ) : ℝ) = (m : ℝ) + 2 := by simp
-        have e4 : ((m + 1 : ℕ) : ℝ) = (m : ℝ) + 1 := by simp
-        rw [e1, e2, e3, e4, pow_add]
+        have e2 : ((k + 2 : ℕ) : ℝ) - 1 = ((k + 1 : ℕ) : ℝ) := by
+          simp only [Nat.cast_add, Nat.cast_one, Nat.cast_ofNat]; ring
+        rw [e2, pow_add]
         linear_combination (x ^ k * x ^ 2) * h
       rw [Finset.sum_congr rfl (fun k _ => hterm k), ← Finset.mul_sum,
-        partitionFunction_factorizes m x]
-      have eΩ : m + 1 + 1 - 2 = m := by omega
-      have hcast : ((m + 1 + 1 : ℕ) : ℝ) - 1 = ((m + 1 : ℕ) : ℝ) := by simp
+        show (∑ i ∈ Finset.range (m + 1), ((m.choose i : ℕ) : ℝ) * x ^ i)
+          = partitionFunction m x from rfl, partitionFunction_factorizes m x]
+      have eΩ : m + 2 - 2 = m := by omega
+      have hcast : ((m + 2 : ℕ) : ℝ) - 1 = ((m + 1 : ℕ) : ℝ) := by
+        simp only [Nat.cast_add, Nat.cast_one, Nat.cast_ofNat]; ring
       rw [eΩ, hcast]
       ring
 
