@@ -126,10 +126,10 @@ theorem rolle_linear_vanishing {α β γ κ₀ h : ℝ} (hκ : κ₀ ≠ 0) (hh 
     rw [hN, hd.deriv]
     ring
   obtain ⟨ξ₁, ⟨hξ₁lo, hξ₁hi⟩, hξ₁0⟩ :=
-    exists_deriv_eq_zero hx12 hdiff.continuousOn
+    exists_deriv_eq_zero hx12 hdiff.continuous.continuousOn
       (fun y _ => hdiff y) (by rw [show N x₁ = 0 from h1, show N x₂ = 0 from h2])
   obtain ⟨ξ₂, ⟨hξ₂lo, hξ₂hi⟩, hξ₂0⟩ :=
-    exists_deriv_eq_zero hx23 hdiff.continuousOn
+    exists_deriv_eq_zero hx23 hdiff.continuous.continuousOn
       (fun y _ => hdiff y) (by rw [show N x₂ = 0 from h2, show N x₃ = 0 from h3])
   rw [hderiv ξ₁] at hξ₁0
   rw [hderiv ξ₂] at hξ₂0
@@ -157,7 +157,7 @@ theorem tempJacDet_ne_zero {κ₀ h : ℝ} (hκ : 0 < κ₀) (hh : h ≠ 0)
     tempJacDet (deplU κ₀ h x₁) (deplU κ₀ h x₂) (deplU κ₀ h x₃) x₁ x₂ x₃ ≠ 0 := by
   intro HD
   have hγ0 : deplU κ₀ h x₃ - deplU κ₀ h x₂ ≠ 0 :=
-    sub_ne_zero.mpr ((deplU_injective hκ hh).ne (ne_of_gt (hx12.trans hx23)))
+    sub_ne_zero.mpr ((deplU_injective hκ hh).ne (ne_of_gt hx23))
   have hF : ∀ y : ℝ, ∀ α β γ : ℝ,
       (α + β * deplU κ₀ h y + γ * deplU κ₀ h y * y) * (1 + κ₀ * Real.exp (h * y))
         = α + κ₀ * ((α + β + γ * y) * Real.exp (h * y)) := by
