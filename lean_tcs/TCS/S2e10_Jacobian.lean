@@ -127,10 +127,10 @@ theorem rolle_linear_vanishing {α β γ κ₀ h : ℝ} (hκ : κ₀ ≠ 0) (hh 
     ring
   obtain ⟨ξ₁, ⟨hξ₁lo, hξ₁hi⟩, hξ₁0⟩ :=
     exists_deriv_eq_zero hx12 hdiff.continuous.continuousOn
-      (fun y _ => hdiff y) (by rw [show N x₁ = 0 from h1, show N x₂ = 0 from h2])
+      (by rw [show N x₁ = 0 from h1, show N x₂ = 0 from h2]) (fun y _ => hdiff y)
   obtain ⟨ξ₂, ⟨hξ₂lo, hξ₂hi⟩, hξ₂0⟩ :=
     exists_deriv_eq_zero hx23 hdiff.continuous.continuousOn
-      (fun y _ => hdiff y) (by rw [show N x₂ = 0 from h2, show N x₃ = 0 from h3])
+      (by rw [show N x₂ = 0 from h2, show N x₃ = 0 from h3]) (fun y _ => hdiff y)
   rw [hderiv ξ₁] at hξ₁0
   rw [hderiv ξ₂] at hξ₂0
   have hL1 : γ + h * (α + β + γ * ξ₁) = 0 := by
