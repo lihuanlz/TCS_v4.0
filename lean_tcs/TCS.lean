@@ -12,3 +12,4 @@ import TCS.S3_S7_Platforms
 import TCS.S8_S11_Platforms
 import TCS.S2e10_Temperature
 import TCS.S2e10_Jacobian
+import TCS.S1c_SecondMoment
