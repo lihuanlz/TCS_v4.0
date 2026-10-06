@@ -27,8 +27,12 @@ Full build from a clean state: **all 14 modules compile with 0 errors and
 0 warnings** (`Build completed successfully.`), no `sorry` anywhere.
 Every theorem below has been machine-checked, line by line, by the Lean
 kernel. The suite contains 100+ checked declarations: the original core
-chain plus 76 additional frozen statements covering every numbered
-theorem of the SI and the platform reductions.
+chain plus 76 additional frozen statements covering the numbered theorems
+of the SI that carry the mathematical argument (master equation, scale
+degeneracy, sampling and digital statistics, Fisher analysis, asymptotics,
+temperature protocols) together with the platform reductions. SI items
+that are numeric or data-fitting in nature are verified in Python instead;
+see `VERIFICATION.md` §5 for the explicit coverage/gap list.
 
 ## 3. SI section ↔ file ↔ theorem map
 

@@ -270,7 +270,35 @@ line, which carries its SI anchor verbatim.
 | `s1a_harmonic_limit` | S1a.2(i), harmonic-mean limit. For polyclonal capture with clone |
 | `s1a_arithmetic_limit` | S1a.2(i), arithmetic-mean limit. With ⟨p⟩(C) = Σ w_i·C/(C + K_i) and |
 
-## 5. The 5-minute "break it yourself" test
+## 5. Coverage and known gaps (what is NOT formalized)
+
+The tables above map every Lean statement to its manuscript/SI anchor.
+For full honesty in the other direction, the following SI material is
+**intentionally not** part of the Lean development. None of it is a
+numbered theorem carrying the main argument; all of it is verified
+numerically by the Python suite instead (each item names the script that
+checks it).
+
+| SI item | Content | Status |
+|---|---|---|
+| S1c.2–S1c.8 (exact finite-size part) | exact canonical Q, cross-correlation ⟨M_L Ω_R⟩, Var(C) correction, saddle-point variance, thermodynamic limit | Combinatorial core formalized (`S1c_PartitionFunction.lean`); the exact finite-size corrections are checked numerically (`SI_Fig_S1c_1_error_scan.py`) |
+| S2a (analog noise model) | y = D + (A−D)p + ε and the LoB/LoD/LoQ coefficients 1.645/3.29/5 | Not formalized; `S2a_AnalogStatistics.lean` formalizes the *binomial sampling* statistics underlying S2a/S2b. The analog metrics are computed and verified in Python (`SI_S2f_b_uncertainty_verification.py`, `SI_Table_4_and_IL6_Simoa_Fig2b.py`) |
+| S2b (four-layer stochastic model) | full Poisson→Poisson→Poisson→Binomial mixed-moment computation behind F₀+F₁=1 | Innermost binomial fluctuation and Lemma 1/2 formalized (`S2b_Lemmas.lean`); the full model is Monte-Carlo verified (`SI_Fig_S2b_2_excess_variance.py`, `SD_5_and_ED_Fig_4_dpcr.py`) |
+| S2c.5.4 | explicit Fisher element scalings (∂p/∂ξ, ∂p/∂κ, I_ξ ~ κ², I_κ ~ κ⁻⁴) | Determinant identity and limit theorems formalized (`S2c_Fisher.lean`); element-wise scalings verified numerically (`SI_S2c_5_5_fisher_verification.py`) |
+| S2e.10.2 | three-temperature identifiability, det J ≠ 0 | Deliberately not formalized (analysis-level Jacobian); two-temperature inversion formalized (`S2e10_Temperature.lean`), the rest computed in `SI_S2e_10_temperature_identifiability.py` |
+| S2f | exact R1 forward/inverse model, h′(P_pos), h″(P_pos), Clopper–Pearson, Cramér–Rao, Edgeworth correction, digital LoB/LoD/LoQ | Not formalized; verified in Python (`SI_S2f_b_uncertainty_verification.py`, `SI_Table_4_and_IL6_Simoa_Fig2b.py`) |
+| S3 (numeric error ranges) | 4PL/5PL concentration-error ranges quoted in main-text Table 1 | Numeric verification (`SI_S3_4pl_5pl_verification.py`); the 5PL inverse and constraint identities are formalized (`S3_S7_Platforms.lean`) |
+| S12 | Mars regolith adsorption reinterpretation | Data reanalysis, not a numbered theorem (Python) |
+
+Two harmless notation differences to be aware of when comparing against
+the SI: Lean proves algebraically equivalent forms rather than literal
+copies — e.g. `master_quadratic` is stated in the ξ-form
+p² − (κξ+κ+1)p + κξ = 0 (the SI's u-form follows by u = κξ),
+`fisher_det_identity` uses the symmetric double sum ½ΣΣ where the SI
+writes Σ_{l<m}, and `finite_omega_correction` is derived from
+M = (Ω−1)p + … . These are the same equations.
+
+## 6. The 5-minute "break it yourself" test
 
 Do not take our word that the compiler checks anything. Break the code
 and watch it fail:
@@ -291,7 +319,7 @@ Conclusion: the compiler is genuinely checking the mathematics, not
 rubber-stamping it. A green build means the statements in Section 4 —
 and only those statements — are theorems.
 
-## 6. Check there is no cheating (`sorry`)
+## 7. Check there is no cheating (`sorry`)
 
 Lean has an escape hatch keyword, `sorry`, which means "trust me, skip
 this proof". A development that used it would still compile (with a
