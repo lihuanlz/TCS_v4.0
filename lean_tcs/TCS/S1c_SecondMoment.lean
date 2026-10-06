@@ -44,9 +44,9 @@ theorem succ_succ_mul_choose (n k : ℕ) :
   have h1 := congrArg (fun m : ℕ => (m : ℝ)) (Nat.succ_mul_choose_eq (n + 1) (k + 1))
   have h2 := congrArg (fun m : ℕ => (m : ℝ)) (Nat.succ_mul_choose_eq n k)
   simp only [Nat.succ_eq_add_one, Nat.cast_mul, Nat.cast_add, Nat.cast_one] at h1 h2
-  -- h1 : (k+2)·C(n+2,k+2) = (n+2)·C(n+1,k+1);  h2 : (k+1)·C(n+1,k+1) = (n+1)·C(n,k)
-  -- (up to side order); multiply h1 by (k+1) and h2 by (n+2) and add
-  linear_combination ((k : ℝ) + 1) * h1 + ((n : ℝ) + 2) * h2
+  -- h1 : (n+2)·C(n+1,k+1) = C(n+2,k+2)·(k+2);  h2 : (n+1)·C(n,k) = C(n+1,k+1)·(k+1)
+  -- goal follows from −(k+1)·h1 − (n+2)·h2
+  linear_combination (-((k : ℝ) + 1)) * h1 + (-((n : ℝ) + 2)) * h2
 
 /-- Second-moment sum: Σ_k k²·C(Ω,k)·x^k
 = Ω·x·(1+x)^(Ω−1) + Ω·(Ω−1)·x²·(1+x)^(Ω−2).
@@ -61,8 +61,9 @@ theorem secondMoment_eq (Ω : ℕ) (x : ℝ) :
         + (k : ℝ) * (Ω.choose k : ℝ) * x ^ k := by
     intro k
     ring
-  rw [secondMoment, Finset.sum_congr rfl (fun k _ => hsplit k), Finset.sum_add_distrib,
-    occupancyNumerator_eq Ω x]
+  rw [secondMoment, Finset.sum_congr rfl (fun k _ => hsplit k), Finset.sum_add_distrib]
+  rw [show (∑ k ∈ Finset.range (Ω + 1), (k : ℝ) * (Ω.choose k : ℝ) * x ^ k)
+        = occupancyNumerator Ω x from rfl, occupancyNumerator_eq Ω x]
   congr 1
   -- Remaining: Σ_k k(k−1)·C(Ω,k)·x^k = Ω·(Ω−1)·x²·(1+x)^(Ω−2)
   cases Ω with
