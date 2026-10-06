@@ -110,9 +110,6 @@ theorem rolle_linear_vanishing {α β γ κ₀ h : ℝ} (hκ : κ₀ ≠ 0) (hh 
     (h3 : α + κ₀ * ((α + β + γ * x₃) * Real.exp (h * x₃)) = 0) :
     γ = 0 := by
   set N : ℝ → ℝ := fun y => α + κ₀ * ((α + β + γ * y) * Real.exp (h * y)) with hN
-  have hdiff : Differentiable ℝ N := by
-    rw [hN]
-    fun_prop
   have hderiv : ∀ x : ℝ,
       deriv N x = κ₀ * Real.exp (h * x) * (γ + h * (α + β + γ * x)) := by
     intro x
@@ -126,11 +123,11 @@ theorem rolle_linear_vanishing {α β γ κ₀ h : ℝ} (hκ : κ₀ ≠ 0) (hh 
     rw [hN, hd.deriv]
     ring
   obtain ⟨ξ₁, ⟨hξ₁lo, hξ₁hi⟩, hξ₁0⟩ :=
-    exists_deriv_eq_zero hx12 hdiff.continuous.continuousOn
-      (by rw [show N x₁ = 0 from h1, show N x₂ = 0 from h2]) (fun y _ => hdiff y)
+    exists_deriv_eq_zero hx12 (by rw [hN]; fun_prop)
+      (by rw [show N x₁ = 0 from h1, show N x₂ = 0 from h2])
   obtain ⟨ξ₂, ⟨hξ₂lo, hξ₂hi⟩, hξ₂0⟩ :=
-    exists_deriv_eq_zero hx23 hdiff.continuous.continuousOn
-      (by rw [show N x₂ = 0 from h2, show N x₃ = 0 from h3]) (fun y _ => hdiff y)
+    exists_deriv_eq_zero hx23 (by rw [hN]; fun_prop)
+      (by rw [show N x₂ = 0 from h2, show N x₃ = 0 from h3])
   rw [hderiv ξ₁] at hξ₁0
   rw [hderiv ξ₂] at hξ₂0
   have hL1 : γ + h * (α + β + γ * ξ₁) = 0 := by
