@@ -416,7 +416,7 @@ def main():
         description="Yalow 1960 RIA TCS reanalysis")
     parser.add_argument("--no-excel", action="store_true",
                         help="Skip Excel output")
-    parser.add_argument("--figure", default="Extened_data_fig_2.svg",
+    parser.add_argument("--figure", default="ED_Fig_2.svg",
                         help="Output figure path")
     parser.add_argument("--excel", default="SI_Table_2.xlsx",
                         help="Output Excel path")

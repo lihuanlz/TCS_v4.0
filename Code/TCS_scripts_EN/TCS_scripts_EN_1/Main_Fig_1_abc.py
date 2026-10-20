@@ -71,38 +71,24 @@ def _fig_to_image(fig, dpi=600):
 
 # =============================================================== panel a
 def render_a():
-    #!/usr/bin/env python3
-    # -*- coding: utf-8 -*-
     """
-    Fig 1a redesign (v2.1, content-specific): "Epitope-Anchored Quantification"
-    Scale Degeneracy and Its Resolution — TCS framework manuscript.
-    v2.3: magnifier filled positive-yellow (well 15 feeds it); carrier
-      graphic abstracted to an anchor point + enumerated forms (bead /
-      surface / droplet / antibody/primer). v2.2: incoming molecule now solid (dashed kept only for the
-      trajectory); definition-stack and step-3 caption line-spacing loosened;
-      'uniform scaling' kept inside the card. v2.1: glyph keys added — target-molecule key (step 1), incoming-target
-    label (step 2), positive/empty partition key (step 3); detection-equation
-    stack shifted down 0.42 data units to make room for the partition key.
-
-    Content checklist (from the manuscript's own Fig. 1 caption):
+    Fig 1a (v3.0): "Epitope-anchored quantification in FOUR steps",
+    aligned with the four-layer stochastic model of SI S2b.1:
       (1) Molecular sampling: W ~ Poisson(M)
-      (2) Finite-site binding: master equation xi = p/(1-p) + p/kappa,
-          kappa = KVN_A/Omega (binding regime parameter),
-          xi = M/(KVN_A) (dimensionless concentration),
-          p = capture-site occupancy;
-          M, Omega, K degenerate under uniform scaling transformations
-      (3) Partition-based detection: N=1 (analog) -> N>1 (digital),
-          beta = Omega/N capture sites per partition
-
-    Output: Fig1a_示意图_重设计_v2.svg (fonts as paths) + _600dpi.png
-    Canvas: 183 mm (7.2 in) double-column width, Liberation Sans (= Arial metrics).
+      (2) Finite-site binding: master equation xi = p/(1-p) + p/kappa
+      (3) Partition allocation: Omega sites over N partitions of
+          beta = Omega/N sites; hypergeometric allocation of C complexes
+      (4) Observation: analog intensity vs digital positive-partition
+          counting; estimator M = kappa*Omega*xi
+    Output: Fig1a svg (fonts as paths) + 600dpi png
+    Canvas: 183 mm (7.2 in) double-column width, Liberation Sans.
     """
     import os
     import numpy as np
     import matplotlib
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
-    from matplotlib.patches import (Arc, Circle, Ellipse, FancyBboxPatch,
+    from matplotlib.patches import (Circle, Ellipse, FancyBboxPatch,
                                     FancyArrowPatch, Polygon, Rectangle)
     import matplotlib.gridspec as gridspec
 
@@ -113,27 +99,22 @@ def render_a():
     plt.rcParams['mathtext.it'] = 'Liberation Sans:italic'
     plt.rcParams['mathtext.rm'] = 'Liberation Sans'
 
-    C_TGT  = '#009E73'   # target molecule (Okabe-Ito bluish green)
-    C_EPI  = '#00573F'   # epitope nub
-    C_AB   = '#0072B2'   # capture antibody / site
-    C_ON   = '#E69F00'   # positive partition
+    C_TGT  = '#009E73'
+    C_EPI  = '#00573F'
+    C_AB   = '#0072B2'
     NAVY   = '#1F2D4E'
     CARD_FC, CARD_EC = '#F5F7FA', '#C9D2DC'
     BOX_FC, BOX_EC   = '#FFF4D6', '#D9BC5F'
-    GOLD   = '#F2C94C'
-    LIQ    = '#F2B8B2'
     LIQ_EC = '#C0574F'
+    GREY   = '#5A6577'
+    INK    = '#333333'
 
-    # ---------------------------------------------------------------- helpers
+    # ------------------------------------------------------------ helpers
     def draw_site(ax, x, y, s, color=C_AB, lw=1.8, z=3):
-        """Generic surface-anchored capture site (platform-agnostic):
-        a docking pad whose V-notch is exactly complementary to the
-        target's triangular recognition motif (lock-and-key docking;
-        NOT an antibody). Pad base at (x,y), anchor stem below."""
         ax.plot([x, x], [y - 0.60*s, y], color=color, lw=lw,
                 solid_capstyle='round', zorder=z)
-        w, h = 0.53*s, 0.68*s          # pad half-width / height
-        nw, nd = 0.19*s, 0.29*s        # notch half-width / depth
+        w, h = 0.53*s, 0.68*s
+        nw, nd = 0.19*s, 0.29*s
         pad = [(x - w, y), (x + w, y), (x + w, y + h), (x + nw, y + h),
                (x, y + h - nd), (x - nw, y + h), (x - w, y + h)]
         ax.add_patch(Polygon(pad, closed=True, fc=color, ec='#013A5C',
@@ -142,7 +123,6 @@ def render_a():
                              closed=True, fc='#01496F', ec='none', zorder=z + 1))
 
     def _blob(x, y, r, seed, rough=0.12, n=9):
-        """Irregular globular-protein silhouette (Chaikin-smoothed)."""
         rng = np.random.default_rng(seed)
         ang = np.linspace(0, 2*np.pi, n, endpoint=False)
         rad = r * (1 + rough * (rng.random(n) * 2 - 1))
@@ -156,92 +136,70 @@ def render_a():
             pts = np.array(out)
         return pts + np.array([x, y])
 
-    def mol(ax, x, y, r, motif_deg=0, seed=0, z=4, ghost=False):
-        """Target molecule: shaded globular protein with a triangular
-        recognition motif (motif_deg=180 -> motif pointing down, docked)."""
+    def mol(ax, x, y, r, motif_deg=0, seed=0, z=4):
         pts = _blob(x, y, r, seed)
-        if ghost:                                    # incoming molecule (dashed)
-            ax.add_patch(Polygon(pts, closed=True, fc='none', ec=C_EPI, lw=1.1,
-                                 ls=(0, (3, 2)), alpha=0.55, zorder=z))
-        else:                                        # pure-vector pseudo-3D shading
-            ax.add_patch(Polygon(pts, closed=True, fc='#00785A', ec='none',
-                                 zorder=z))
-            ov = (pts - [x, y]) * 0.87 + [x - 0.05*r, y + 0.07*r]
-            ax.add_patch(Polygon(ov, closed=True, fc=C_TGT, ec='none',
-                                 zorder=z + 1))
-            hi = (pts - [x, y]) * 0.55 + [x - 0.16*r, y + 0.18*r]
-            ax.add_patch(Polygon(hi, closed=True, fc='#46C49C', ec='none',
-                                 alpha=0.9, zorder=z + 2))
-            ax.add_patch(Polygon(pts, closed=True, fc='none', ec=C_EPI, lw=1.3,
-                                 zorder=z + 3))
-            hi_e = Ellipse((x - 0.30*r, y + 0.34*r), 0.34*r, 0.20*r,
-                           angle=25, fc='white', ec='none', alpha=0.5,
-                           zorder=z + 4)
-            ax.add_patch(hi_e)
-            hi_e.set_clip_path(Polygon(pts, closed=True,
-                                       transform=ax.transData))
+        ax.add_patch(Polygon(pts, closed=True, fc='#00785A', ec='none', zorder=z))
+        ov = (pts - [x, y]) * 0.87 + [x - 0.05*r, y + 0.07*r]
+        ax.add_patch(Polygon(ov, closed=True, fc=C_TGT, ec='none', zorder=z + 1))
+        hi = (pts - [x, y]) * 0.55 + [x - 0.16*r, y + 0.18*r]
+        ax.add_patch(Polygon(hi, closed=True, fc='#46C49C', ec='none',
+                             alpha=0.9, zorder=z + 2))
+        ax.add_patch(Polygon(pts, closed=True, fc='none', ec=C_EPI, lw=1.3,
+                             zorder=z + 3))
         a = np.radians(motif_deg)
         base = np.array([[-0.11, r - 0.02], [0.11, r - 0.02], [0.0, r + 0.22]])
         R = np.array([[np.cos(a), -np.sin(a)], [np.sin(a), np.cos(a)]])
         tri = base @ R.T + np.array([x, y])
-        if ghost:
-            ax.add_patch(Polygon(tri, closed=True, fc='none', ec=C_EPI, lw=1.0,
-                                 ls=(0, (2, 2)), alpha=0.55, zorder=z + 1))
-        else:
-            ax.add_patch(Polygon(tri, closed=True, fc=C_EPI, ec=C_EPI,
-                                 zorder=z + 4))
+        ax.add_patch(Polygon(tri, closed=True, fc=C_EPI, ec=C_EPI, zorder=z + 4))
 
     def badge(ax, x, y, n):
         ax.add_patch(Circle((x, y), 0.52, fc=NAVY, ec='none', zorder=6))
-        ax.text(x, y - 0.02, str(n), color='white', fontsize=10, weight='bold',
+        ax.text(x, y - 0.02, str(n), color='white', fontsize=9.5, weight='bold',
                 ha='center', va='center', zorder=7)
 
     def card(ax, w):
         ax.add_patch(FancyBboxPatch((0.22, 0.18), w - 0.24, 13.0,
                      boxstyle='round,pad=0.02,rounding_size=0.28',
-                     fc='#D9DFE7', ec='none', zorder=-1))     # soft drop shadow
+                     fc='#D9DFE7', ec='none', zorder=-1))
         ax.add_patch(FancyBboxPatch((0.12, 0.30), w - 0.24, 13.0,
                      boxstyle='round,pad=0.02,rounding_size=0.28',
                      fc=CARD_FC, ec=CARD_EC, lw=1.2, zorder=0))
 
-    # ---------------------------------------------------------------- figure
-    fig = plt.figure(figsize=(7.2, 3.5))
-    gs = gridspec.GridSpec(1, 3, width_ratios=[8.2, 10.6, 10.2],
-                           left=0.004, right=0.996, top=0.92, bottom=0.17,
-                           wspace=0.35)
-    W = [8.2, 10.6, 10.2]
+    # ------------------------------------------------------------ figure
+    W = [7.4, 9.6, 9.0, 9.6]
+    fig = plt.figure(figsize=(7.2, 3.0))
+    gs = gridspec.GridSpec(1, 4, width_ratios=W,
+                           left=0.004, right=0.996, top=0.985, bottom=0.015,
+                           wspace=0.28)
     axs = []
-    for i in range(3):
+    for i in range(4):
         ax = fig.add_subplot(gs[i])
         ax.set_xlim(0, W[i]); ax.set_ylim(0, 13.4)
         ax.set_aspect('equal'); ax.axis('off')
         card(ax, W[i])
         axs.append(ax)
-    ax1, ax2, ax3 = axs
+    ax1, ax2, ax3, ax4 = axs
 
-    # ================================================== STEP 1 — sampling
-    badge(ax1, 0.80, 12.35, 1)
-    ax1.text(1.48, 12.35, 'Molecular sampling', fontsize=9.5, weight='bold',
+    FS_T, FS_C = 8.3, 6.1
+
+    # ================================================ STEP 1 - sampling
+    badge(ax1, 0.72, 12.45, 1)
+    ax1.text(1.32, 12.45, 'Molecular sampling', fontsize=FS_T, weight='bold',
              color=NAVY, ha='left', va='center')
-    cx = 4.1
-    Y_CONE, Y_TIP = 7.10, 4.72          # shoulder / cone-tip of the tube
-    HW = 1.5                            # body half-width
-    def hw(y):                          # vessel inner half-width
+    cx = 3.9
+    Y_CONE, Y_TIP = 6.95, 4.60
+    HW = 1.35
+    def hw(y):
         if y >= Y_CONE:
             return HW
-        return 0.17 + (y - Y_TIP) * (HW - 0.17) / (Y_CONE - Y_TIP)
-    # Eppendorf-style vessel: cylindrical body + conical bottom + rounded tip
+        return 0.16 + (y - Y_TIP) * (HW - 0.16) / (Y_CONE - Y_TIP)
     _ta = np.linspace(np.pi, 2 * np.pi, 25)
-    tube = ([(cx - HW, 10.95), (cx - HW, Y_CONE)]
-            + list(zip(cx + 0.17 * np.cos(_ta), Y_TIP + 0.17 * np.sin(_ta)))
-            + [(cx + HW, Y_CONE), (cx + HW, 10.95)])
-    ax1.add_patch(Polygon(tube, closed=False, fc='none', ec=NAVY, lw=1.7,
+    tube = ([(cx - HW, 10.6), (cx - HW, Y_CONE)]
+            + list(zip(cx + 0.16 * np.cos(_ta), Y_TIP + 0.16 * np.sin(_ta)))
+            + [(cx + HW, Y_CONE), (cx + HW, 10.6)])
+    ax1.add_patch(Polygon(tube, closed=False, fc='none', ec=NAVY, lw=1.5,
                           joinstyle='round', capstyle='round', zorder=2))
-    # faint graduation ticks on the right wall
-    for yg in (7.80, 8.70, 9.60):
-        ax1.plot([cx + HW - 0.30, cx + HW - 0.06], [yg, yg], color=NAVY,
-                 lw=1.0, alpha=0.35, zorder=2.5, solid_capstyle='round')
-    yl = 9.80                                        # liquid level
+    yl = 9.50
     liq = ([(cx - hw(yl) + 0.08, yl), (cx + hw(yl) - 0.08, yl),
             (cx + HW - 0.08, Y_CONE)]
            + list(zip(cx + 0.10 * np.cos(_ta), Y_TIP + 0.10 + 0.10 * np.sin(_ta)))
@@ -250,224 +208,189 @@ def render_a():
     ax1.add_patch(liq_clip)
     bands = ['#F8D6D1', '#F5CAC4', '#F2BDB5', '#EFB0A6', '#ECA499']
     ybs = np.linspace(Y_TIP + 0.02, yl, 6)
-    for i in range(5):                               # vertical gradient, clipped
-        rc = Rectangle((cx - 1.7, ybs[i]), 3.4, ybs[i + 1] - ybs[i],
+    for i in range(5):
+        rc = Rectangle((cx - 1.6, ybs[i]), 3.2, ybs[i + 1] - ybs[i],
                        fc=bands[4 - i], ec='none', zorder=1)
         ax1.add_patch(rc)
         rc.set_clip_path(liq_clip)
-    ax1.add_patch(Ellipse((cx, 10.95), 3.00, 0.42, fc='#EDF1F5', ec=NAVY, lw=1.7,
-                          zorder=2.6))               # tube rim / opening
-    ax1.add_patch(Ellipse((cx, yl), 2 * (hw(yl) - 0.10), 0.22, fc='#F8D6D1',
-                          ec=LIQ_EC, lw=1.2, zorder=2.4))   # meniscus
-
+    ax1.add_patch(Ellipse((cx, 10.6), 2.70, 0.38, fc='#EDF1F5', ec=NAVY, lw=1.5,
+                          zorder=2.6))
+    ax1.add_patch(Ellipse((cx, yl), 2 * (hw(yl) - 0.10), 0.20, fc='#F8D6D1',
+                          ec=LIQ_EC, lw=1.1, zorder=2.4))
     rng = np.random.default_rng(9)
     pts = []
     for _ in range(600):
-        if len(pts) >= 10:
+        if len(pts) >= 8:
             break
-        y = 6.0 + 3.4 * rng.random() ** 0.7
-        x = cx + (rng.random() * 2 - 1) * (hw(y) - 0.26)
-        if all((x - px)**2 + (y - py)**2 > 0.56**2 for px, py in pts):
+        y = 5.9 + 3.1 * rng.random() ** 0.7
+        x = cx + (rng.random() * 2 - 1) * (hw(y) - 0.24)
+        if all((x - px)**2 + (y - py)**2 > 0.52**2 for px, py in pts):
             pts.append((x, y))
     for (x, y) in pts:
-        mol(ax1, x, y, 0.24, motif_deg=float(rng.integers(0, 360)),
+        mol(ax1, x, y, 0.22, motif_deg=float(rng.integers(0, 360)),
             seed=int(rng.integers(1, 10**6)))
-
-    # glyph key: what the green globule is (wording from the Fig. 1 caption)
-    mol(ax1, 1.30, 9.75, 0.24, motif_deg=25, seed=11)
-    ax1.text(1.30, 8.85, 'target\nmolecule', fontsize=6.8, color=C_EPI,
+    mol(ax1, 1.10, 9.55, 0.22, motif_deg=25, seed=11)
+    ax1.text(1.10, 8.75, 'target\nmolecule', fontsize=5.8, color=C_EPI,
              ha='center', va='top', linespacing=1.15)
-
-    ax1.text(cx, 3.55, 'M target molecules in volume V,', fontsize=6.8,
-             ha='center', color='#333333')
-    ax1.text(cx, 2.95, 'each bearing an epitope', fontsize=6.8,
-             ha='center', color='#333333')
-    ax1.text(cx, 1.40, r'$W \sim \mathrm{Poisson}(M)$', fontsize=11.5,
+    ax1.text(cx, 3.55, 'M targets in volume V', fontsize=FS_C, ha='center',
+             color=INK)
+    ax1.text(cx, 1.55, r'$W \sim \mathrm{Poisson}(M)$', fontsize=11,
              ha='center', va='center', color=NAVY)
 
-    # ======================================== STEP 2 — finite-site binding
-    badge(ax2, 0.80, 12.35, 2)
-    ax2.text(1.48, 12.35, 'Finite-site binding', fontsize=9.5, weight='bold',
+    # ========================================== STEP 2 - finite-site binding
+    badge(ax2, 0.72, 12.45, 2)
+    ax2.text(1.32, 12.45, 'Finite-site binding', fontsize=FS_T, weight='bold',
              color=NAVY, ha='left', va='center')
-    ax2.text(1.48, 11.60, 'epitope-anchored capture', fontsize=7, style='italic',
-             color='#5A6577', ha='left', va='center')
-
-    # generic support bar + anchor point (carrier-agnostic) + capture site
-    ax2.add_patch(FancyBboxPatch((2.40, 5.38), 1.60, 0.30,
-                  boxstyle='round,pad=0.02,rounding_size=0.14',
+    ax2.add_patch(FancyBboxPatch((2.10, 5.55), 1.45, 0.28,
+                  boxstyle='round,pad=0.02,rounding_size=0.13',
                   fc='#8A97A5', ec=NAVY, lw=0.9, zorder=2))
-    ax2.add_patch(Circle((3.20, 5.72), 0.16, fc=NAVY, ec='none', zorder=2))
-    ax2.text(10.30, 5.90, 'carrier: bead · surface · droplet', fontsize=6.5,
-             color='#5A6577', ha='right', va='center')
-    ax2.text(10.30, 5.42, 'capture: antibody · primer', fontsize=6.5,
-             color='#5A6577', ha='right', va='center')
-    draw_site(ax2, 3.20, 6.72, 0.85, lw=2.2)            # anchored docking pad
-    mol(ax2, 3.20, 7.86, 0.52, motif_deg=180, seed=4)   # motif docked into notch
-    # incoming molecule (ghost) + trajectory -> the capture event
-    mol(ax2, 2.62, 9.55, 0.36, motif_deg=195, seed=6)   # solid free molecule
-    ax2.add_patch(FancyArrowPatch((2.95, 9.18), (2.94, 8.52),
+    ax2.add_patch(Circle((2.83, 5.87), 0.15, fc=NAVY, ec='none', zorder=2))
+    draw_site(ax2, 2.83, 6.80, 0.80, lw=2.0)
+    mol(ax2, 2.83, 7.85, 0.48, motif_deg=180, seed=4)
+    mol(ax2, 2.30, 9.45, 0.33, motif_deg=195, seed=6)
+    ax2.add_patch(FancyArrowPatch((2.60, 9.10), (2.60, 8.50),
                   connectionstyle='arc3,rad=-0.30', arrowstyle='-|>',
-                  mutation_scale=9, color='#5A6577', lw=1.2, ls=(0, (3, 2)),
+                  mutation_scale=8, color=GREY, lw=1.1, ls=(0, (3, 2)),
                   alpha=0.85, zorder=3))
-    # solid incoming molecule; the dashed curve is its approach trajectory
-    ax2.text(2.35, 10.72, 'incoming target\nmolecule', fontsize=6.5,
-             color=C_EPI, ha='center', va='center', linespacing=1.15)
-    ax2.annotate('', xy=(2.62, 10.02), xytext=(2.37, 10.30),
-                 arrowprops=dict(arrowstyle='-', color=C_EPI, lw=0.9))
-    ax2.annotate('epitope', xy=(3.28, 7.28), xytext=(5.65, 8.85), fontsize=7,
-                 color=C_EPI, ha='left',
-                 arrowprops=dict(arrowstyle='-', color=C_EPI, lw=1.0))
-    ax2.text(4.55, 6.30, 'anchored capture site', fontsize=6.5, color='#5A6577',
-             ha='left', va='center')
-
-    # on/off kinetics
-    ax2.add_patch(FancyArrowPatch((1.28, 8.35), (1.28, 7.45), arrowstyle='-|>',
-                                  mutation_scale=9, color=NAVY, lw=1.4))
-    ax2.add_patch(FancyArrowPatch((1.74, 7.45), (1.74, 8.35), arrowstyle='-|>',
-                                  mutation_scale=9, color=NAVY, lw=1.4))
-    ax2.text(1.08, 7.90, r'$k_{\mathrm{on}}$', fontsize=7, ha='right',
+    ax2.text(2.10, 10.45, 'incoming target', fontsize=5.8, color=C_EPI,
+             ha='center', va='center')
+    ax2.add_patch(FancyArrowPatch((1.10, 8.20), (1.10, 7.40), arrowstyle='-|>',
+                                  mutation_scale=8, color=NAVY, lw=1.3))
+    ax2.add_patch(FancyArrowPatch((1.50, 7.40), (1.50, 8.20), arrowstyle='-|>',
+                                  mutation_scale=8, color=NAVY, lw=1.3))
+    ax2.text(0.92, 7.80, r'$k_{\mathrm{on}}$', fontsize=6, ha='right',
              va='center', color=NAVY)
-    ax2.text(1.94, 7.90, r'$k_{\mathrm{off}}$', fontsize=7, ha='left',
+    ax2.text(1.68, 7.80, r'$k_{\mathrm{off}}$', fontsize=6, ha='left',
              va='center', color=NAVY)
-    ax2.text(1.50, 6.80, 'K: affinity', fontsize=6.5, ha='center', va='center',
-             color='#5A6577')
-
-    # scale-degeneracy triangle  M -- Omega -- K  with x s
-    tcx, tcy, tr = 9.00, 8.50, 1.00
+    tcx, tcy, tr = 7.60, 8.65, 0.92
     tri = [(tcx, tcy + tr),
            (tcx - tr*np.cos(np.pi/6), tcy - tr*np.sin(np.pi/6)),
            (tcx + tr*np.cos(np.pi/6), tcy - tr*np.sin(np.pi/6))]
-    ax2.add_patch(Polygon(tri, closed=True, fc='none', ec=NAVY, lw=1.4, zorder=2))
+    ax2.add_patch(Polygon(tri, closed=True, fc='none', ec=NAVY, lw=1.3, zorder=2))
     for (nx, ny), lab in zip(tri, ['M', r'$\Omega$', 'K']):
-        ax2.add_patch(Circle((nx, ny), 0.42, fc='white', ec=NAVY, lw=1.4,
+        ax2.add_patch(Circle((nx, ny), 0.40, fc='white', ec=NAVY, lw=1.3,
                              zorder=4))
-        ax2.text(nx, ny, lab, fontsize=8.5, weight='bold', color=NAVY,
+        ax2.text(nx, ny, lab, fontsize=7.5, weight='bold', color=NAVY,
                  ha='center', va='center', zorder=5)
-    ax2.text(tcx, tcy, r'$\times s$', fontsize=10, weight='bold',
+    ax2.text(tcx, tcy, r'$\times s$', fontsize=9, weight='bold',
              color='#B03030', ha='center', va='center', zorder=5)
-    ax2.text(tcx - 0.28, 6.82, 'uniform scaling', fontsize=6.5, color='#5A6577',
+    ax2.text(tcx, 6.95, 'uniform scaling', fontsize=5.8, color=GREY,
              ha='center', va='center')
-
-    # symbol definitions (wording from the manuscript caption)
-    ax2.text(5.30, 4.55, 'p — capture-site occupancy', fontsize=6.8,
-             ha='center', color='#333333')
-    ax2.text(5.30, 3.94, r'$\kappa \equiv KVN_A/\Omega$ — binding regime parameter',
-             fontsize=6.5, ha='center', color='#333333')
-    ax2.text(5.30, 3.20, r'$\xi \equiv M/(KVN_A)$ — dimensionless concentration',
-             fontsize=6.5, ha='center', color='#333333')
-
-    # master equation (boxed)
-    ax2.text(5.30, 2.68, 'master equation', fontsize=7, color='#5A6577',
-             ha='center', va='center')
-    ax2.add_patch(FancyBboxPatch((1.35, 0.56), 7.90, 1.78,
+    ax2.text(4.80, 4.70, 'p — capture-site occupancy', fontsize=FS_C,
+             ha='center', color=INK)
+    ax2.text(4.80, 4.05, r'$\kappa \equiv KVN_A/\Omega$;  $\xi \equiv M/(KVN_A)$',
+             fontsize=6.2, ha='center', color=INK)
+    ax2.add_patch(FancyBboxPatch((1.30, 0.70), 7.00, 1.85,
                   boxstyle='round,pad=0.02,rounding_size=0.22',
-                  fc=BOX_FC, ec=BOX_EC, lw=1.6, zorder=3))
-    ax2.text(5.30, 1.45, r'$\xi = \frac{p}{1-p} + \frac{p}{\kappa}$',
-             fontsize=14, ha='center', va='center', color=NAVY, zorder=4)
+                  fc=BOX_FC, ec=BOX_EC, lw=1.5, zorder=3))
+    ax2.text(4.80, 1.62, r'$\xi = \frac{p}{1-p} + \frac{p}{\kappa}$',
+             fontsize=13, ha='center', va='center', color=NAVY, zorder=4)
+    ax2.text(4.80, 2.92, 'master equation (thermodynamic limit)', fontsize=5.8,
+             color=GREY, ha='center', va='center')
 
-    # ==================================== STEP 3 — partition-based detection
-    badge(ax3, 0.80, 12.35, 3)
-    ax3.text(1.48, 12.35, 'Partition-based detection', fontsize=9.5,
-             weight='bold', color=NAVY, ha='left', va='center')
-
-    # N = 1 unit (analog)
-    ax3.add_patch(FancyBboxPatch((0.55, 6.90), 2.75, 3.20,
+    # ======================================== STEP 3 - partition allocation
+    badge(ax3, 0.72, 12.45, 3)
+    ax3.text(1.32, 12.45, 'Partition allocation', fontsize=FS_T, weight='bold',
+             color=NAVY, ha='left', va='center')
+    ax3.add_patch(FancyBboxPatch((0.55, 7.10), 2.40, 2.80,
                   boxstyle='round,pad=0.02,rounding_size=0.18',
-                  fc='white', ec=NAVY, lw=1.3, zorder=1))
-    for yy in (7.85, 9.20):
-        for xx in (1.20, 1.90, 2.60):
-            draw_site(ax3, xx, yy, 0.34, lw=1.4)
-    mol(ax3, 1.90, 8.33, 0.16, motif_deg=180, seed=7)   # one occupied site
-    ax3.text(2.15, 6.45, 'N = 1: all $\\Omega$ sites', fontsize=6.5, ha='center',
-             va='center', color='#333333')
-    ax3.text(2.15, 5.90, 'in one unit', fontsize=6.5, ha='center', va='center',
-             color='#333333')
-    ax3.text(2.15, 5.28, r'$\rightarrow$ analog signal y', fontsize=6.5,
-             ha='center', va='center', color='#333333')
-
-    # partition arrow
-    ax3.add_patch(FancyArrowPatch((3.72, 8.60), (5.42, 8.60), arrowstyle='-|>',
-                                  mutation_scale=13, color=NAVY, lw=1.8, zorder=5))
-    ax3.text(4.57, 9.00, 'partition', fontsize=6.5, ha='center', va='center',
-             color='#5A6577')
-
-    # N > 1: 4x4 well array
-    xw0, yw0, dw = 5.70, 7.35, 0.72
-    on = {1, 2, 3, 15}   # 4/16 positive (p ~ 0.25); well 15 feeds the magnifier
+                  fc='white', ec=NAVY, lw=1.2, zorder=1))
+    for yy in (7.95, 9.05):
+        for xx in (1.15, 1.75, 2.35):
+            draw_site(ax3, xx, yy, 0.30, lw=1.2)
+    mol(ax3, 1.75, 8.52, 0.15, motif_deg=180, seed=7)
+    ax3.text(1.75, 6.35, r'N = 1: all $\Omega$ sites', fontsize=FS_C,
+             ha='center', va='center', color=INK)
+    ax3.text(1.75, 5.72, 'in one unit (analog)', fontsize=FS_C, ha='center',
+             va='center', color=INK)
+    ax3.add_patch(FancyArrowPatch((3.35, 8.60), (4.85, 8.60), arrowstyle='-|>',
+                                  mutation_scale=11, color=NAVY, lw=1.6, zorder=5))
+    ax3.text(4.10, 9.05, 'partition', fontsize=5.8, ha='center', va='center',
+             color=GREY)
+    xw0, yw0, dw = 5.05, 7.40, 0.66
+    on = {1, 2, 3, 15}
     for i in range(4):
         for j in range(4):
             xw, yw = xw0 + i*dw + dw/2, yw0 + j*dw + dw/2
             pos = (j*4 + i) in on
-            if pos:
-                ax3.add_patch(Circle((xw, yw), 0.28, fc='#D99400', ec=NAVY,
-                                     lw=1.1, zorder=3))   # solid yellow, as the key
-            else:
-                ax3.add_patch(Circle((xw, yw), 0.28, fc='white', ec=NAVY,
-                                     lw=1.1, zorder=3))
-    ax3.text(7.15, 6.58, r'N > 1: $\beta = \Omega/N$ sites', fontsize=6.5,
-             ha='center', va='center', color='#333333')
-    ax3.text(7.15, 5.96, 'per partition', fontsize=6.5, ha='center', va='center',
-             color='#333333')
-    ax3.text(7.15, 5.34, r'$\rightarrow$ digital count k of n', fontsize=6.5, ha='center',
-             va='center', color='#333333')
-    # glyph key: positive vs empty partitions
-    ax3.add_patch(Circle((5.19, 4.78), 0.16, fc='#D99400', ec=NAVY, lw=1.0,
-                         zorder=3))
-    ax3.text(5.45, 4.78, 'positive', fontsize=6.5, ha='left', va='center',
-             color='#333333')
-    ax3.add_patch(Circle((7.55, 4.78), 0.16, fc='white', ec=NAVY, lw=1.0,
-                         zorder=3))
-    ax3.text(7.81, 4.78, 'empty', fontsize=6.5, ha='left', va='center',
-             color='#333333')
-
-    # magnifier bubble: one partition = beta sites (circle first, then Ys on top)
-    bx, by, br = 9.15, 11.05, 0.88
-    ax3.add_patch(Circle((bx, by), br, fc='#D99400', ec=NAVY, lw=1.4,
-                         zorder=4))   # one POSITIVE partition, zoomed
+            ax3.add_patch(Circle((xw, yw), 0.25,
+                                 fc=('#D99400' if pos else 'white'),
+                                 ec=NAVY, lw=1.0, zorder=3))
+    ax3.text(6.40, 6.55, r'N > 1: $\beta = \Omega/N$ sites', fontsize=FS_C,
+             ha='center', va='center', color=INK)
+    ax3.text(6.40, 5.95, 'per partition (digital)', fontsize=FS_C, ha='center',
+             va='center', color=INK)
+    bx, by, br = 8.15, 11.00, 0.86
+    ax3.add_patch(Circle((bx, by), br, fc='#D99400', ec=NAVY, lw=1.3, zorder=4))
     for ang, occ in [(0, False), (90, True), (180, False), (270, False)]:
         a = np.radians(ang)
-        yx, yy = bx + 0.36*np.cos(a), by + 0.36*np.sin(a)
-        draw_site(ax3, yx, yy, 0.30, lw=1.3, z=5)
+        yx, yy = bx + 0.34*np.cos(a), by + 0.34*np.sin(a)
+        draw_site(ax3, yx, yy, 0.28, lw=1.2, z=5)
         if occ:
-            mol(ax3, yx, yy + 0.34, 0.14, motif_deg=180, seed=9, z=6)
-    ax3.plot([8.08, 8.48], [10.18, 10.48], color='#8A97A5', lw=1.0, zorder=3)
-    ax3.plot([8.52, 8.62], [10.02, 10.30], color='#8A97A5', lw=1.0, zorder=3)
-    ax3.text(7.95, 11.05, 'one partition:\n$\\beta$ sites', fontsize=6.5,
-             ha='right', va='center', color='#5A6577', linespacing=1.2)
-
-    # detection equations
-    ax3.text(5.10, 4.00, r'$P_{\mathrm{specific}} = 1 - (1-p)^{\beta}$',
-             fontsize=9.5, ha='center', va='center', color=NAVY)
-    ax3.text(5.10, 3.00, r'positive if $\geq 1$ of $\beta$ sites occupied',
-             fontsize=6.5, ha='center', va='center', color='#5A6577')
-    ax3.text(5.10, 2.13, r'$y = D + (A - D)\,p + \varepsilon$', fontsize=9.5,
+            mol(ax3, yx, yy + 0.32, 0.13, motif_deg=180, seed=9, z=6)
+    ax3.plot([7.40, 7.70], [9.98, 10.28], color='#8A97A5', lw=0.9, zorder=3)
+    ax3.plot([7.46, 7.56], [9.82, 10.10], color='#8A97A5', lw=0.9, zorder=3)
+    ax3.text(7.15, 11.00, 'one\npartition', fontsize=5.8, ha='right',
+             va='center', color=GREY, linespacing=1.2)
+    ax3.text(4.70, 4.35, 'C bound complexes dealt to partitions:', fontsize=FS_C,
+             ha='center', va='center', color=INK)
+    ax3.text(4.70, 3.30, 'multivariate hypergeometric', fontsize=7.2,
              ha='center', va='center', color=NAVY)
-    ax3.text(5.10, 0.90, r'estimator:  $\hat{M} = \kappa\Omega\,\hat{\xi}$',
-             fontsize=10.5, weight='bold', ha='center', va='center', color=NAVY)
+    ax3.text(4.70, 2.55, r'positive if $\geq$ 1 of $\beta$ sites occupied',
+             fontsize=FS_C, ha='center', va='center', color=GREY)
+    # glyph key lives here (the coloured circles are in THIS panel)
+    ax3.add_patch(Circle((2.50, 1.30), 0.17, fc='#D99400', ec=NAVY, lw=0.9,
+                         zorder=3))
+    ax3.text(2.77, 1.30, 'positive', fontsize=FS_C, ha='left', va='center',
+             color=INK)
+    ax3.add_patch(Circle((5.45, 1.30), 0.17, fc='white', ec=NAVY, lw=0.9,
+                         zorder=3))
+    ax3.text(5.72, 1.30, 'empty', fontsize=FS_C, ha='left', va='center',
+             color=INK)
 
-    # ------------------------------------------------- chevrons between cards
+    # ================================================ STEP 4 - observation
+    badge(ax4, 0.72, 12.45, 4)
+    ax4.text(1.32, 12.45, 'Observation', fontsize=FS_T, weight='bold',
+             color=NAVY, ha='left', va='center')
+    ax4.text(4.80, 10.85, r'$P_{\mathrm{pos}} = 1 - (1-p)^{\beta}$',
+             fontsize=8.2, ha='center', va='center', color=NAVY)
+    ax4.text(4.80, 10.10, 'Type 1: binary count + Poisson inversion',
+             fontsize=5.8, ha='center', va='center', color=GREY)
+    ax4.text(4.80, 9.50, 'Type 2: direct per-molecule counting',
+             fontsize=5.8, ha='center', va='center', color=GREY)
+    ax4.plot([1.20, 8.40], [8.80, 8.80], color='#C9D2DC', lw=1.0, zorder=1)
+    ax4.text(4.80, 8.10, r'$y = D + (A - D)\,p + \varepsilon$',
+             fontsize=8.8, ha='center', va='center', color=NAVY)
+    ax4.text(4.80, 7.40, 'analog: single intensity, no counting', fontsize=5.8,
+             ha='center', va='center', color=GREY)
+    ax4.text(4.80, 6.15, r'$\kappa \to 0$:  $M = -N\,\ln(1 - N_{\mathrm{pos}}/N)$',
+             fontsize=7.6, ha='center', va='center', color=NAVY)
+    ax4.text(4.80, 5.45, 'calibration-free absolute count (dPCR)', fontsize=5.8,
+             ha='center', va='center', color=GREY)
+    ax4.add_patch(FancyBboxPatch((1.20, 0.90), 7.20, 1.90,
+                  boxstyle='round,pad=0.02,rounding_size=0.22',
+                  fc=BOX_FC, ec=BOX_EC, lw=1.5, zorder=3))
+    ax4.text(4.80, 1.85, r'estimator:  $\hat{M} = \kappa\,\Omega\,\hat{\xi}$',
+             fontsize=8.8, weight='bold', ha='center', va='center', color=NAVY,
+             zorder=4)
+
+    # ----------------------------------------------- chevrons between cards
     fig.canvas.draw()
-    for a, b in ((ax1, ax2), (ax2, ax3)):
+    for a, b in ((ax1, ax2), (ax2, ax3), (ax3, ax4)):
         pa, pb = a.get_position(), b.get_position()
         gx = (pa.x1 + pb.x0) / 2
-        gy, gh, gw = 0.545, 0.045, 0.012
+        gy, gh, gw = 0.52, 0.060, 0.010
         fig.patches.append(Polygon(
             [(gx - gw, gy + gh), (gx + gw*0.6, gy), (gx - gw, gy - gh),
              (gx - gw*0.4, gy)],
             closed=True, transform=fig.transFigure, fc=NAVY, ec='none', zorder=8))
 
-    # ---------------------------------------------------------- bottom ribbon
-    fig.patches.append(Rectangle((0.004, 0.030), 0.992, 0.105,
-                       transform=fig.transFigure, fc=NAVY, ec='none', zorder=8))
-    fig.text(0.022, 0.0825, 'SCALE DEGENERACY', color=GOLD, fontsize=8.5,
-             weight='bold', va='center', zorder=9)
-    fig.text(0.215, 0.0825,
-             r'$\{M,\ \Omega,\ K\} \rightarrow s\,\{M,\ \Omega,\ K\}$  leaves the'
-             r' occupancy $p$ unchanged — only scale-invariant combinations'
-             r' are observable',
-             color='white', fontsize=7.8, va='center', zorder=9)
+    import os as _os
+    out = _os.path.join(_os.path.dirname(_os.path.abspath(__file__)),
+                        'Fig1a_4steps.svg')
+    fig.savefig(out, facecolor='white')
+    fig.savefig(out.replace('.svg', '_600dpi.png'), dpi=600, facecolor='white')
     return _fig_to_image(fig)
-
 # =============================================================== panel b
 def render_b():
     #!/usr/bin/env python3
@@ -561,7 +484,7 @@ def render_b():
     # ------------------------------------------------------------- canvas
     fig, ax = plt.subplots(figsize=(5.8, 5.0))
     ax.set_xlim(-2.55, 2.75)          # log10 kappa
-    ax.set_ylim(4.4, 10.5)            # log10 beta
+    ax.set_ylim(3.3, 10.5)            # log10 beta (bottom strip: this work)
     ax.set_xticks(range(-2, 3))
     ax.set_xticklabels(['$10^{-2}$', '$10^{-1}$', '$10^{0}$', '$10^{1}$',
                         '$10^{2}$'], fontsize=8)
@@ -571,21 +494,29 @@ def render_b():
         ax.spines[s].set_visible(False)
     for s in ('left', 'bottom'):
         ax.spines[s].set_color(NAVY); ax.spines[s].set_linewidth(1.3)
-    ax.tick_params(colors=NAVY, length=3)
+    # minor ticks at log positions (axes are linear over log10 coordinates),
+    # matched in style to the other main-text figures (outward, 3.5/2.0 pt)
+    _xmin = [np.log10(_m) + _d for _d in range(-2, 2) for _m in range(2, 10)]
+    _ymin = [np.log10(_m) + _d for _d in range(5, 10) for _m in range(2, 10)]
+    ax.set_xticks(_xmin, minor=True)
+    ax.set_yticks(_ymin, minor=True)
+    ax.tick_params(colors=NAVY, length=3.5, width=1.0, direction='out')
+    ax.tick_params(which='minor', colors=NAVY, length=2.0, width=0.8,
+                   direction='out')
     ax.grid(True, ls=':', lw=0.5, color='#C9D2DC', zorder=0)
 
     # ------------------------------------------------- regime boundary + tints
     Xs = np.linspace(-2.55, 2.75, 50)
-    Yline = np.clip(Xs + 6.6, 4.4, 10.5)
+    Yline = np.clip(Xs + 6.6, 3.3, 10.5)
     ax.fill_between(Xs, Yline, 10.5, color=C_TGT, alpha=0.07, zorder=0)
-    ax.fill_between(Xs, 4.4, Yline, color=C_AB, alpha=0.07, zorder=0)
+    ax.fill_between(Xs, 3.3, Yline, color=C_AB, alpha=0.07, zorder=0)
     ax.plot(Xs, Yline, ls=(0, (5, 3)), color=NAVY, lw=1.4, zorder=1)
 
     # kappa thresholds kappa_1 ~= 0.1, kappa_2 ~= 10 (text, asymptotic
     # analysis): vertical dotted lines; Table-1 bars anchor on them
     # (PICO/DigitISA start at kappa_1; 5PL ends at kappa_2; 4PL starts at it)
     for xx in (-1.0, 1.0):
-        ax.plot([xx, xx], [4.4, 10.5], ls=(0, (2, 2)), color=NAVY, lw=1.1,
+        ax.plot([xx, xx], [3.3, 10.5], ls=(0, (2, 2)), color=NAVY, lw=1.1,
                 alpha=0.75, zorder=1)
     ax.text(-1.0, 10.62, r'$\kappa_1 \approx 0.1$', fontsize=7, color=NAVY,
             ha='center', weight='bold')
@@ -657,8 +588,8 @@ def render_b():
     bubble(0.00, 6.30, S_HUGE, C_TGT)                          # dELISA
     kappa_bar(-0.237, 0.915, 6.30, C_TGT)                      # kappa 0.579-8.23
     range_arrow(0.00, 5.76, 0.00, 4.62, C_TGT)                 # beta down to 1
-    ax.text(-0.74, 6.48, 'dELISA', fontsize=8.5, weight='bold', color=NAVY,
-            ha='right', bbox=_KO)
+    ax.text(-0.74, 6.48, 'Simoa (dELISA)', fontsize=8.5, weight='bold',
+            color=NAVY, ha='right', bbox=_KO)
     ax.text(-0.74, 6.22, r'finite $\kappa$ · $1 \leq \beta < \infty$',
             fontsize=6, color=GREY, ha='right', bbox=_KO)
     ax.text(-0.74, 5.96, 'calibration required', fontsize=6, color=GREY,
@@ -708,12 +639,33 @@ def render_b():
     ax.text(-2.42, 9.80, r'$\rightarrow$ absolute single-molecule counting',
             fontsize=6.3, color='#0B6B52', bbox=_KO)
 
-    ax.text(2.70, 5.06, 'CONCENTRATION SENSING', fontsize=9, weight='bold',
-            color='#0B4E7A', ha='right', bbox=_KO)
-    ax.text(2.70, 4.80, r'low $\beta$ · high $\kappa$ — minimal target'
-            ' perturbation', fontsize=6.3, color='#0B4E7A', ha='right', bbox=_KO)
-    ax.text(2.70, 4.56, r'$\rightarrow$ ultrasensitive ambient sensing',
-            fontsize=6.3, color='#0B4E7A', ha='right')
+    ax.text(-1.35, 4.12, 'CONCENTRATION SENSING', fontsize=9, weight='bold',
+            color='#0B4E7A', ha='center', bbox=_KO)
+    ax.text(-1.35, 3.88, r'low $\beta$ · high $\kappa$ — minimal target'
+            ' perturbation', fontsize=6.3, color='#0B4E7A', ha='center',
+            bbox=_KO)
+    ax.text(-1.35, 3.64, r'$\rightarrow$ ultrasensitive ambient sensing',
+            fontsize=6.3, color='#0B4E7A', ha='center', bbox=_KO)
+
+    # -------------------------------------------- this work: droplet dELISA
+    # kappa ~ 3.5e3, beta -> 1 (~1 effective site per bead -> tiny Omega ->
+    # kappa huge): drawn AAI-style as a dashed box at the bottom strip,
+    # immediately left of the AAI region (which shares kappa >= 100 but has
+    # beta ~ 1e5-1e7; the contrast in beta is the point).
+    bx0, bx1, by0, by1 = 1.40, 2.10, 3.40, 4.34
+    ax.add_patch(Rectangle((bx0, by0), bx1 - bx0, by1 - by0, fc=C_TGT,
+                           ec='none', alpha=0.09, zorder=2))
+    for xx, yy, dx, dy in ((bx0, by0, 0, by1 - by0), (bx0, by0, bx1 - bx0, 0),
+                           (bx0, by1, bx1 - bx0, 0), (bx1, by0, 0, by1 - by0)):
+        ax.plot([xx, xx + dx], [yy, yy + dy], color=C_TGT, lw=1.2, alpha=0.55,
+                ls=(0, (4, 2)), zorder=2)
+    bubble(1.75, 3.87, 1500, C_TGT)      # N ~ 2e6 droplets: biggest ball here
+    ax.text(1.24, 4.10, 'droplet dELISA (this work)', fontsize=7,
+            weight='bold', color=NAVY, ha='right', bbox=_KO)
+    ax.text(1.24, 3.88, r'$\kappa \approx 3.5\times10^3$ · $\beta \to 1$',
+            fontsize=6, color=GREY, ha='right', bbox=_KO)
+    ax.text(1.24, 3.66, r'$\approx$1 effective site per bead', fontsize=6,
+            color=GREY, ha='right', bbox=_KO)
 
     # -------------------------------------------------------------- legend
     lx, ly = 1.28, 10.28
@@ -746,7 +698,7 @@ def render_b():
                   fontsize=9, color=NAVY, weight='bold')
     ax.set_ylabel(r'capture sites per partition  $\beta = \Omega/N$',
                   fontsize=9, color=NAVY, weight='bold')
-    ax.annotate('', xy=(2.75, 4.4), xytext=(2.45, 4.4),
+    ax.annotate('', xy=(2.75, 3.3), xytext=(2.45, 3.3),
                 arrowprops=dict(arrowstyle='-|>', color=NAVY, lw=1.3))
     ax.annotate('', xy=(-2.55, 10.5), xytext=(-2.55, 10.2),
                 arrowprops=dict(arrowstyle='-|>', color=NAVY, lw=1.3))
@@ -765,9 +717,12 @@ def render_c():
     matplotlib.use('Agg')
     import matplotlib.pyplot as plt
 
-    plt.rcParams.update({'font.family': 'serif',
-                         'font.serif': ['Liberation Serif', 'Times New Roman', 'DejaVu Serif'],
-                         'mathtext.fontset': 'stix'})
+    plt.rcParams.update({'font.family': 'sans-serif',
+                         'font.sans-serif': ['Arial', 'Liberation Sans', 'DejaVu Sans'],
+                         'mathtext.fontset': 'custom',
+                         'mathtext.rm': 'Arial',
+                         'mathtext.it': 'Arial:italic',
+                         'mathtext.bf': 'Arial:bold'})
     FS = 14
 
     p_vals = np.logspace(-4, np.log10(0.9999), 1000)
@@ -869,17 +824,12 @@ xc = 121.4
 yc = y2 - hc                       # top-aligned with b (letters on one line)
 _place(fig, PW, PH, img_c, xc, yc, wc)
 
-# panel labels + short titles (wording from the Fig. 1 caption);
-# one single string per panel -> no dict lookup, no offset arithmetic
-panel_labels = [(1.2, PH - 0.4, 'top',
-                 'Fig. 1a: Epitope-anchored quantification in three steps'),
-                (1.2, y2 + 0.5, 'bottom',
-                 'Fig. 1b: Bioanalytical technologies in the TCS operating'
-                 ' space'),
-                (xc + 1.0, y2 + 0.5, 'bottom',
-                 'Fig. 1c: TCS master equation in 3D')]
+# panel labels: Nature-style bold lowercase letters (descriptions live in the caption)
+panel_labels = [(1.2, PH - 0.4, 'top', 'a'),
+                (1.2, y2 + 0.5, 'bottom', 'b'),
+                (xc + 1.0, y2 + 0.5, 'bottom', 'c')]
 for lx, ly, va, lab in panel_labels:
-    fig.text(lx / PW, ly / PH, lab, fontsize=8, weight='bold',
+    fig.text(lx / PW, ly / PH, lab, fontsize=10, weight='bold',
              color='black', ha='left', va=va)
 
 OUT_DIR = os.path.dirname(os.path.abspath(__file__))

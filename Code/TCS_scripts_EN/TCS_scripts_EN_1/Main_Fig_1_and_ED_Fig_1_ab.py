@@ -565,7 +565,7 @@ def figure2_li_number_collapse(K_nM=1.0, V_uL=100.0,
     plt.tight_layout(rect=[0, 0, 1, 0.97])
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = os.path.join(output_dir, f"Extended_Data_Fig_1a.svg")
+    filename = os.path.join(output_dir, f"ED_Fig_1a.svg")
     plt.savefig(filename, format='svg', bbox_inches='tight')
     print(f"Saved Figure 1d: {filename}")
     plt.show()
@@ -770,7 +770,7 @@ def figure3_quantification_performance(kappa=1, beta=1, N=1e6, n=1e4, b=0.01, pa
         print(f"b={bi}: RSE={rse:.1f}%")
     
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = os.path.join(output_dir, f"Extended_Data_Fig_1{panel}.svg")
+    filename = os.path.join(output_dir, f"ED_Fig_1{panel}.svg")
     plt.savefig(filename, format='svg', bbox_inches='tight')
     print(f"\nSaved Figure 3 (final): {filename}")
     plt.show()

@@ -1,8 +1,8 @@
 # Target-Capture Scaling (TCS): reproducibility capsule
 
 Companion code for "Scale degeneracy: the physical basis of calibration and
-absolute quantification in molecular binding" (Nature Communications,
-manuscript NCOMMS-26-082662-T).
+absolute quantification in molecular binding" (preprint: ChemRxiv,
+DOI: 10.26434/chemrxiv-2024-19rj6).
 
 The capsule is fully self-contained: every experimental dataset used in the
 manuscript (digitized Yalow and Berson 1960 radioimmunoassay values, Simoa
@@ -28,7 +28,9 @@ python Main_Fig_1_abc.py
 
 Each script writes its outputs (figures as PDF/PNG, tables as XLSX/CSV/TXT)
 into the working directory. To reproduce everything, execute the `run` script,
-which runs all 24 scripts in sequence and collects the outputs:
+which runs all 26 analysis scripts in sequence and collects the outputs
+(`tcs_figstyle.py` is a shared style module imported by the figure scripts,
+not an analysis script):
 
 ```
 bash run
@@ -39,17 +41,19 @@ bash run
 | Script | Reproduces |
 | --- | --- |
 | Main_Fig_1_abc.py | Fig. 1a-c (TCS framework figure) |
-| Main_Fig_1_and_ED_Fig_1_ab.py | Fig. 1 and Extended Data Fig. 1a-b (in silico master-equation validation) |
-| SD_1_and_Main_Fig_2a_if.py | Supplementary Data 1 and Fig. 2a (immunofluorescence scale-degeneracy experiment, 72 measurements) |
-| SI_Table_4_and_IL6_Simoa_Fig2b.py | Fig. 2b (IL-6 Simoa reanalysis), SI Table 4, Supplementary Data |
+| Main_Fig_1_and_ED_Fig_1_ab.py | Fig. 1 and Supplementary Figure ED1a-b (in silico master-equation validation) |
+| SD_1_and_Fig_3a_scale_degeneracy.py | Supplementary Data 1 and Fig. 3a (immunofluorescence scale-degeneracy experiment, 72 measurements) |
+| SI_Table_4_and_Fig_3b_simoa.py | Fig. 3b (IL-6 Simoa reanalysis), SI Table 4, Supplementary Data |
+| Main_Fig_3_cde_droplet.py | Fig. 3c-e (home-built droplet digital immunoassay: chip, equilibrium response, clinical correlation) and SI Table 6 (SI_Table_6.xlsx: raw counts, fit parameters, LoB/LoD/LoQ, clinical values, bootstrap samples) |
 | SD_2_ria_yalow1960.py | Supplementary Data 2 (Yalow 1960 RIA reanalysis) |
-| SD_3_and_ED_Fig_3_sbg_simoa.py | Supplementary Data 3 and Extended Data Fig. 3 (2010 Simoa benchmark) |
-| SD_5_and_ED_Fig_4_dpcr.py | Supplementary Data 5 and Extended Data Fig. 4 (dPCR analysis) |
-| ED_Fig_5a_4pl_5pl_comparison.py | Extended Data Fig. 5a (4PL/5PL versus exact TCS) |
+| SD_3_and_ED_Fig_3_sbg_simoa.py | Supplementary Data 3 and Supplementary Figure ED3 (2010 Simoa benchmark) |
+| SD_5_and_ED_Fig_4_dpcr.py | Supplementary Data 5 and Supplementary Figure ED4 (dPCR analysis) |
+| ED_Fig_5a_4pl_5pl_comparison.py | Supplementary Figure ED5a (4PL/5PL versus exact TCS) |
+| ED_Fig_6_droplet_morphometry.py | Supplementary Figure ED6 and ED Fig. 6 workbook (droplet morphometry, SI S12) |
 | SI_S3_4pl_5pl_verification.py | SI S3: symbolic derivation check of 4PL/5PL from TCS |
 | SI_S5_pico_verification.py | SI S5: PICO platform verification |
 | SI_Fig_S1c_1_error_scan.py | SI Fig. S1c.1 (error scan) |
-| SI_Fig_S2b_1_cv_estimator.py | SI Fig. S2b.1 (CV estimator) |
+| Fig_2_cv_estimator.py | Fig. 2 (exact CV of the count estimator; formerly SI Fig. S2b.1, moved to the main text) |
 | SI_Fig_S2b_2_excess_variance.py | SI Fig. S2b.2 (excess variance) |
 | SI_S2b_6_7_optimality_lod_tails.py | SI S2b.6-S2b.7 (optimality and LoD tails) |
 | SI_S2c_5_2_profile_likelihood.py | SI S2c.5.2 (profile likelihood; Bayesian, long runtime) |

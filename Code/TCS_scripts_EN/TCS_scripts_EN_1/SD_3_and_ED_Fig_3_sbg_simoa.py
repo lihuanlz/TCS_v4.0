@@ -1038,7 +1038,7 @@ ax.set_xlabel('Concentration (aM)', fontsize=14)
 ax.set_ylabel(r'$P_{\mathrm{specific}}$', fontsize=14)
 ax.set_title('(4) R3 Linear Approximation', fontsize=14, fontweight='bold')
 ax.legend(fontsize=8)
-fig_core.savefig('Extended_data_fig_3.svg', dpi=300, bbox_inches='tight')
+fig_core.savefig('ED_Fig_3.svg', dpi=300, bbox_inches='tight')
 plt.show()
 plt.close(fig_core)
 

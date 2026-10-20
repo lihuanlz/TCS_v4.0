@@ -125,7 +125,7 @@ plt.suptitle('Extended Data Fig. 5a: TCS Unified Framework — '
              fontsize=16, fontweight='bold', y=1.01)
 
 plt.tight_layout()
-plt.savefig('Extended_Data_Fig_5a.svg', dpi=300, bbox_inches='tight')
+plt.savefig('ED_Fig_5a.svg', dpi=300, bbox_inches='tight')
 plt.show()
 
 # ============================================

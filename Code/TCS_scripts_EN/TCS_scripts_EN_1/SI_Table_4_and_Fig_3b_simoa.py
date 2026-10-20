@@ -12,14 +12,18 @@ from collections import defaultdict    # added
 import pandas as pd
 
 plt.rcParams.update({
-    'font.family': 'serif',
-    'font.size': 10,
     'savefig.dpi': 400,
-    'axes.linewidth': 0.8,
     'axes.unicode_minus': False,
 })
+from tcs_figstyle import apply_style, OI
+apply_style(base_size=12)  # unified TCS manuscript style (Arial family, outward ticks)
 sns.set_style("white")
-plt.rcParams['font.serif'] = ['Arial']
+# restore tick marks: seaborn's "white" style zeroes the major/minor tick
+# sizes; tcs_figstyle (outward ticks) governs the rest of the appearance
+plt.rcParams.update({
+    'xtick.major.size': 3.5, 'ytick.major.size': 3.5,
+    'xtick.minor.size': 2.0, 'ytick.minor.size': 2.0,
+})
 warnings.filterwarnings('ignore')
 
 print("=" * 80)
@@ -1339,20 +1343,18 @@ print(f"Relative error Bland-Altman (exclude mean<=0.01): bias = {bias_rel:.2f}%
 
 
 # ========== Create 3x2 figure ==========
-fig_core, axes = plt.subplots(3, 2, figsize=(13, 19))
-# fig_core.suptitle('Figure 2. TCS analysis of the IL-6 Simoa dataset.', fontsize=16, fontweight='bold')
+fig_core, axes = plt.subplots(3, 2, figsize=(10, 14.615))
+# suptitle removed (unified style: figure numbering lives in the caption)
 
-fig_core.suptitle('Fig. 2b: TCS analysis of the IL-6 Single molecule array dataset.', 
-                  fontsize=18, fontweight='bold', y=1)
 # --- (a) 4PL ---
 ax = axes[0, 0]
 mu_plot = np.logspace(np.log10(mu_nz.min()*0.5), np.log10(mu_nz.max()*2), 200)
 conc_plot = (mu_plot * scale_4pl * N) / (V * N_A) * Mw * 1e9
-ax.semilogx(conc_plot, fourpl_fixed_A(mu_plot, B_4pl, C_4pl, D_4pl, A_4pl), 'b-', lw=2)
-ax.scatter(conc_train_4pl_real, AEB_train, c='blue', s=30, alpha=0.6)
-ax.set_xlabel('Concentration (pg/mL)', fontsize=14)
-ax.set_ylabel('AEB', fontsize=14)
-ax.set_title('(1) 4PL Fit', fontsize=14, fontweight='bold')
+ax.semilogx(conc_plot, fourpl_fixed_A(mu_plot, B_4pl, C_4pl, D_4pl, A_4pl), color=OI['blue'], lw=2)
+ax.scatter(conc_train_4pl_real, AEB_train, c=OI['blue'], s=30, alpha=0.6)
+ax.set_xlabel('Concentration (pg/mL)')
+ax.set_ylabel('AEB')
+ax.set_title('(1) 4PL Fit', fontsize=11, fontweight='bold')
 ax.grid(False)
 # ax.text(0.05, 0.95, f"A={A_4pl:.4f}\nB={B_4pl:.2f}\nC={C_4pl:.1e}\nD={D_4pl:.2f}",
 #         transform=ax.transAxes, fontsize=14, va='top',
@@ -1364,7 +1366,7 @@ ax.text(0.05, 0.95,
         f"D = {D_4pl:.2f}\n"
         f"4PL: AEB = A + (D-A)/(1+(C/x)$^B$)\n"
         f"R$^2$ = {R2_4pl:.4f}",
-        transform=ax.transAxes, fontsize=11, va='top',
+        transform=ax.transAxes, fontsize=9, va='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.9))
 
 # --- (b) TCS with Uncertainty ---
@@ -1372,8 +1374,8 @@ ax = axes[0, 1]
 mu_plot_orig = np.logspace(np.log10(mu_train[mask_nz].min()*0.5), np.log10(mu_train[mask_nz].max()*2), 200)
 conc_plot_orig = (mu_plot_orig * N) / (V * N_A) * Mw * 1e9
 P_plot = tcs_model(mu_plot_orig, kappa_tcs, b_tcs)
-ax.semilogx(conc_plot_orig, P_plot, 'r-', lw=2, label='TCS fit')
-ax.scatter(conc_train_real, P_train, c='red', s=30, alpha=0.6)
+ax.semilogx(conc_plot_orig, P_plot, color=OI['vermillion'], lw=2, label='TCS fit')
+ax.scatter(conc_train_real, P_train, c=OI['vermillion'], s=30, alpha=0.6)
 
 conc_count = defaultdict(int)
 for (conc, Pobs, Mhat, cv, Plow, Pup) in plot_tcs_data:
@@ -1390,7 +1392,8 @@ for (conc, Pobs, Mhat, cv, Plow, Pup) in plot_tcs_data:
             y_shift = 0.08 if (cnt - 1) % 2 == 0 else -0.08
             ha_lab = 'right'
         ax.text(conc, Pobs + y_shift, f'T:{cv:.2f}%',
-                fontsize=11, color='darkred', alpha=0.8, ha=ha_lab, va='bottom' if y_shift>0 else 'top')
+                fontsize=8, color='darkred', alpha=0.85, ha=ha_lab,
+                va='bottom' if y_shift > 0 else 'top')
 
 ax.axvline(r2_lob_range[0], color='green', linestyle=':', linewidth=1.2, alpha=0.8)
 ax.axvline(r2_lob_range[1], color='green', linestyle=':', linewidth=1.2, alpha=0.8)
@@ -1427,14 +1430,18 @@ for data, color, label in kde_specs:
     if len(clean) > 1:
         kde = gaussian_kde(np.log10(clean))
         x_kde = np.logspace(np.log10(clean.min()*0.8), np.log10(clean.max()*1.2), 200)
+        ax2.fill_between(x_kde, 0, kde(np.log10(x_kde)), color=color,
+                         alpha=0.30, lw=0)
         ax2.plot(x_kde, kde(np.log10(x_kde)), color=color, lw=1.5, linestyle='-', alpha=0.7, label=label)
 
-ax2.set_ylabel('Density', fontsize=14)
+ax2.set_ylabel('Density')
 ax2.set_ylim(0, 20)
-# --- Fig. 2b layout fix (PDF-safe): legend pinned fully inside the axes ---
-ax2.legend(loc='lower right', bbox_to_anchor=(0.985, 0.02), fontsize=9,
-           framealpha=0.95, ncol=1, borderaxespad=0.6, handlelength=1.6,
-           labelspacing=0.35, handletextpad=0.6)
+# --- legend moved to the empty centre-left band: clears the low-concentration
+# points/T-labels (bottom), the density curves (left), the rising fit curve
+# (right) and the parameter text block (top) ---
+ax2.legend(loc='lower left', bbox_to_anchor=(0.225, 0.46), fontsize=7,
+           framealpha=0.95, ncol=1, borderaxespad=0.5, handlelength=1.5,
+           labelspacing=0.32, handletextpad=0.55)
 if ax.get_legend() is not None:
     ax.get_legend().remove()
 # --- Fig. 2b layout fix: right-margin headroom so LoQ_high line/KDE stay
@@ -1446,9 +1453,9 @@ ax.set_xlim(_x0, _x1 * 1.28)
 # bottom kept slightly below 0 so the lowest T: label stays inside ---
 ax.set_ylim(-0.06, 1.20)
 
-ax.set_xlabel('Concentration (pg/mL)', fontsize=14)
-ax.set_ylabel(r'$P_{\mathrm{pos}}$', fontsize=14)
-ax.set_title('(2) TCS Fit with Model Uncertainty', fontsize=14, fontweight='bold')
+ax.set_xlabel('Concentration (pg/mL)')
+ax.set_ylabel(r'$P_{\mathrm{pos}}$')
+ax.set_title('(2) TCS Fit with Model Uncertainty', fontsize=11, fontweight='bold')
 ax.grid(False)
 # ax.text(0.05, 0.95, f"κ={kappa_tcs:.2f}\nb={b_tcs:.4f}",
 #         transform=ax.transAxes, fontsize=14, va='top',
@@ -1490,7 +1497,7 @@ ax.text(0.05, 0.95,
         f"{eq_str}\n"
         f"R$^2$ = {R2_tcs:.4f}\n"
         f"Error bars: Clopper-Pearson 95% CI\nT: TCS Model CV",
-        transform=ax.transAxes, fontsize=11, va='top',
+        transform=ax.transAxes, fontsize=9, va='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.9))
 
 # ax.text(0.75, 0.9, "Error bars: Clopper-Pearson 95% CI\nT: TCS Model CV",
@@ -1499,17 +1506,17 @@ ax.text(0.05, 0.95,
 
 # --- (c) Residuals ---
 ax = axes[1, 0]
-ax.scatter(conc_train_4pl_real, resid_4pl, c='blue', alpha=0.6, label='4PL')
-ax.scatter(conc_train_real, resid_tcs, c='red', alpha=0.6, label='TCS')
+ax.scatter(conc_train_4pl_real, resid_4pl, c=OI['blue'], alpha=0.6, label='4PL')
+ax.scatter(conc_train_real, resid_tcs, c=OI['vermillion'], alpha=0.6, label='TCS')
 ax.axhline(0, color='k', ls='--')
 ax.set_xscale('log')
-ax.set_xlabel('Concentration (pg/mL)', fontsize=14)
-ax.set_ylabel('Residual (AEB)', fontsize=14)
-ax.set_title('(3) Residuals (AEB scale)', fontsize=14, fontweight='bold')
-ax.legend(fontsize=14)
+ax.set_xlabel('Concentration (pg/mL)')
+ax.set_ylabel('Residual (AEB)')
+ax.set_title('(3) Residuals (AEB scale)', fontsize=11, fontweight='bold')
+ax.legend(fontsize=9)
 ax.grid(False)
 ax.text(0.05, 0.15, f"LOO: Δ = {mean_diff:.1f} ± {se_diff:.2f}\nt = {t_stat:.2f}",
-        transform=ax.transAxes, fontsize=14, ha='left', va='top',
+        transform=ax.transAxes, fontsize=9, ha='left', va='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.9))
 
 
@@ -1529,7 +1536,7 @@ ax.loglog(c_range, P_theory, 'k--', lw=1, label=f'R2')
 
 if not np.isnan(gamma_fit_r3):
     P_fit_line = gamma_fit_r3 * mu_range
-    ax.loglog(c_range, P_fit_line, 'b-', lw=2, label=f'R3')
+    ax.loglog(c_range, P_fit_line, color=OI['blue'], lw=2, label=f'R3')
 
 ax.loglog(concentrations_pgmL[~mask_zero], P_specific_train_r3[~mask_zero],
           'o', color='gray', alpha=0.5, label='All data')
@@ -1539,11 +1546,11 @@ for plot_idx, i in enumerate(valid_indices):
     conc_i = concentrations_pgmL[i]
     ps_i = P_specific_train_r3[i]
     cv_i = CV_r3_temp[i] * 100
-    ax.loglog(conc_i, ps_i, 'ro', markersize=8)
+    ax.loglog(conc_i, ps_i, 'o', color=OI['vermillion'], markersize=7)
     y_shift = 1.3 if plot_idx % 2 == 0 else 0.7
     va = 'bottom' if plot_idx % 2 == 0 else 'top'
     ax.text(conc_i * 1.1, ps_i * y_shift * 1.4, f'T:{cv_i:.2f}%',
-            fontsize=12, color='darkred', ha='left', va=va)
+            fontsize=8, color='darkred', ha='left', va=va)
 
 ax.axvline(r3_lob_range[0], color='green', linestyle=':', linewidth=1.2, alpha=0.8)
 ax.axvline(r3_lob_range[1], color='green', linestyle=':', linewidth=1.2, alpha=0.8)
@@ -1569,18 +1576,26 @@ for data, color, label in kde_specs3:
     if len(clean) > 1:
         kde = gaussian_kde(np.log10(clean))
         x_kde = np.logspace(np.log10(clean.min()*0.8), np.log10(clean.max()*1.2), 200)
+        ax2.fill_between(x_kde, 0, kde(np.log10(x_kde)), color=color,
+                         alpha=0.30, lw=0)
         ax2.plot(x_kde, kde(np.log10(x_kde)), color=color, lw=1.5, linestyle='-', alpha=0.7, label=label)
 
-ax2.set_ylabel('Density', fontsize=14)
+ax2.set_ylabel('Density')
 ax2.set_ylim(bottom=0)
 
 handles_orig, labels_orig = ax.get_legend_handles_labels()
 handles_kde, labels_kde = ax2.get_legend_handles_labels()
-ax2.legend(handles_orig + handles_kde, labels_orig + labels_kde, loc='lower right', fontsize=10, framealpha=0.9, ncol=1)
+# --- legend shrunk and pinned to the empty bottom-right corner: at this size
+# the R2/R3 diagonal, the orange point's T-labels and the grey points all
+# stay clear of the frame ---
+ax2.legend(handles_orig + handles_kde, labels_orig + labels_kde,
+           loc='lower right', bbox_to_anchor=(0.985, 0.015), fontsize=7,
+           framealpha=0.95, ncol=1, borderaxespad=0.4, handlelength=1.4,
+           labelspacing=0.25, handletextpad=0.5)
 
-ax.set_xlabel('Concentration (pg/mL)', fontsize=14)
-ax.set_ylabel(r'$P_{\mathrm{specific}}$', fontsize=14)
-ax.set_title('(4) R3 Linear Approximation', fontsize=14, fontweight='bold')
+ax.set_xlabel('Concentration (pg/mL)')
+ax.set_ylabel(r'$P_{\mathrm{specific}}$')
+ax.set_title('(4) R3 Linear Approximation', fontsize=11, fontweight='bold')
 ax2.set_ylim(0, 20)
 # param_text = "T: TCS Model CV"
 # ax.text(0.25, 0.95, param_text, transform=ax.transAxes, fontsize=14, va='top')
@@ -1633,13 +1648,13 @@ ax.text(0.05, 0.95,
         f"\n{eq_r3}\n"
         f"{gamma_def}\n"
         "T: TCS Model CV",
-        transform=ax.transAxes, fontsize=11, va='top',
+        transform=ax.transAxes, fontsize=9, va='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.9))
 
 # --- (e) TCS vs Simoa scatter plot ---
 ax = axes[2, 0]
 markers = {'Simulated': 's', 'Plasma': 'o'}
-colors = {'Simulated': 'red', 'Plasma': 'blue'}
+colors = {'Simulated': OI['orange'], 'Plasma': OI['blue']}
 
 for t in ['Simulated', 'Plasma']:
     mask = (type_clean == t)
@@ -1650,16 +1665,16 @@ for t in ['Simulated', 'Plasma']:
 x_line = np.linspace(min(simoa_clean), max(simoa_clean), 100)
 y_line = slope * x_line + intercept
 ax.plot(x_line, y_line, 'k--', label=f'OLS: y={slope:.2f}x+{intercept:.1f}')
-ax.plot(x_line, x_line, 'r-', label='Identity')
-ax.set_xlabel('Simoa standard concentration', fontsize=14)
-ax.set_ylabel('TCS fitted concentration', fontsize=14)
-ax.set_title('(5) Correlation', fontsize=14,fontweight='bold')
-ax.legend(fontsize=14)
+ax.plot(x_line, x_line, color=OI['vermillion'], lw=1.5, label='Identity')
+ax.set_xlabel('Simoa standard concentration')
+ax.set_ylabel('TCS fitted concentration')
+ax.set_title('(5) Correlation', fontsize=11, fontweight='bold')
+ax.legend(fontsize=9)
 textstr = (f'Slope: {slope:.3f} [{slope_ci[0]:.3f}, {slope_ci[1]:.3f}]\n'
            f'Intercept: {intercept:.2f} [{intercept_ci[0]:.2f}, {intercept_ci[1]:.2f}]\n'
            f'$R^2$={r2:.4f},  $\\rho$={rho:.4f}')
 ax.text(0.05, 0.95, textstr, transform=ax.transAxes, verticalalignment='top',
-        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8), fontsize=14)
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8), fontsize=9)
 
 # --- (f) Bland-Altman relative error plot ---
 ax = axes[2, 1]
@@ -1668,24 +1683,29 @@ for t in ['Simulated', 'Plasma']:
     ax.scatter(mean_val_ba[mask], rel_diff_ba[mask],
                marker=markers[t], color=colors[t], alpha=0.8,
                edgecolors='k', s=50, label=t)
-ax.axhline(y=bias_rel, color='r', linestyle='-', label=f'Bias = {bias_rel:.2f}%')
+ax.axhline(y=bias_rel, color=OI['vermillion'], linestyle='-', label=f'Bias = {bias_rel:.2f}%')
 ax.axhline(y=loa_rel_lower, color='gray', linestyle='--', label='95% LoA')
 ax.axhline(y=loa_rel_upper, color='gray', linestyle='--')
-ax.set_xlabel('Mean of TCS and Simoa', fontsize=14)
-ax.set_ylabel('Relative difference (%)', fontsize=14)
-ax.set_title('(6) Bland-Altman (relative)', fontsize=14,fontweight='bold')
-ax.legend(fontsize=14)
+ax.set_xlabel('Mean of TCS and Simoa')
+ax.set_ylabel('Relative difference (%)')
+ax.set_title('(6) Bland-Altman (relative)', fontsize=11, fontweight='bold')
+ax.legend(fontsize=9)
 loa_text = f'95% LoA: [{loa_rel_lower:.2f}%, {loa_rel_upper:.2f}%]'
 ax.text(0.05, 0.95, loa_text, transform=ax.transAxes, verticalalignment='top',
-        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8), fontsize=14)
+        bbox=dict(boxstyle='round', facecolor='white', alpha=0.8), fontsize=9)
 
 plt.tight_layout()
+# panel identity of this six-panel composite within main-text Figure 3 (b)
+fig_core.text(0.005, 0.998, 'b', fontsize=17, fontweight='bold',
+              ha='left', va='top')
 # pad_inches adds a uniform margin around the tight bbox so that downstream
 # SVG->PDF converters with different font metrics cannot clip edge elements;
 # a direct PDF export is also written so the conversion step can be skipped
-fig_core.savefig('Fig_2b.svg', dpi=300, bbox_inches='tight', pad_inches=0.15)
-fig_core.savefig('Fig_2b.pdf', bbox_inches='tight', pad_inches=0.15)
-print("\nCore figure saved: Fig_2b.svg")
+fig_core.savefig('Fig_3b_simoa_il6.svg', dpi=300, bbox_inches='tight', pad_inches=0.15)
+fig_core.savefig('Fig_3b_simoa_il6.pdf', bbox_inches='tight', pad_inches=0.15)
+fig_core.savefig('Fig_3b_simoa_il6.png', dpi=300, bbox_inches='tight', pad_inches=0.15,
+                 facecolor='white')
+print("\nCore figure saved: Fig_3b_simoa_il6.svg/.pdf/.png")
 
 # ============================================================================
 # 5. Supplementary figure: Fig_S1.png (QQ + concentration distribution + Bland-Altman)
@@ -1697,16 +1717,16 @@ fig_s1.suptitle('Supplementary Diagnostics', fontsize=16, fontweight='bold')
 ax = axes_s1[0, 0]
 stats.probplot(resid_4pl, dist="norm", plot=ax)
 ax.set_title('(a) 4PL Residuals Q-Q', fontsize=14, fontweight='bold')
-ax.set_xlabel('Theoretical Quantiles', fontsize=14)
-ax.set_ylabel('Ordered Residuals', fontsize=14)
+ax.set_xlabel('Theoretical Quantiles')
+ax.set_ylabel('Ordered Residuals')
 ax.grid(False)
 
 # (b) TCS QQ
 ax = axes_s1[0, 1]
 stats.probplot(resid_tcs, dist="norm", plot=ax)
 ax.set_title('(b) TCS Residuals Q-Q', fontsize=14, fontweight='bold')
-ax.set_xlabel('Theoretical Quantiles', fontsize=14)
-ax.set_ylabel('Ordered Residuals', fontsize=14)
+ax.set_xlabel('Theoretical Quantiles')
+ax.set_ylabel('Ordered Residuals')
 ax.grid(False)
 
 # (c) Test set concentration distribution
@@ -1731,8 +1751,8 @@ if len(valid_tcs)>1:
     ax.plot(x_grid, kde_tcs(np.log10(x_grid))/(x_grid*np.log(10)), 'r-', lw=2)
 ax.set_xscale('log')
 ax.set_xlim(10**log_min, 10**log_max)
-ax.set_xlabel('Estimated Concentration (pg/mL)', fontsize=14)
-ax.set_ylabel('Density', fontsize=14)
+ax.set_xlabel('Estimated Concentration (pg/mL)')
+ax.set_ylabel('Density')
 ax.set_title('(c) Test Set Concentration Distribution', fontsize=14, fontweight='bold')
 ax.legend(['4PL KDE','TCS KDE'], fontsize=14)
 ax.grid(False)
@@ -1748,10 +1768,10 @@ ax.scatter(log_mean, log_diff, alpha=0.5, edgecolors='k', linewidth=0.3)
 ax.axhline(np.mean(log_diff), color='r', linestyle='--', label=f'Mean = {np.mean(log_diff):.3f}')
 ax.axhline(np.mean(log_diff)+1.96*np.std(log_diff), color='gray', linestyle=':', label='±1.96 SD')
 ax.axhline(np.mean(log_diff)-1.96*np.std(log_diff), color='gray', linestyle=':')
-ax.set_xlabel('Mean log10(Conc)', fontsize=14)
-ax.set_ylabel('log10(4PL) - log10(TCS)', fontsize=14)
+ax.set_xlabel('Mean log10(Conc)')
+ax.set_ylabel('log10(4PL) - log10(TCS)')
 ax.set_title('(d) Bland-Altman', fontsize=14, fontweight='bold')
-ax.legend(fontsize=14)
+ax.legend(fontsize=9)
 ax.grid(False)
 
 plt.tight_layout()
@@ -1847,8 +1867,8 @@ print("\nR3 analysis saved to R3_analysis.csv")
 #     ax_r3.text(conc_i * 1.1, ps_i * y_shift*1.4, f'T: {cv_i:.2f}%',
 #                fontsize=8, color='darkred', ha='left', va=va)
 
-# ax_r3.set_xlabel('Concentration (pg/mL)', fontsize=14)
-# ax_r3.set_ylabel(r'$P_{\mathrm{specific}}$', fontsize=14)
+# ax_r3.set_xlabel('Concentration (pg/mL)')
+# ax_r3.set_ylabel(r'$P_{\mathrm{specific}}$')
 # ax_r3.set_title('R3 Linear Approximation (Low Concentration)', fontsize=14, fontweight='bold')
 # ax_r3.legend(fontsize=9)
 
@@ -3275,8 +3295,8 @@ ax = axes_beta[0]
 ax.hist(kappa_samples, bins=80, density=True, alpha=0.7, color='steelblue', edgecolor='black')
 ax.axvline(kappa_med, color='red', lw=2, label=f'median={kappa_med:.2f}')
 ax.axvline(kappa_tcs, color='green', lw=2, ls='--', label=f'R2 κ={kappa_tcs:.2f}')
-ax.set_xlabel('κ', fontsize=14)
-ax.set_ylabel('Density', fontsize=14)
+ax.set_xlabel('κ')
+ax.set_ylabel('Density')
 ax.set_title('Posterior of κ (R1)', fontsize=14)
 ax.legend(fontsize=11)
 
@@ -3285,7 +3305,7 @@ ax.hist(beta_samples, bins=80, density=True, alpha=0.7, color='coral', edgecolor
 ax.axvline(beta_med, color='red', lw=2, label=f'median={beta_med:.1f}')
 ax.axvline(beta_ci[0], color='gray', ls='--', lw=1.5)
 ax.axvline(beta_ci[1], color='gray', ls='--', lw=1.5, label=f'95% CI [{beta_ci[0]:.1f}, {beta_ci[1]:.1f}]')
-ax.set_xlabel('β', fontsize=14)
+ax.set_xlabel('β')
 ax.set_title('Posterior of β (R1) — KEY DIAGNOSTIC', fontsize=14, fontweight='bold')
 ax.legend(fontsize=11)
 
@@ -3293,7 +3313,7 @@ ax = axes_beta[2]
 ax.hist(b_samples, bins=80, density=True, alpha=0.7, color='mediumseagreen', edgecolor='black')
 ax.axvline(b_med, color='red', lw=2, label=f'median={b_med:.6f}')
 ax.axvline(b_tcs, color='green', lw=2, ls='--', label=f'R2 b={b_tcs:.6f}')
-ax.set_xlabel('b', fontsize=14)
+ax.set_xlabel('b')
 ax.set_title('Posterior of b (R1)', fontsize=14)
 ax.legend(fontsize=11)
 

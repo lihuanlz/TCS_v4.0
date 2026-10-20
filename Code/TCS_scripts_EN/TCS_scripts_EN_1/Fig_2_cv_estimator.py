@@ -39,6 +39,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from joblib import Parallel, delayed
 import matplotlib
+from tcs_figstyle import apply_style
+apply_style()  # unified TCS manuscript style
 
 # ============================================================
 # Shared functions
@@ -209,13 +211,20 @@ b2 = 0.01
 
 # --- Compute Panel 1 ---
 print("=== Panel 1: Non-dilute, truly 4-layer ===")
+import os
+os.makedirs('.cache_fig2', exist_ok=True)   # per-point cache: rerun resumes where it stopped
 results1 = {}
 for kappa in kappas1:
     print(f"  kappa={kappa}...")
     CV_ex = np.full(len(Ms1), np.nan)
     CV_r1 = np.full(len(Ms1), np.nan)
     for i, M in enumerate(Ms1):
-        CV_ex[i] = cv_truly_4layer(M, kappa, Omega1, N1, n1, beta1, b=b1, n_trials=5000)
+        cache = f'.cache_fig2/p1_{kappa}_{M}.npy'
+        if os.path.exists(cache):
+            CV_ex[i] = np.load(cache)[0]
+        else:
+            CV_ex[i] = cv_truly_4layer(M, kappa, Omega1, N1, n1, beta1, b=b1, n_trials=5000)
+            np.save(cache, np.array([CV_ex[i]]))
         CV_r1[i] = cv_r1_delta(M, kappa, Omega1, N1, n1, beta1, b=b1)
         r = CV_r1[i]/CV_ex[i] if (np.isfinite(CV_ex[i]) and CV_ex[i] > 1e-6) else np.nan
         print(f"    M={M:5d}  CV_4L={CV_ex[i]:.4f}  CV_R1={CV_r1[i]:.4f}  R1/4L={r:.4f}")
@@ -229,68 +238,74 @@ for kappa in kappas2:
     CV_ex = np.full(len(Ms2), np.nan)
     CV_r1 = np.full(len(Ms2), np.nan)
     for i, M in enumerate(Ms2):
-        CV_ex[i] = cv_dilute_4layer(M, kappa, Omega2, N2, n2, beta2, b=b2, n_trials=30000)
+        cache = f'.cache_fig2/p2_{kappa}_{M}.npy'
+        if os.path.exists(cache):
+            CV_ex[i] = np.load(cache)[0]
+        else:
+            CV_ex[i] = cv_dilute_4layer(M, kappa, Omega2, N2, n2, beta2, b=b2, n_trials=30000)
+            np.save(cache, np.array([CV_ex[i]]))
         CV_r1[i] = cv_r1_delta(M, kappa, Omega2, N2, n2, beta2, b=b2)
         r = CV_r1[i]/CV_ex[i] if (np.isfinite(CV_ex[i]) and CV_ex[i] > 1e-6) else np.nan
         print(f"    M={M:7d}  CV_4L={CV_ex[i]:.4f}  CV_R1={CV_r1[i]:.4f}  R1/4L={r:.4f}")
     results2[kappa] = (CV_ex, CV_r1)
 
 # --- Plot ---
-fig, (ax_top, ax_bot) = plt.subplots(2, 1, figsize=(7, 14))
+from tcs_figstyle import OI, panel_label
+KCOL = {0.01: OI['purple'], 0.1: OI['blue'], 1.0: OI['orange'],
+        10.0: OI['green']}
 
-# Overall title
-fig.suptitle('Fig. S2b.1. CV of the molecular count estimator $M$\n'
-             'Exact 4-layer Monte Carlo (solid) vs R1 delta-method (dashed)',
-             fontsize=15, fontweight='bold', y=0.98)
+fig, (ax_top, ax_bot) = plt.subplots(2, 1, figsize=(6.0, 11.6))
 
-for kappa, color in zip(kappas1, colors1):
+for kappa in kappas1:
     CV_ex, CV_r1 = results1[kappa]
+    color = KCOL[kappa]
     valid = np.isfinite(CV_ex) & np.isfinite(CV_r1) & (CV_ex < 1.5) & (CV_r1 < 1.5)
-    ax_top.plot(Ms1[valid], CV_ex[valid], 'o-', color=color, linewidth=2, markersize=5,
-                label=f'4-layer exact ($\\kappa={kappa}$)')
-    ax_top.plot(Ms1[valid], CV_r1[valid], '--', color=color, linewidth=1.2, alpha=0.7,
-                label=f'R1 ($\\kappa={kappa}$)')
+    ax_top.plot(Ms1[valid], CV_ex[valid], 'o-', color=color, linewidth=1.8,
+                markersize=4.5, label=f'$\\kappa={kappa}$')
+    ax_top.plot(Ms1[valid], CV_r1[valid], '--', color=color, linewidth=1.2,
+                alpha=0.75, label='_nolegend_')
 
 ax_top.set_xscale('log')
-ax_top.set_xlabel('$M$ (molecules)', fontsize=14)
-ax_top.set_ylabel('CV', fontsize=14)
-ax_top.set_title('a.Non-dilute: truly 4-layer MC (canonical + hypergeometric) vs R1\n'
-                 f'$N={N1}$, $n={n1}$, $\\beta={beta1}$ ($\\Omega={Omega1}$), $b={b1}$', fontsize=14)
+ax_top.set_xlabel('$M$ (molecules)')
+ax_top.set_ylabel('CV')
+ax_top.text(0.03, 0.97, 'non-dilute: 4-layer MC (canonical + hypergeometric) vs R1\n'
+            f'$N={N1}$, $n={n1}$, $\\beta={beta1}$ ($\\Omega={Omega1}$), $b={b1}$\n'
+            'solid: exact MC · dashed: R1',
+            transform=ax_top.transAxes, fontsize=8.5, va='top', color='0.3',
+            bbox=dict(fc='white', ec='none', alpha=0.85, pad=1.6))
 ax_top.set_ylim(0, 1.4)
 ax_top.axhline(y=1.0, color='gray', linestyle=':', alpha=0.3)
-ax_top.legend(fontsize=11, loc='upper right', ncol=2)
+ax_top.legend(loc='upper right', handlelength=1.6, framealpha=1.0,
+              edgecolor='0.8')
+panel_label(ax_top, 'a', x=-0.16, y=1.03, fontsize=15)
 
-# # Panel a label
-# ax_top.text(-0.12, 1.02, 'a', transform=ax_top.transAxes,
-#             fontsize=18, fontweight='bold', va='bottom', ha='right')
-
-
-for kappa, color in zip(kappas2, colors2):
+for kappa in kappas2:
     CV_ex, CV_r1 = results2[kappa]
+    color = KCOL[kappa]
     valid = np.isfinite(CV_ex) & np.isfinite(CV_r1) & (CV_ex < 1.5) & (CV_r1 < 1.5)
-    ax_bot.plot(Ms2[valid], CV_ex[valid], 'o-', color=color, linewidth=2, markersize=3,
-                label=f'4-layer MC ($\\kappa={kappa}$)')
-    ax_bot.plot(Ms2[valid], CV_r1[valid], '--', color=color, linewidth=1.2, alpha=0.7,
-                label=f'R1 ($\\kappa={kappa}$)')
+    ax_bot.plot(Ms2[valid], CV_ex[valid], 'o-', color=color, linewidth=1.8,
+                markersize=3.5, label=f'$\\kappa={kappa}$')
+    ax_bot.plot(Ms2[valid], CV_r1[valid], '--', color=color, linewidth=1.2,
+                alpha=0.75, label='_nolegend_')
 
 ax_bot.set_xscale('log')
-ax_bot.set_xlabel('$M$ (molecules)', fontsize=14)
-ax_bot.set_ylabel('CV', fontsize=14)
-ax_bot.set_title('b.Dilute: 4-layer MC (Poisson thinning + multinomial) vs R1\n'
-                 f'$N={N2:,}$, $n={n2:,}$, $\\beta={beta2}$ ($\\Omega={Omega2:,}$), $b={b2}$', fontsize=14)
+ax_bot.set_xlabel('$M$ (molecules)')
+ax_bot.set_ylabel('CV')
+ax_bot.text(0.03, 0.97, 'dilute: 4-layer MC (Poisson thinning + multinomial) vs R1\n'
+            f'$N={N2:,}$, $n={n2:,}$, $\\beta={beta2}$ ($\\Omega={Omega2:,}$), $b={b2}$\n'
+            'solid: exact MC · dashed: R1',
+            transform=ax_bot.transAxes, fontsize=8.5, va='top', color='0.3',
+            bbox=dict(fc='white', ec='none', alpha=0.85, pad=1.6))
 ax_bot.set_ylim(0, 1.3)
 ax_bot.axhline(y=1.0, color='gray', linestyle=':', alpha=0.3)
-# ax_bot.text(0.02, 0.03, 'R1 leaves the axis range at low $M$\n(up to 250$\\times$; see caption)',
-#             transform=ax_bot.transAxes, fontsize=10, va='bottom', color='gray')
-ax_bot.legend(fontsize=11, loc='upper right', ncol=2)
+ax_bot.legend(loc='upper right', handlelength=1.6, framealpha=1.0,
+              edgecolor='0.8')
+panel_label(ax_bot, 'b', x=-0.16, y=1.03, fontsize=15)
 
-# # Panel b label
-# ax_bot.text(-0.12, 1.02, 'b', transform=ax_bot.transAxes,
-#             fontsize=18, fontweight='bold', va='bottom', ha='right')
-
-plt.tight_layout(rect=[0, 0, 1, 0.96])
-plt.savefig('Fig_S2b_1.svg', dpi=300, bbox_inches='tight')
+plt.tight_layout()
+plt.savefig('Fig_2_cv_estimator.svg', dpi=300, bbox_inches='tight')
+plt.savefig('Fig_2_cv_estimator.png', dpi=300, bbox_inches='tight', facecolor='white')
 
 plt.show()
 
-print("\nDone: Fig_S2b_1.svg")
+print("\nDone: Fig_2_cv_estimator.svg/.png (main-text Figure 2)")

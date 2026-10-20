@@ -522,8 +522,8 @@ ax.text(0.8, 0.9, "Error bars: 95% CI (Delta)",
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.7))
 ax.legend(fontsize=16)
 plt.tight_layout()
-fig.savefig('Extended_data_fig_4.svg', dpi=300, bbox_inches='tight')
-print("\nFigure saved: Extended_data_fig_4.svg")
+fig.savefig('ED_Fig_4.svg', dpi=300, bbox_inches='tight')
+print("\nFigure saved: ED_Fig_4.svg")
 print("All outputs generated.")
 print("=" * 80)
 

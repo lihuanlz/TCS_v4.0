@@ -26,6 +26,8 @@ collect() {
     \( -name '*.pdf' -o -name '*.png' -o -name '*.svg' \
        -o -name '*.xlsx' -o -name '*.csv' -o -name '*.txt' \) \
     ! -name 'requirements.txt' \
+    ! -name 'fig4a_brightfield.png' \
+    ! -name 'fig4a_fluorescence.png' \
     -exec mv -f {} "$RESULTS_DIR/" \;
   find . -mindepth 1 -maxdepth 1 -type d -empty -delete
 }
