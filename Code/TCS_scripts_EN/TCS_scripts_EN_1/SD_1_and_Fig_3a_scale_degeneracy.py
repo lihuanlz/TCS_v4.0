@@ -275,7 +275,7 @@ ax3.legend()
 ax3.grid(False, alpha=0.3)
 
 plt.subplots_adjust(top=0.85)
-plt.savefig('ED_Fig_5c.svg', dpi=300)
+plt.savefig('ED_Fig_2c.svg', dpi=300)
 plt.show()
 
 # statistics
@@ -534,7 +534,7 @@ ax_cmp.text(0.74, 0.65, textstr, transform=ax_cmp.transAxes, fontsize=12,
 
 fig_cmp.tight_layout()
 # Modified: consistent filename with figure title
-fig_cmp.savefig('ED_Fig_5b_4PL_vs_5PL.svg', dpi=300)
+fig_cmp.savefig('ED_Fig_2b_4PL_vs_5PL.svg', dpi=300)
 plt.show()
 
 
@@ -640,7 +640,7 @@ ax_res.text(0.05, 0.95, text_info, transform=ax_res.transAxes, fontsize=14,
 
 fig_res_cmp.tight_layout()
 # Modified: consistent filename
-fig_res_cmp.savefig('ED_Fig_5b_residuals.svg', dpi=300)
+fig_res_cmp.savefig('ED_Fig_2b_residuals.svg', dpi=300)
 plt.show()
 
 print("\nAll figures saved. MCMC posterior medians replace the original bootstrap estimates; D locked to the measured blank.")

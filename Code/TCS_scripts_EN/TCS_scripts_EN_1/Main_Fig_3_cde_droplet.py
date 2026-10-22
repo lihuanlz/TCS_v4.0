@@ -295,10 +295,18 @@ axs.text(1.10, 0.034, 'OCA spacer, 50 µm', fontsize=7.5, color='#7a5b12',
          ha='left', va='center')
 
 # micrographs
+# bright field: 2-1401.jpg crop (175,175)-(975,975), 0.15015 um/px
+# (calibration transferred from the morphometry frame: drawn 50 um bar = 333 px,
+# cross-validated on 140 hand-marked 3 um beads; identical bead FWHM here)
+# fluorescence: 800x800 px at 0.733496 um/px
 axb1 = fig.add_axes([0.555, 0.715, 0.195, 0.26])
 axb1.imshow(Image.open(os.path.join(_here, 'fig4a_brightfield.png')))
+axb1.plot([800 - 28 - 133.2, 800 - 28], [800 - 34, 800 - 34], color='black',
+          lw=3.2, solid_capstyle='butt')
+axb1.text(800 - 28 - 66.6, 800 - 66, '20 µm', fontsize=9.5, color='black',
+          ha='center')
 axb1.axis('off')
-axb1.set_title('bright field: bead monolayer', fontsize=9.5, pad=3)
+axb1.set_title('bright field: bead-bearing droplets', fontsize=9.5, pad=3)
 
 axf1 = fig.add_axes([0.770, 0.715, 0.195, 0.26])
 axf1.imshow(Image.open(os.path.join(_here, 'fig4a_fluorescence.png')))
@@ -553,8 +561,11 @@ with _pd.ExcelWriter(_xlsx) as _xw:
     _cov.to_excel(_xw, sheet_name='Fit_parameters', index=True,
                   startrow=len(_fit) + 3)
     _ws = _xw.sheets['Fit_parameters']
-    _ws.cell(row=len(_fit) + 3, column=1,
-             value='log-space Fisher covariance (R2 likelihood)')
+    _lbl = 'log-space Fisher covariance (R2 likelihood)'
+    if hasattr(_ws, 'cell'):  # openpyxl engine
+        _ws.cell(row=len(_fit) + 3, column=1, value=_lbl)
+    else:  # xlsxwriter engine
+        _ws.write(len(_fit) + 2, 0, _lbl)
 
     _rows = []
     for _nm, _pt, _a in [('LoB', LoB, LoB_bs), ('LoD', LoD, LoD_bs),

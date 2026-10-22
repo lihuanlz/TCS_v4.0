@@ -184,8 +184,8 @@ def render_a():
 
     # ================================================ STEP 1 - sampling
     badge(ax1, 0.72, 12.45, 1)
-    ax1.text(1.32, 12.45, 'Molecular sampling', fontsize=FS_T, weight='bold',
-             color=NAVY, ha='left', va='center')
+    ax1.text(1.32, 12.45, 'Molecular\nsampling', fontsize=FS_T, weight='bold',
+             color=NAVY, ha='left', va='center', linespacing=1.05)
     cx = 3.9
     Y_CONE, Y_TIP = 6.95, 4.60
     HW = 1.35
@@ -230,11 +230,11 @@ def render_a():
         mol(ax1, x, y, 0.22, motif_deg=float(rng.integers(0, 360)),
             seed=int(rng.integers(1, 10**6)))
     mol(ax1, 1.10, 9.55, 0.22, motif_deg=25, seed=11)
-    ax1.text(1.10, 8.75, 'target\nmolecule', fontsize=5.8, color=C_EPI,
+    ax1.text(1.45, 8.75, 'target\nmolecule', fontsize=5.8, color=C_EPI,
              ha='center', va='top', linespacing=1.15)
     ax1.text(cx, 3.55, 'M targets in volume V', fontsize=FS_C, ha='center',
              color=INK)
-    ax1.text(cx, 1.55, r'$W \sim \mathrm{Poisson}(M)$', fontsize=11,
+    ax1.text(cx, 1.55, r'$W \sim \mathrm{Poisson}(M)$', fontsize=10,
              ha='center', va='center', color=NAVY)
 
     # ========================================== STEP 2 - finite-site binding
@@ -299,9 +299,9 @@ def render_a():
         for xx in (1.15, 1.75, 2.35):
             draw_site(ax3, xx, yy, 0.30, lw=1.2)
     mol(ax3, 1.75, 8.52, 0.15, motif_deg=180, seed=7)
-    ax3.text(1.75, 6.35, r'N = 1: all $\Omega$ sites', fontsize=FS_C,
-             ha='center', va='center', color=INK)
-    ax3.text(1.75, 5.72, 'in one unit (analog)', fontsize=FS_C, ha='center',
+    ax3.text(0.55, 6.50, r'N = 1: all $\Omega$ sites', fontsize=5.3,
+             ha='left', va='center', color=INK)
+    ax3.text(0.55, 5.88, 'in one unit (analog)', fontsize=5.3, ha='left',
              va='center', color=INK)
     ax3.add_patch(FancyArrowPatch((3.35, 8.60), (4.85, 8.60), arrowstyle='-|>',
                                   mutation_scale=11, color=NAVY, lw=1.6, zorder=5))
@@ -316,11 +316,11 @@ def render_a():
             ax3.add_patch(Circle((xw, yw), 0.25,
                                  fc=('#D99400' if pos else 'white'),
                                  ec=NAVY, lw=1.0, zorder=3))
-    ax3.text(6.40, 6.55, r'N > 1: $\beta = \Omega/N$ sites', fontsize=FS_C,
-             ha='center', va='center', color=INK)
-    ax3.text(6.40, 5.95, 'per partition (digital)', fontsize=FS_C, ha='center',
+    ax3.text(8.50, 6.50, r'N > 1: $\beta = \Omega/N$ sites', fontsize=5.3,
+             ha='right', va='center', color=INK)
+    ax3.text(8.50, 5.88, 'per partition (digital)', fontsize=5.3, ha='right',
              va='center', color=INK)
-    bx, by, br = 8.15, 11.00, 0.86
+    bx, by, br = 7.62, 10.95, 0.84
     ax3.add_patch(Circle((bx, by), br, fc='#D99400', ec=NAVY, lw=1.3, zorder=4))
     for ang, occ in [(0, False), (90, True), (180, False), (270, False)]:
         a = np.radians(ang)
@@ -328,11 +328,11 @@ def render_a():
         draw_site(ax3, yx, yy, 0.28, lw=1.2, z=5)
         if occ:
             mol(ax3, yx, yy + 0.32, 0.13, motif_deg=180, seed=9, z=6)
-    ax3.plot([7.40, 7.70], [9.98, 10.28], color='#8A97A5', lw=0.9, zorder=3)
-    ax3.plot([7.46, 7.56], [9.82, 10.10], color='#8A97A5', lw=0.9, zorder=3)
-    ax3.text(7.15, 11.00, 'one\npartition', fontsize=5.8, ha='right',
+    ax3.plot([7.06, 7.28], [9.98, 10.22], color='#8A97A5', lw=0.9, zorder=3)
+    ax3.plot([7.22, 7.35], [9.82, 10.02], color='#8A97A5', lw=0.9, zorder=3)
+    ax3.text(6.62, 10.95, 'one\npartition', fontsize=5.8, ha='right',
              va='center', color=GREY, linespacing=1.2)
-    ax3.text(4.70, 4.35, 'C bound complexes dealt to partitions:', fontsize=FS_C,
+    ax3.text(4.62, 4.35, 'C bound complexes dealt to partitions:', fontsize=5.6,
              ha='center', va='center', color=INK)
     ax3.text(4.70, 3.30, 'multivariate hypergeometric', fontsize=7.2,
              ha='center', va='center', color=NAVY)

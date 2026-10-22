@@ -1,0 +1,362 @@
+Biosorbent,Solute,K_L,qmax,kappa,R_exact,R_percent
+Marine algae DP95Ca,Pb(II),23.7369,324.28,0.000130,0.000130,0.01%
+Leaves of saltbush,Cu(II),9.09,590.92,0.000186,0.000186,0.02%
+Marine algae DP95Ca,Pb(II),11.8159,307.54,0.000275,0.000275,0.03%
+Tamarindus indica seeds,Cr(VI),16023.07,0.098,0.000637,0.000636,0.06%
+Poly(amic acid) yeast,Pb(II),6.6,210.5,0.000720,0.000719,0.07%
+Marine algae DP95Ca,Pb(II),4.3258,269.88,0.000857,0.000856,0.09%
+Ca-alginate resin,Pb(II),0.873,670.2,0.001709,0.001706,0.17%
+Marine algae ER95Ca,Pb(II),1.8584,263.6,0.002041,0.002037,0.20%
+Marine algae ER95Ca,Pb(II),1.7155,244.78,0.002381,0.002376,0.24%
+Poly(amic acid) yeast,Cd(II),4.0,95.2,0.002626,0.002619,0.26%
+Marine algae ER95Ca,Pb(II),1.2413,207.12,0.003890,0.003874,0.39%
+Marine algae DP95Ca,Cu(II),2.6251,82.6,0.004612,0.004591,0.46%
+Tamarindus indica seeds,Cr(VI),3191.93,0.055,0.005696,0.005664,0.57%
+Marine algae ER95Ca,Cu(II),2.0696,70.53,0.006851,0.006804,0.68%
+Marine algae DP95Ca,Cu(II),1.7485,76.88,0.007439,0.007384,0.74%
+Marine algae ER95Ca,Cu(II),1.289,67.35,0.011519,0.011388,1.14%
+Wheat bran,Cu(II),7.57,10.61,0.012451,0.012297,1.23%
+Wheat bran,Zn(II),4.95,16.02,0.012610,0.012453,1.25%
+Marine algae DP95Ca,Cu(II),1.1457,62.9,0.013876,0.013687,1.37%
+Cystine modified biomass,Pb(II),1.25,45.87,0.017441,0.017142,1.71%
+Pinus sylvestris,Cr(VI),0.2166,256.41,0.018006,0.017687,1.77%
+Laminaria EC1,Pb(II),0.1568,352.24,0.018106,0.017784,1.78%
+Saccharomyces cerevisiae,Cr(VI),0.1259,384.61,0.020652,0.020234,2.02%
+Algal waste,Cr(III),3.3,11.8,0.025681,0.025038,2.50%
+Marine algae ER95Ca,Pb(II),0.4421,87.87,0.025742,0.025096,2.51%
+Marine algae ER95Ca,Cu(II),0.6295,60.36,0.026318,0.025643,2.56%
+Gelidium,Cr(III),2.1,18.0,0.026455,0.025773,2.58%
+Wheat bran,Cu(II),2.96,12.58,0.026855,0.026153,2.62%
+Wheat bran,Zn(II),5.45,6.67,0.027509,0.026773,2.68%
+Cotton cellulose,B(III),0.866,41.49,0.027832,0.027078,2.71%
+Gelidium,Zn(II),2.6,13.0,0.029586,0.028736,2.87%
+Lyngbya exopolysaccharides,Cr(VI),0.189,178.6,0.029625,0.028773,2.88%
+Maize husk EDTA,Zn(II),0.04,769.23,0.032500,0.031477,3.15%
+Pinus sylvestris,Cr(VI),0.1165,263.16,0.032618,0.031587,3.16%
+Algal waste,Zn(II),4.2,7.1,0.033535,0.032446,3.24%
+Laminaria EC2,Pb(II),0.0815,343.95,0.035674,0.034445,3.44%
+Chlorella sorokiniana immobilized,Cr(III),0.387,68.51,0.037717,0.036346,3.63%
+Fucus vesiculosus,Cu(II),1.1,23.4,0.038850,0.037397,3.74%
+Turbinaria conoides,Pb(II),0.048,439.4,0.047413,0.045267,4.53%
+Cotton cellulose,B(III),1.358,15.41,0.047786,0.045606,4.56%
+Cladophora fascicularis,Cu(II),0.1882,110.56,0.048060,0.045856,4.59%
+Phosphorylated orange waste,Fe(III),0.1201,173.14,0.048091,0.045884,4.59%
+Pristine baker's yeast,Pb(II),1.06,19.01,0.049626,0.047280,4.73%
+Marine algae DP95Ca,Pb(II),0.1252,158.99,0.050237,0.047834,4.78%
+Pseudomonas,Hg(II),0.2353,84.25,0.050444,0.048021,4.80%
+Cladophora fascicularis NL,Cu(II),0.175,112.97,0.050582,0.048147,4.81%
+Turbinaria conoides,Pb(II),0.047,401.4,0.053006,0.050338,5.03%
+Lignin,Pb(II),0.2081,89.51,0.053685,0.050950,5.10%
+Mimosa pudica inoculated,Pb(II),0.0383,485.0,0.053834,0.051084,5.11%
+Turbinaria conoides,Pb(II),0.044,420.1,0.054100,0.051323,5.13%
+Bacillus jeotgali,Zn(II),0.08,222.2,0.056256,0.053259,5.33%
+Cladophora fascicularis NL,Pb(II),0.0759,229.92,0.057304,0.054198,5.42%
+Cladophora fascicularis,Pb(II),0.0766,227.7,0.057333,0.054225,5.42%
+Cystine modified biomass,Cd(II),1.52,11.03,0.059646,0.056289,5.63%
+Pseudomonas,Pb(II),0.402,41.44,0.060028,0.056629,5.66%
+Magnetic yeast,Hg(II),0.119,133.3,0.063041,0.059302,5.93%
+Turbinaria conoides,Pb(II),0.041,385.1,0.063335,0.059562,5.96%
+Pseudomonas,Zn(II),0.8272,19.06,0.063426,0.059643,5.96%
+Cladophora fascicularis,Cu(II),0.1649,92.77,0.065369,0.061358,6.14%
+Pseudomonas,Hg(II),0.1949,78.23,0.065587,0.061550,6.15%
+Cotton cellulose,B(III),0.846,17.79,0.066444,0.062304,6.23%
+Magnetic yeast,Hg(II),0.158,93.4,0.067764,0.063463,6.35%
+Activated sludge,Pb(II),0.1,142.96,0.069950,0.065377,6.54%
+Pseudomonas,Pb(II),0.3778,37.29,0.070982,0.066277,6.63%
+Phosphorylated orange waste,Ga(III),0.2712,49.01,0.075236,0.069972,7.00%
+Cladophora fascicularis NL,Cu(II),0.1241,106.81,0.075443,0.070150,7.02%
+Pseudomonas,Zn(II),0.7141,18.43,0.075983,0.070617,7.06%
+Turbinaria conoides,Pb(II),0.057,228.0,0.076947,0.071449,7.14%
+Pleurozium schreberi,Cu(II),1.15,11.1,0.078339,0.072648,7.26%
+Magnetic yeast,Hg(II),0.172,74.1,0.078461,0.072753,7.28%
+Pseudomonas,Pb(II),0.3175,39.37,0.080000,0.074074,7.41%
+Peat,Pb(II),0.415,29.5,0.081683,0.075514,7.55%
+Peat,Pb(II),0.437,27.8,0.082314,0.076054,7.61%
+Peat,Pb(II),0.416,28.3,0.084942,0.078291,7.83%
+Peat,Pb(II),0.382,30.8,0.084994,0.078336,7.83%
+Pseudomonas,Pb(II),0.2639,43.51,0.087091,0.080114,8.01%
+Pseudomonas,Co(II),0.5125,22.39,0.087147,0.080161,8.02%
+Pseudomonas,Hg(II),0.15,76.22,0.087466,0.080431,8.04%
+Cladophora fascicularis,Cu(II),0.1607,70.53,0.088229,0.081076,8.11%
+Lyngbya putealis,Cr(VI),0.104,105.3,0.091314,0.083674,8.37%
+Pinus sylvestris,Cr(VI),0.045,238.1,0.093331,0.085364,8.54%
+Spirulina platensis spent,Cr(VI),0.05,212.76,0.094003,0.085925,8.59%
+Pseudomonas,Pb(II),0.2264,45.58,0.096906,0.088345,8.83%
+Pseudomonas,Zn(II),0.5398,18.43,0.100518,0.091337,9.13%
+Phosphorylated orange waste,In(III),0.122,81.22,0.100920,0.091669,9.17%
+HCl treated tamarind shells,Cr(VI),0.07,140.84,0.101432,0.092091,9.21%
+Lignin,Cu(II),0.4309,22.87,0.101475,0.092126,9.21%
+Rice husk,Pb(II),0.09,108.0,0.102881,0.093284,9.33%
+Cotton cellulose,B(III),0.737,13.06,0.103894,0.094116,9.41%
+Activated sludge,Zn(II),0.6098,15.69,0.104518,0.094627,9.46%
+Pseudomonas,Co(II),0.4123,22.98,0.105545,0.095469,9.55%
+Surfactant modified coconut coir,Cr(VI),0.124,76.3,0.105695,0.095591,9.56%
+Cladophora fascicularis NL,Pb(II),0.0431,217.99,0.106435,0.096197,9.62%
+Cladophora fascicularis,Pb(II),0.0435,215.8,0.106527,0.096271,9.63%
+Phosphorylated orange waste,Pb(II),0.0367,251.05,0.108536,0.097909,9.79%
+Activated sludge,Cd(II),0.32,28.1,0.111210,0.100080,10.01%
+Pseudomonas,Hg(II),0.1176,76.22,0.111564,0.100367,10.04%
+Sargassum filipendula,Pb(II),4.96,1.8,0.112007,0.100725,10.07%
+Treated sawdust,Cr(VI),2.36,3.6,0.117702,0.105307,10.53%
+Pseudomonas,Co(II),0.3699,22.39,0.120743,0.107735,10.77%
+Laminaria washed,Pb(II),0.0299,273.5,0.122285,0.108960,10.90%
+Pseudomonas,Zn(II),0.4327,18.43,0.125397,0.111425,11.14%
+Cladophora fascicularis NL,Pb(II),0.0396,200.42,0.125998,0.111899,11.19%
+Rhizopus arrhizus,Cr(VI),0.331,23.92,0.126302,0.112139,11.21%
+Bacillus jeotgali,Cd(II),0.2,37.3,0.134048,0.118203,11.82%
+Maize husk EDTA,Cd(II),0.00893,833.33,0.134379,0.118460,11.85%
+Cladophora fascicularis,Pb(II),0.0359,198.5,0.140328,0.123060,12.31%
+Magnetic yeast,Hg(II),0.147,48.3,0.140843,0.123455,12.35%
+Pseudomonas,Hg(II),0.0862,80.24,0.144578,0.126315,12.63%
+Cassia fistula pods bark,Ni(II),0.0345,196.07,0.147832,0.128793,12.88%
+Cladophora fascicularis NL,Cu(II),0.0652,102.55,0.149560,0.130102,13.01%
+Pseudomonas,Zn(II),0.3593,18.43,0.151014,0.131201,13.12%
+Cladophora fascicularis,Cu(II),0.1406,47.019,0.151266,0.131391,13.14%
+Bacillus jeotgali,Zn(II),0.06,105.2,0.158428,0.136761,13.68%
+Chlorella sorokiniana free,Cr(III),0.11,56.56,0.160730,0.138473,13.85%
+Myriophyllum,Zn(II),0.88,6.8,0.167112,0.143184,14.32%
+Chlorella vulgaris,Cr(VI),0.036,163.93,0.169449,0.144896,14.49%
+PVA-Sargassum,Cu(II),28.07,0.21,0.169644,0.145039,14.50%
+Tamarindus indica seeds,Cr(VI),72.43,0.08,0.172580,0.147180,14.72%
+Palmaria palmata,Cr(VI),0.1662,33.79,0.178066,0.151151,15.12%
+Green coconut shell powder,Cd(II),0.019,285.7,0.184220,0.155562,15.56%
+Pseudomonas,Co(II),0.2393,22.39,0.186639,0.157284,15.73%
+Chitosan coated calcium alginate,Ni(II),0.024,222.2,0.187519,0.157908,15.79%
+Oxalic acid treated tamarind shells,Cr(VI),0.035,151.51,0.188578,0.158658,15.87%
+Maize husk EDTA,Pb(II),0.00736,714.29,0.190216,0.159817,15.98%
+Pristine baker's yeast,Cd(II),1.32,3.9,0.194250,0.162655,16.27%
+Spirulina platensis fresh,Cr(VI),0.027,188.68,0.196296,0.164086,16.41%
+Waste beer yeast,Pb(II),0.0883,55.71,0.203285,0.168942,16.89%
+Pseudomonas,Co(II),0.1884,24.75,0.214459,0.176588,17.66%
+Laminaria KMnO4,Pb(II),0.0109,391.61,0.234272,0.189806,18.98%
+Rose waste biomass,Pb(II),0.028,151.51,0.235722,0.190757,19.08%
+Dried activated sludge,Pb(II),0.032,131.6,0.237462,0.191894,19.19%
+Phosphorylated orange waste,Zr(IV),0.0361,113.11,0.244902,0.196724,19.67%
+Bacillus jeotgali,Cd(II),0.07,57.9,0.246731,0.197902,19.79%
+Crude tamarind fruit shells,Cr(VI),0.05,74.62,0.268025,0.211372,21.14%
+Spirogyra,Pb(II),0.024,151.57,0.274900,0.215625,21.56%
+Lignin,Cd(II),0.1421,25.4,0.277059,0.216951,21.70%
+Sour orange residue,Cu(II),0.066,52.08,0.290928,0.225363,22.54%
+Spirogyra,Pb(II),0.023,144.93,0.299995,0.230766,23.08%
+Bacillus jeotgali,Cd(II),0.07,47.5,0.300752,0.231214,23.12%
+Arca shell,Ni(II),0.281,11.75,0.302870,0.232464,23.25%
+Tea waste,Pb(II),0.0494,65.0,0.311429,0.237473,23.75%
+Phosphorylated orange waste,Cu(II),0.0452,67.35,0.328491,0.247266,24.73%
+Waste weed Salvinia,Cr(VI),0.013,232.6,0.330710,0.248521,24.85%
+Spirogyra,Pb(II),0.021,140.84,0.338107,0.252676,25.27%
+Rice husk,Cu(II),0.1,29.0,0.344828,0.256410,25.64%
+Pseudomonas veronii,Cd(II),0.0526,54.0,0.352063,0.260390,26.04%
+Grape bagasse,Cd(II),0.0527,53.84,0.352439,0.260595,26.06%
+Palmaria palmata,Cr(III),0.095,29.63,0.355259,0.262134,26.21%
+Freely suspended Sargassum,Cu(II),2.86,0.96,0.364219,0.266980,26.70%
+Phosphorylated orange waste,As(V),0.0358,73.42,0.380454,0.275601,27.56%
+Caulerpa lentillifera,Cu(II),0.0618,42.37,0.381903,0.276360,27.64%
+Arca shell,Co(II),0.225,11.53,0.385468,0.278222,27.82%
+Mimosa pudica inoculated,Cu(II),0.099,25.4,0.397678,0.284527,28.45%
+Rhyzopus oryzae viable,Cu(II),0.129,19.4,0.399584,0.285502,28.55%
+Brown seaweed,Cu(II),0.0254,93.9,0.419277,0.295416,29.54%
+Lignin,Zn(II),0.2046,11.25,0.434452,0.302870,30.29%
+Activated sludge,Cu(II),0.1201,19.06,0.436852,0.304034,30.40%
+Fucus vesiculosos,Cr(III),0.0362,62.91,0.439108,0.305125,30.51%
+Brown seaweed,Cu(II),0.026,82.6,0.465636,0.317702,31.77%
+Polysiphonia lanosa,Cr(VI),0.0469,45.75,0.466054,0.317897,31.79%
+Chlorella vulgaris,Ni(II),70.9,0.03,0.470146,0.319795,31.98%
+Brown seaweed,Cu(II),0.024,88.0,0.473485,0.321337,32.13%
+Rice husk,Pb(II),0.02,105.0,0.476190,0.322581,32.26%
+Arca shell,Pb(II),0.069,30.39,0.476892,0.322903,32.29%
+Cotton cellulose,B(III),0.304,6.88,0.478121,0.323465,32.35%
+Bacillus licheniformis,Cr(VI),0.03,69.35,0.480654,0.324623,32.46%
+Fucus spiralis,Cr(III),0.034,60.83,0.483508,0.325922,32.59%
+Cassia fistula leaves,Ni(II),0.0126,163.93,0.484140,0.326209,32.62%
+Caulerpa lentillifera,Pb(II),0.0711,28.99,0.485157,0.326670,32.67%
+Distillery sludge NaOH,Pb(II),0.0219,91.74,0.497734,0.332325,33.23%
+Distillery sludge HCl,Pb(II),0.0235,85.47,0.497873,0.332387,33.24%
+Caladium bicolor,Pb(II),0.038,52.63,0.500015,0.333340,33.33%
+Azadirachta indica bark,Zn(II),0.0572,33.49,0.522022,0.342979,34.30%
+Baker's yeast,Ni(II),0.212,9.01,0.523527,0.343628,34.36%
+Dried activated sludge,Cr(II),0.0063,294.1,0.539715,0.350529,35.05%
+Tea factory waste,Ni(II),0.098,18.42,0.553968,0.356486,35.65%
+Marine algae ER95Ca,Cu(II),0.063,28.59,0.555195,0.356994,35.70%
+Dried activated sludge,Cd(II),0.021,84.3,0.564876,0.360972,36.10%
+Distillery sludge SDS,Pb(II),0.0228,74.63,0.587695,0.370156,37.02%
+Bacillus thuringiensis spore,Ni(II),0.036,45.87,0.605576,0.377171,37.72%
+Tea factory waste,Ni(II),0.093,17.73,0.606469,0.377517,37.75%
+Distillery sludge HCHO,Pb(II),0.0189,85.47,0.619048,0.382353,38.24%
+Phosphorylated orange waste,As(III),0.0174,91.4,0.628788,0.386047,38.60%
+Arca shell,Cu(II),0.059,26.88,0.630549,0.386710,38.67%
+Lignin,Ni(II),0.2511,5.99,0.664854,0.399347,39.93%
+Caladium bicolor,Cd(II),0.0253,59.02,0.669700,0.401090,40.11%
+Caladium bicolor,Pb(II),0.0393,37.17,0.684565,0.406375,40.64%
+Fucus vesiculosos,Cr(VI),0.0339,42.63,0.691966,0.408972,40.90%
+Ulva lactuca,Cr(III),0.0381,36.91,0.711100,0.415581,41.56%
+Ulva spp.,Cr(III),0.0265,53.03,0.711594,0.415749,41.57%
+Mimosa pudica w/o,Cu(II),0.0614,22.7,0.717473,0.417749,41.77%
+Distillery sludge autoclaved,Pb(II),0.017,81.3,0.723537,0.419798,41.98%
+Aspergillus niger,Pb(II),0.039,34.92,0.734279,0.423392,42.34%
+Myriophyllum,Cu(II),0.012,113.0,0.737463,0.424448,42.44%
+Distillery sludge untreated,Pb(II),0.0188,71.43,0.744666,0.426824,42.68%
+Tea factory waste,Ni(II),0.088,15.26,0.744668,0.426825,42.68%
+Crab shell,Cu(II),0.0055,243.9,0.745462,0.427086,42.71%
+Activated sludge,Ni(II),0.1697,7.78,0.757423,0.430985,43.10%
+Mimosa pudica inoculated,Cd(II),0.0307,42.9,0.759284,0.431587,43.16%
+Sour orange residue NaOH,Cu(II),0.054,23.47,0.789029,0.441038,44.10%
+Agaricus bisporus,Cr(VI),0.09,13.79,0.805737,0.446209,44.62%
+Rhyzopus oryzae NaOH,Cu(II),0.028,43.7,0.817261,0.449721,44.97%
+Caladium bicolor,Cd(II),0.0289,42.19,0.820149,0.450594,45.06%
+Crab shell,Cu(II),0.0054,222.2,0.833417,0.454570,45.46%
+Baker's yeast,Ni(II),0.137,8.46,0.862798,0.463173,46.32%
+Dried activated sludge,Ni(II),0.0048,238.1,0.874983,0.466662,46.67%
+Calcium alginate,Ni(II),0.0036,310.4,0.894903,0.472268,47.23%
+Rice husk,Cu(II),0.05,22.0,0.909091,0.476190,47.62%
+Arca shell,Cs(I),0.228,4.76,0.921421,0.479552,47.96%
+Mimosa pudica w/o,Pb(II),0.0413,26.1,0.927704,0.481248,48.12%
+Rhodococcus opacus,Cr(III),0.0015,714.29,0.933328,0.482757,48.28%
+Cupriavidus,Pb(II),0.0211,50.1,0.945975,0.486119,48.61%
+Cedar sawdust,Cu(II),0.003584,294.12,0.948653,0.486825,48.68%
+Ulva lactuca,Cr(VI),0.0379,27.55,0.957721,0.489202,48.92%
+Rose waste biomass,Co(II),0.0372,27.62,0.973270,0.493227,49.32%
+Fucus spiralis,Cr(VI),0.0283,35.35,0.999595,0.499899,49.99%
+Mimosa pudica w/o,Cd(II),0.0392,25.3,1.008308,0.502069,50.21%
+Caladium bicolor,Pb(II),0.0263,37.59,1.011514,0.502862,50.29%
+Birch wood,Cu(II),0.2,4.9,1.020408,0.505051,50.51%
+Caladium bicolor,Cd(II),0.0208,46.95,1.024003,0.505929,50.59%
+Rice husk,Pb(II),0.01,96.0,1.041667,0.510204,51.02%
+Cedar sawdust,Cu(II),0.00629,144.93,1.096961,0.523119,52.31%
+Algal waste,Cu(II),0.053,17.0,1.109878,0.526039,52.60%
+Aspergillus niger,Cu(II),0.026,33.54,1.146736,0.534177,53.42%
+Polysiphonia lanosa,Cr(III),0.0258,33.79,1.147076,0.534250,53.43%
+Coconut copra meal,Cd(II),0.176,4.92,1.154841,0.535929,53.59%
+Dried activated sludge,Ni(II),0.0079,106.4,1.189683,0.543313,54.33%
+Spent grain,Cu(II),0.08,10.47,1.193887,0.544188,54.42%
+Bengal gram husk,Cr(VI),0.009,91.64,1.212474,0.548017,54.80%
+Cedar sawdust,Cu(II),0.00775,106.38,1.212937,0.548112,54.81%
+Ficus religiosa,Pb(II),0.022,37.45,1.213740,0.548276,54.83%
+Palm Tree Leaves,Zn(II),0.056,14.6,1.223092,0.550176,55.02%
+Crab shell,Cu(II),0.0039,208.3,1.230966,0.551764,55.18%
+Crushed brick,Cu(II),0.005274,153.85,1.232430,0.552058,55.21%
+Cladonia rangiformis,Cu(II),0.1051,7.69,1.237288,0.553030,55.30%
+Crab shell,Co(II),0.0025,322.6,1.239926,0.553557,55.36%
+Caulerpa lentillifera,Pb(II),0.0324,24.19,1.275907,0.560615,56.06%
+Aspergillus niger,Pb(II),0.022,34.92,1.301677,0.565534,56.55%
+Myriophyllum,Ni(II),0.25,3.0,1.333333,0.571429,57.14%
+Myriophyllum,Co(II),0.32,2.3,1.358696,0.576037,57.60%
+Aspergillus niger,Pb(II),0.021,34.69,1.372702,0.578540,57.85%
+Baker's yeast,Ni(II),0.094,7.73,1.376235,0.579166,57.92%
+Crushed brick,Cu(II),0.006935,104.17,1.384238,0.580579,58.06%
+Crushed brick,Cu(II),0.010243,68.03,1.435068,0.589334,58.93%
+Ulva spp.,Cr(VI),0.0231,30.15,1.435822,0.589461,58.95%
+Cupriavidus,Cu(II),0.0363,19.0,1.449906,0.591821,59.18%
+Chitosan coated silica,Ni(II),0.0026,254.3,1.512447,0.601982,60.20%
+Coconut copra meal,Cd(II),0.141,4.68,1.515427,0.602453,60.25%
+Crab shell,Co(II),0.0021,303.0,1.571586,0.611135,61.11%
+Carica papaya,Hg(II),0.004,155.63,1.606374,0.616325,61.63%
+Grapefruit peels,Cd(II),0.005382,110.16,1.686679,0.627793,62.78%
+Gelidium,Cu(II),0.013,45.0,1.709402,0.630915,63.09%
+Bacillus thuringiensis veg,Ni(II),0.016,35.46,1.762549,0.638016,63.80%
+Chlorella vulgaris,Cd(II),28.3,0.02,1.766784,0.638570,63.86%
+Agaricus bisporus,Cr(VI),0.05,11.28,1.773050,0.639386,63.94%
+Agaricus bisporus,Cr(VI),0.07,8.0,1.785714,0.641026,64.10%
+Rice husk,Cu(II),0.03,18.0,1.851852,0.649351,64.94%
+Caladium bicolor,Pb(II),0.026,20.45,1.880760,0.652869,65.29%
+Crab shell,Cu(II),0.0026,204.1,1.884446,0.653313,65.33%
+Sargassum wightii,Ni(II),0.0065,81.2,1.894657,0.654536,65.45%
+Dried activated sludge,Cr(II),0.0055,95.2,1.909855,0.656340,65.63%
+Crab shell,Co(II),0.0018,285.7,1.944542,0.660389,66.04%
+Aspergillus niger,Cu(II),0.015,33.23,2.006219,0.667356,66.74%
+Gelidium,Cu(II),0.015,33.0,2.020202,0.668896,66.89%
+Pretreated Aspergillus niger,Cu(II),0.1888,2.61,2.029353,0.669896,66.99%
+Algal waste,Cu(II),0.028,16.7,2.138580,0.681385,68.14%
+Dead spirulina,Cd(II),0.0013,355.0,2.166847,0.684229,68.42%
+Crab shell,Co(II),0.0017,270.3,2.176231,0.685161,68.52%
+Baker's yeast,Ni(II),0.062,7.37,2.188471,0.686370,68.64%
+Sargassum wightii,Ni(II),0.0057,79.1,2.217934,0.689242,68.92%
+Marine algae ER95Ca,Pb(II),0.0425,10.46,2.249466,0.692257,69.23%
+Marine algae ER95Ca,Cu(II),0.0976,4.45,2.302450,0.697194,69.72%
+Crab shell,Cu(II),0.0023,188.7,2.304094,0.697345,69.73%
+Grapefruit peels,Cd(II),0.005649,76.44,2.315836,0.698417,69.84%
+Caulerpa lentillifera,Cu(II),0.076,5.57,2.362279,0.702583,70.26%
+Immobilized S. cerevisiae,Pb(II),0.014,30.04,2.377782,0.703948,70.39%
+Sargassum wightii,Ni(II),0.0055,76.1,2.389201,0.704945,70.49%
+Vegetal biomass olive pits,Cd(II),0.044,9.39,2.420370,0.707634,70.76%
+Aspergillus niger,Cu(II),0.012,33.11,2.516863,0.715656,71.57%
+Lentil shell,Cu(II),0.041,9.59,2.543300,0.717777,71.78%
+Crab shell,Co(II),0.0016,235.5,2.653928,0.726322,72.63%
+Tea waste,Cu(II),0.0076,48.0,2.741228,0.732708,73.27%
+Crab shell,Cu(II),0.0022,163.9,2.773310,0.734981,73.50%
+Caulerpa lentillifera,Cd(II),0.0742,4.69,2.873580,0.741841,74.18%
+Rice bran,Zn(II),0.019,18.31,2.874472,0.741900,74.19%
+Cassia fistula stem bark,Ni(II),0.002,172.41,2.900064,0.743594,74.36%
+Sargassum wightii,Ni(II),0.0054,63.2,2.930145,0.745556,74.56%
+Water hyacinth,Cr(III),0.05,6.61,3.025719,0.751597,75.16%
+Cupriavidus,Cd(II),0.0167,19.6,3.055114,0.753398,75.34%
+Lemon peels,Cd(II),0.002046,159.62,3.062013,0.753817,75.38%
+Lemon peels,Cd(II),0.001557,209.08,3.071842,0.754411,75.44%
+Crab shell,Co(II),0.0015,212.8,3.132832,0.758035,75.80%
+Caladium bicolor,Cd(II),0.0141,22.47,3.156297,0.759401,75.94%
+Coconut copra meal,Cd(II),0.119,2.66,3.159158,0.759567,75.96%
+Ficus religiosa,Cr(VI),0.012,26.25,3.174603,0.760456,76.05%
+Grape bagasse,Pb(II),0.0074,42.27,3.196951,0.761732,76.17%
+Water hyacinth,Cr(VI),0.917,0.34,3.207390,0.762323,76.23%
+Reed mat,Cr(III),0.042,7.18,3.316090,0.768309,76.83%
+Wool,Cr(VI),0.00715,41.15,3.398788,0.772665,77.27%
+Chitosan beads,Cr(VI),0.003421,76.92,3.800210,0.791676,79.17%
+Mangrove leaves,Cr(VI),0.044,5.72,3.973299,0.798926,79.89%
+Live spirulina,Cd(II),0.0004,625.0,4.000000,0.800000,80.00%
+Atlantic Cod fish scale,As(V),8.8,0.0267,4.256044,0.809743,80.97%
+Caulerpa lentillifera,Pb(II),0.0144,15.94,4.356615,0.813315,81.33%
+Rice bran,Zn(II),0.015,14.84,4.492363,0.817929,81.79%
+Caladium bicolor,Pb(II),0.025,8.81,4.540295,0.819504,81.95%
+Orange peels,Cd(II),0.001779,123.65,4.546005,0.819690,81.97%
+Mangrove leaves,Cr(III),0.032,6.54,4.778287,0.826938,82.69%
+Lentil shell,Cu(II),0.022,9.51,4.779658,0.826979,82.70%
+Orange peels,Cd(II),0.001379,150.63,4.814201,0.828007,82.80%
+Green taro,Cr(III),0.034,6.07,4.845431,0.828926,82.89%
+Coconut copra meal,Cd(II),0.099,2.01,5.025378,0.834035,83.40%
+Water lily,Cr(III),0.031,6.11,5.279552,0.840753,84.08%
+Caulerpa lentillifera,Zn(II),0.0671,2.66,5.602680,0.848546,84.85%
+Sugar beet pulp,Pb(II),0.4759,0.37,5.679140,0.850280,85.03%
+Caladium bicolor,Cd(II),0.0124,14.03,5.748051,0.851809,85.18%
+Lentil shell,Cu(II),0.019,8.98,5.860978,0.854248,85.42%
+Caladium bicolor,Cd(II),0.0195,8.58,5.976929,0.856670,85.67%
+Olive cake,Cr(VI),0.0047,33.44,6.362618,0.864179,86.42%
+Rice bran,Zn(II),0.011,14.17,6.415603,0.865149,86.51%
+Sawdust,Cr(VI),0.00915,15.28,7.152462,0.877338,87.73%
+Water lily,Cr(VI),0.027,5.11,7.247952,0.878758,87.88%
+Atlantic Cod fish scale,As(III),5.2,0.0248,7.754342,0.885771,88.58%
+Pine needles,Cr(VI),0.00544,21.5,8.549932,0.895287,89.53%
+Caulerpa lentillifera,Cd(II),0.0229,4.34,10.061779,0.909599,90.96%
+Wheat shell,Cu(II),0.005,17.42,11.481056,0.919879,91.99%
+Caulerpa lentillifera,Zn(II),0.05,1.65,12.121212,0.923788,92.38%
+Coal,Cr(VI),0.0115,6.78,12.825446,0.927670,92.77%
+Caulerpa lentillifera,Cu(II),0.029,2.64,13.061651,0.928885,92.89%
+Caladium bicolor,Pb(II),0.012,5.49,15.179114,0.938192,93.82%
+Reed mat,Cr(VI),0.039,1.66,15.446401,0.939196,93.92%
+Wheat shell,Cu(II),0.004,16.08,15.547264,0.939567,93.96%
+Green taro,Cr(VI),0.042,1.42,16.767270,0.943717,94.37%
+Almond,Cr(VI),0.00546,10.62,17.245780,0.945193,94.52%
+Rice shell,Cu(II),0.018,2.95,18.832392,0.949577,94.96%
+A. niger (fungal),Cr(VI),0.0026,17.61,21.840737,0.956219,95.62%
+Cactus,Cr(VI),0.00613,7.08,23.041262,0.958405,95.84%
+P. janthinellum,Cr(VI),0.0042,9.35,25.464731,0.962214,96.22%
+Rice shell,Cu(II),0.016,2.31,27.056277,0.964357,96.44%
+Marine algae DP95Ca,Cu(II),0.0031,11.44,28.197609,0.965751,96.58%
+Tamarindus indica seeds,Cr(VI),1.36,0.023,31.969309,0.969669,96.97%
+Caulerpa lentillifera,Cd(II),0.0106,2.95,31.979533,0.969678,96.97%
+Nopal,Pb(II),0.00228,13.39,32.755526,0.970375,97.04%
+Caulerpa lentillifera,Zn(II),0.0201,1.37,36.314776,0.973201,97.32%
+Nopal,Pb(II),0.002041,12.76,38.397798,0.974618,97.46%
+Reed,Pb(II),0.00149,17.1552,39.121721,0.975076,97.51%
+Rice shell,Cu(II),0.011,1.85,49.140049,0.980056,98.01%
+A. sydoni,Cr(VI),0.0022,9.07,50.115265,0.980436,98.04%
+Sugar beet pulp,Cd(II),0.1237,0.13,62.185187,0.984174,98.42%
+Wheat shell,Cu(II),0.002,7.39,67.658999,0.985435,98.54%
+Nopal,Pb(II),0.0009894,12.34,81.905475,0.987938,98.79%
+Poplar forests,Cu(II),0.0003574,29.33,95.396708,0.989626,98.96%
+Nopal,Pb(II),0.0006118,11.29,144.776004,0.993140,99.31%
+Poplar forests,Cu(II),0.000186,29.76,180.656723,0.994495,99.45%
+Chitosan beads,Cr(III),0.000132,30.03,252.272980,0.996052,99.61%
+Poplar forests,Cu(II),0.000166,19.53,308.453476,0.996768,99.68%
+Nopal,Pb(II),0.0002868,5.43,642.127136,0.998445,99.84%
+Living ureolytic mixed culture,Ni(II),8e-05,12.58,993.640700,0.998995,99.90%
+Protonated rice bran,Ni(II),9.43e-06,46.51,2280.037383,0.999562,99.96%
+Non-living ureolytic mixed culture,Ni(II),5.9e-05,7.41,2287.335026,0.999563,99.96%
