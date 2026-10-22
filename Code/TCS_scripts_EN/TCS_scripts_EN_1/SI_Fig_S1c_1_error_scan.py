@@ -83,6 +83,7 @@ ax.set_xlim(3, 200)
 plt.tight_layout()
 # Save first, then show (the Spyder plot window opens automatically)
 plt.savefig('S1c.1.svg', dpi=300, bbox_inches='tight')
+plt.savefig('S1c.1.png', dpi=600, bbox_inches='tight')
 plt.show()          # usually appears directly in Spyder; optional
 
 # ----- Output table -----

@@ -175,7 +175,8 @@ def make_figure(Omega=2520, out="Fig_S2b_2.svg"):
     ax.set_xlim(0.29, 1.0)
     ax.set_ylim(0, 52)
     plt.tight_layout()
-    plt.savefig(out, dpi=300)
+    plt.savefig(out, dpi=300, bbox_inches='tight')
+    plt.savefig(out.replace('.svg', '.png'), dpi=600, bbox_inches='tight')
     plt.show()
     print(f"\nfigure saved: {out}")
 

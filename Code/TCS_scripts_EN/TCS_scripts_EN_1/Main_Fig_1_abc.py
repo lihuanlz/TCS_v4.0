@@ -836,6 +836,6 @@ OUT_DIR = os.path.dirname(os.path.abspath(__file__))
 fig.savefig(os.path.join(OUT_DIR, 'Fig1_abc.svg'), dpi=300,
             facecolor='white')
 fig.savefig(os.path.join(OUT_DIR, 'Fig1_abc.pdf'), facecolor='white')
-fig.savefig(os.path.join(OUT_DIR, 'Fig1_abc.png'), dpi=300,
+fig.savefig(os.path.join(OUT_DIR, 'Fig1_abc.png'), dpi=600,
             facecolor='white')
 print('saved abc composite')

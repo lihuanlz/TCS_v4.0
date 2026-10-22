@@ -535,6 +535,7 @@ ax_cmp.text(0.74, 0.65, textstr, transform=ax_cmp.transAxes, fontsize=12,
 fig_cmp.tight_layout()
 # Modified: consistent filename with figure title
 fig_cmp.savefig('ED_Fig_2b_4PL_vs_5PL.svg', dpi=300)
+fig_cmp.savefig('ED_Fig_2b_4PL_vs_5PL.png', dpi=600)
 plt.show()
 
 

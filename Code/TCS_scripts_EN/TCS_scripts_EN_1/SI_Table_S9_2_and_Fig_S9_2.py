@@ -184,6 +184,7 @@ def run_noisy_demo():
     plt.tight_layout()
 
     plt.savefig('SI_S9_Table_S9_2_and_Figure_S9_2.svg', dpi=100)
+    plt.savefig('SI_S9_Table_S9_2_and_Figure_S9_2.png', dpi=200)
     plt.show()
 
 if __name__ == "__main__":
