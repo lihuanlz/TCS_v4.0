@@ -24,8 +24,8 @@ diameter (331 hand-marked beads, median 2.97 um).
 
 Inputs (raw data, same directory)
 ---------------------------------
-mingchang_droplets.csv : id, cx, cy, r (px) - hand-circled droplets
-mingchang_beads.csv    : id, cx, cy, r (px) - hand-circled beads
+brightfield_droplet_annotations.csv : id, cx, cy, r (px) - hand-circled droplets
+brightfield_bead_annotations.csv    : id, cx, cy, r (px) - hand-circled beads
 
 Outputs
 -------
@@ -57,8 +57,8 @@ VOLUME_ASSAY_UL = 50.0       # emulsion aqueous phase per assay (uL)
 # ----------------------------------------------------------------------------
 # Raw data (hand-circled ROIs, full 1000 x 1000 px bright-field image)
 # ----------------------------------------------------------------------------
-beads = pd.read_csv('mingchang_beads.csv')
-drop = pd.read_csv('mingchang_droplets.csv')
+beads = pd.read_csv('brightfield_bead_annotations.csv')
+drop = pd.read_csv('brightfield_droplet_annotations.csv')
 
 # bead-bearing status: a bead circle fully inside the droplet circle
 n_beads = np.zeros(len(drop), dtype=int)
