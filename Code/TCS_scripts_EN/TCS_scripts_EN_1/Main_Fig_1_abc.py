@@ -76,8 +76,7 @@ def render_a():
     aligned with the four-layer stochastic model of SI S2b.1:
       (1) Molecular sampling: W ~ Poisson(M)
       (2) Finite-site binding: exact binding identity
-          <B> = <(M-B)(Omega-B)>/KV (equation 1); the master equation
-          xi = p/(1-p) + p/kappa is noted only as its thermodynamic limit
+          <B> = <(M-B)(Omega-B)>/KV (equation 1)
       (3) Partition allocation: Omega sites over N partitions of
           beta = Omega/N sites; hypergeometric allocation of C complexes
       (4) Observation: analog intensity vs digital counting
@@ -282,9 +281,7 @@ def render_a():
              fontsize=FS_C, ha='center', color=INK)
     ax2.text(4.80, 4.05, r'$\kappa \equiv KVN_A/\Omega$;  $\xi \equiv M/(KVN_A)$',
              fontsize=6.2, ha='center', color=INK)
-    ax2.text(4.80, 3.55, r'thermodynamic limit $\rightarrow$  $\xi = p/(1-p) + p/\kappa$  (panel c)',
-             fontsize=5.6, color=GREY, ha='center', va='center')
-    ax2.text(4.80, 2.95, 'exact binding identity, any M and Ω (equation 1)',
+    ax2.text(4.80, 3.05, 'exact for any M and Ω (equation 1)',
              fontsize=5.6, color=GREY, ha='center', va='center')
     ax2.add_patch(FancyBboxPatch((0.60, 0.45), 8.40, 2.20,
                   boxstyle='round,pad=0.02,rounding_size=0.22',
@@ -362,40 +359,30 @@ def render_a():
     badge(ax4, 0.72, 12.45, 4)
     ax4.text(1.32, 12.45, 'Observation', fontsize=FS_T, weight='bold',
              color=NAVY, ha='left', va='center')
-    ax4.text(4.80, 11.55, r'digital ($N > 1$): count positive partitions',
-             fontsize=5.6, ha='center', va='center', color=INK)
-    ax4.text(4.80, 10.85, r'$Z \sim \mathrm{Binomial}(N,\, P_{\mathrm{pos}})$',
-             fontsize=8.6, ha='center', va='center', color=NAVY)
-    ax4.text(4.80, 10.18, r'$P_{\mathrm{pos}}$ exact from equation (2)',
-             fontsize=5.3, ha='center', va='center', color=GREY)
-    ax4.text(4.80, 9.58, 'Type 1: binary count + Poisson inversion',
-             fontsize=5.6, ha='center', va='center', color=GREY)
-    ax4.text(4.80, 9.03, '(dPCR, Simoa)',
-             fontsize=5.3, ha='center', va='center', color=GREY)
-    ax4.text(4.80, 8.48, 'Type 2: direct per-molecule counting',
-             fontsize=5.6, ha='center', va='center', color=GREY)
-    ax4.text(4.80, 7.93, '(Singulex, DigitISA)',
-             fontsize=5.3, ha='center', va='center', color=GREY)
-    ax4.plot([1.20, 8.40], [7.33, 7.33], color='#C9D2DC', lw=1.0, zorder=1)
-    ax4.text(4.80, 6.78, r'$y = D + (A - D)\,p + \varepsilon$',
+    ax4.text(4.80, 10.90, 'digital: count positive partitions',
+             fontsize=5.8, ha='center', va='center', color=GREY)
+    ax4.text(4.80, 10.15, r'$Z \sim \mathrm{Binomial}(N,\, P_{\mathrm{pos}})$',
              fontsize=8.8, ha='center', va='center', color=NAVY)
-    ax4.text(4.80, 6.13, r'analog ($N = 1$): single intensity, no counting',
+    ax4.text(4.80, 9.35, 'Type 1: binary count + Poisson inversion',
              fontsize=5.6, ha='center', va='center', color=GREY)
-    ax4.text(4.80, 5.33, r'$\kappa \to 0$:  $M = -N\,\ln(1 - N_{\mathrm{pos}}/N)$',
+    ax4.text(4.80, 8.80, 'Type 2: direct per-molecule counting',
+             fontsize=5.6, ha='center', va='center', color=GREY)
+    ax4.plot([1.20, 8.40], [8.15, 8.15], color='#C9D2DC', lw=1.0, zorder=1)
+    ax4.text(4.80, 7.50, r'$y = D + (A - D)\,p + \varepsilon$',
+             fontsize=8.8, ha='center', va='center', color=NAVY)
+    ax4.text(4.80, 6.85, 'analog: single intensity',
+             fontsize=5.6, ha='center', va='center', color=GREY)
+    ax4.text(4.80, 5.90, r'$\kappa \to 0$:  $M = -N\,\ln(1 - N_{\mathrm{pos}}/N)$',
              fontsize=7.6, ha='center', va='center', color=NAVY)
-    ax4.text(4.80, 4.68, 'calibration-free absolute count (dPCR)', fontsize=5.6,
+    ax4.text(4.80, 5.20, 'calibration-free absolute count (dPCR)', fontsize=5.6,
              ha='center', va='center', color=GREY)
-    ax4.text(4.80, 3.82, r'absolute quantification requires $\kappa\Omega = KVN_A$',
-             fontsize=5.3, ha='center', va='center', color=INK)
-    ax4.text(4.80, 3.27, 'to be independently known', fontsize=5.3,
-             ha='center', va='center', color=INK)
     ax4.add_patch(FancyBboxPatch((1.20, 0.55), 7.20, 1.80,
                   boxstyle='round,pad=0.02,rounding_size=0.22',
                   fc=BOX_FC, ec=BOX_EC, lw=1.5, zorder=3))
     ax4.text(4.80, 1.45, r'$M = \kappa\,\Omega\,\xi$',
              fontsize=12, weight='bold', ha='center', va='center', color=NAVY,
              zorder=4)
-    ax4.text(4.80, 2.72, 'absolute count, any readout (equation 4)',
+    ax4.text(4.80, 2.72, 'absolute count (equation 4)',
              fontsize=5.6, color=GREY, ha='center', va='center')
 
     # ----------------------------------------------- chevrons between cards
