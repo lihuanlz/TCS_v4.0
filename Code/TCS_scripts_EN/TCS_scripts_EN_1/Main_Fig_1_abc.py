@@ -277,8 +277,8 @@ def render_a():
              color='#B03030', ha='center', va='center', zorder=5)
     ax2.text(tcx, 6.95, 'uniform scaling', fontsize=5.8, color=GREY,
              ha='center', va='center')
-    ax2.text(4.80, 4.70, r'$p \equiv B/\Omega$ — capture-site occupancy',
-             fontsize=FS_C, ha='center', color=INK)
+    ax2.text(4.80, 4.70, r'$B$: bound complexes;  $p \equiv B/\Omega$: occupancy',
+             fontsize=5.8, ha='center', color=INK)
     ax2.text(4.80, 4.05, r'$\kappa \equiv KVN_A/\Omega$;  $\xi \equiv M/(KVN_A)$',
              fontsize=6.2, ha='center', color=INK)
     ax2.text(4.80, 3.05, 'exact for any M and Ω (equation 1)',
