@@ -72,14 +72,16 @@ def _fig_to_image(fig, dpi=600):
 # =============================================================== panel a
 def render_a():
     """
-    Fig 1a (v3.0): "Epitope-anchored quantification in FOUR steps",
+    Fig 1a (v3.1): "Epitope-anchored quantification in FOUR steps",
     aligned with the four-layer stochastic model of SI S2b.1:
       (1) Molecular sampling: W ~ Poisson(M)
-      (2) Finite-site binding: master equation xi = p/(1-p) + p/kappa
+      (2) Finite-site binding: exact binding identity
+          <B> = <(M-B)(Omega-B)>/KV (equation 1); the master equation
+          xi = p/(1-p) + p/kappa is noted only as its thermodynamic limit
       (3) Partition allocation: Omega sites over N partitions of
           beta = Omega/N sites; hypergeometric allocation of C complexes
-      (4) Observation: analog intensity vs digital positive-partition
-          counting; estimator M = kappa*Omega*xi
+      (4) Observation: analog intensity vs digital counting
+          Z ~ Binomial(N, Ppos); absolute count M = kappa*Omega*xi (eq. 4)
     Output: Fig1a svg (fonts as paths) + 600dpi png
     Canvas: 183 mm (7.2 in) double-column width, Liberation Sans.
     """
@@ -276,17 +278,21 @@ def render_a():
              color='#B03030', ha='center', va='center', zorder=5)
     ax2.text(tcx, 6.95, 'uniform scaling', fontsize=5.8, color=GREY,
              ha='center', va='center')
-    ax2.text(4.80, 4.70, 'p — capture-site occupancy', fontsize=FS_C,
-             ha='center', color=INK)
+    ax2.text(4.80, 4.70, r'$p \equiv B/\Omega$ — capture-site occupancy',
+             fontsize=FS_C, ha='center', color=INK)
     ax2.text(4.80, 4.05, r'$\kappa \equiv KVN_A/\Omega$;  $\xi \equiv M/(KVN_A)$',
              fontsize=6.2, ha='center', color=INK)
-    ax2.add_patch(FancyBboxPatch((1.30, 0.70), 7.00, 1.85,
+    ax2.text(4.80, 3.55, r'thermodynamic limit $\rightarrow$  $\xi = p/(1-p) + p/\kappa$  (panel c)',
+             fontsize=5.6, color=GREY, ha='center', va='center')
+    ax2.text(4.80, 2.95, 'exact binding identity, any M and Ω (equation 1)',
+             fontsize=5.6, color=GREY, ha='center', va='center')
+    ax2.add_patch(FancyBboxPatch((0.60, 0.45), 8.40, 2.20,
                   boxstyle='round,pad=0.02,rounding_size=0.22',
                   fc=BOX_FC, ec=BOX_EC, lw=1.5, zorder=3))
-    ax2.text(4.80, 1.62, r'$\xi = \frac{p}{1-p} + \frac{p}{\kappa}$',
-             fontsize=13, ha='center', va='center', color=NAVY, zorder=4)
-    ax2.text(4.80, 2.92, 'master equation (thermodynamic limit)', fontsize=5.8,
-             color=GREY, ha='center', va='center')
+    ax2.text(4.80, 2.10, r'$\langle B \rangle \, K V = \langle (M-B)\,(\Omega-B) \rangle$',
+             fontsize=9.0, ha='center', va='center', color=NAVY, zorder=4)
+    ax2.text(4.80, 1.05, r'$= \frac{M\,\Omega}{KV}\,\frac{Q(M-1,\,\Omega-1)}{Q(M,\,\Omega)}$',
+             fontsize=7.5, ha='center', va='center', color=NAVY, zorder=4)
 
     # ======================================== STEP 3 - partition allocation
     badge(ax3, 0.72, 12.45, 3)
@@ -299,9 +305,11 @@ def render_a():
         for xx in (1.15, 1.75, 2.35):
             draw_site(ax3, xx, yy, 0.30, lw=1.2)
     mol(ax3, 1.75, 8.52, 0.15, motif_deg=180, seed=7)
-    ax3.text(0.55, 6.50, r'N = 1: all $\Omega$ sites', fontsize=5.3,
+    ax3.text(0.55, 6.62, r'analog ($N = 1$):', fontsize=5.3,
+             ha='left', va='center', color=GREY)
+    ax3.text(0.55, 6.05, r'all $\Omega$ sites', fontsize=5.3,
              ha='left', va='center', color=INK)
-    ax3.text(0.55, 5.88, 'in one unit (analog)', fontsize=5.3, ha='left',
+    ax3.text(0.55, 5.48, 'in one unit', fontsize=5.3, ha='left',
              va='center', color=INK)
     ax3.add_patch(FancyArrowPatch((3.35, 8.60), (4.85, 8.60), arrowstyle='-|>',
                                   mutation_scale=11, color=NAVY, lw=1.6, zorder=5))
@@ -316,9 +324,11 @@ def render_a():
             ax3.add_patch(Circle((xw, yw), 0.25,
                                  fc=('#D99400' if pos else 'white'),
                                  ec=NAVY, lw=1.0, zorder=3))
-    ax3.text(8.50, 6.50, r'N > 1: $\beta = \Omega/N$ sites', fontsize=5.3,
+    ax3.text(8.50, 6.62, r'digital ($N > 1$):', fontsize=5.3,
+             ha='right', va='center', color=GREY)
+    ax3.text(8.50, 6.05, r'$\beta = \Omega/N$ sites', fontsize=5.3,
              ha='right', va='center', color=INK)
-    ax3.text(8.50, 5.88, 'per partition (digital)', fontsize=5.3, ha='right',
+    ax3.text(8.50, 5.48, 'per partition', fontsize=5.3, ha='right',
              va='center', color=INK)
     bx, by, br = 7.62, 10.95, 0.84
     ax3.add_patch(Circle((bx, by), br, fc='#D99400', ec=NAVY, lw=1.3, zorder=4))
@@ -332,12 +342,12 @@ def render_a():
     ax3.plot([7.22, 7.35], [9.82, 10.02], color='#8A97A5', lw=0.9, zorder=3)
     ax3.text(6.62, 10.95, 'one\npartition', fontsize=5.8, ha='right',
              va='center', color=GREY, linespacing=1.2)
-    ax3.text(4.62, 4.35, 'C bound complexes dealt to partitions:', fontsize=5.6,
-             ha='center', va='center', color=INK)
-    ax3.text(4.70, 3.30, 'multivariate hypergeometric', fontsize=7.2,
+    ax3.text(4.70, 4.50, 'C bound complexes are dealt to partitions',
+             fontsize=5.6, ha='center', va='center', color=INK)
+    ax3.text(4.70, 3.80, 'multivariate hypergeometric', fontsize=7.2,
              ha='center', va='center', color=NAVY)
-    ax3.text(4.70, 2.55, r'positive if $\geq$ 1 of $\beta$ sites occupied',
-             fontsize=FS_C, ha='center', va='center', color=GREY)
+    ax3.text(4.70, 3.00, r'positive if $\geq$ 1 of its $\beta$ sites is occupied',
+             fontsize=5.6, ha='center', va='center', color=GREY)
     # glyph key lives here (the coloured circles are in THIS panel)
     ax3.add_patch(Circle((2.50, 1.30), 0.17, fc='#D99400', ec=NAVY, lw=0.9,
                          zorder=3))
@@ -352,27 +362,41 @@ def render_a():
     badge(ax4, 0.72, 12.45, 4)
     ax4.text(1.32, 12.45, 'Observation', fontsize=FS_T, weight='bold',
              color=NAVY, ha='left', va='center')
-    ax4.text(4.80, 10.85, r'$P_{\mathrm{pos}} = 1 - (1-p)^{\beta}$',
-             fontsize=8.2, ha='center', va='center', color=NAVY)
-    ax4.text(4.80, 10.10, 'Type 1: binary count + Poisson inversion',
-             fontsize=5.8, ha='center', va='center', color=GREY)
-    ax4.text(4.80, 9.50, 'Type 2: direct per-molecule counting',
-             fontsize=5.8, ha='center', va='center', color=GREY)
-    ax4.plot([1.20, 8.40], [8.80, 8.80], color='#C9D2DC', lw=1.0, zorder=1)
-    ax4.text(4.80, 8.10, r'$y = D + (A - D)\,p + \varepsilon$',
+    ax4.text(4.80, 11.55, r'digital ($N > 1$): count positive partitions',
+             fontsize=5.6, ha='center', va='center', color=INK)
+    ax4.text(4.80, 10.85, r'$Z \sim \mathrm{Binomial}(N,\, P_{\mathrm{pos}})$',
+             fontsize=8.6, ha='center', va='center', color=NAVY)
+    ax4.text(4.80, 10.18, r'$P_{\mathrm{pos}}$ exact from equation (2)',
+             fontsize=5.3, ha='center', va='center', color=GREY)
+    ax4.text(4.80, 9.58, 'Type 1: binary count + Poisson inversion',
+             fontsize=5.6, ha='center', va='center', color=GREY)
+    ax4.text(4.80, 9.03, '(dPCR, Simoa)',
+             fontsize=5.3, ha='center', va='center', color=GREY)
+    ax4.text(4.80, 8.48, 'Type 2: direct per-molecule counting',
+             fontsize=5.6, ha='center', va='center', color=GREY)
+    ax4.text(4.80, 7.93, '(Singulex, DigitISA)',
+             fontsize=5.3, ha='center', va='center', color=GREY)
+    ax4.plot([1.20, 8.40], [7.33, 7.33], color='#C9D2DC', lw=1.0, zorder=1)
+    ax4.text(4.80, 6.78, r'$y = D + (A - D)\,p + \varepsilon$',
              fontsize=8.8, ha='center', va='center', color=NAVY)
-    ax4.text(4.80, 7.40, 'analog: single intensity, no counting', fontsize=5.8,
-             ha='center', va='center', color=GREY)
-    ax4.text(4.80, 6.15, r'$\kappa \to 0$:  $M = -N\,\ln(1 - N_{\mathrm{pos}}/N)$',
+    ax4.text(4.80, 6.13, r'analog ($N = 1$): single intensity, no counting',
+             fontsize=5.6, ha='center', va='center', color=GREY)
+    ax4.text(4.80, 5.33, r'$\kappa \to 0$:  $M = -N\,\ln(1 - N_{\mathrm{pos}}/N)$',
              fontsize=7.6, ha='center', va='center', color=NAVY)
-    ax4.text(4.80, 5.45, 'calibration-free absolute count (dPCR)', fontsize=5.8,
+    ax4.text(4.80, 4.68, 'calibration-free absolute count (dPCR)', fontsize=5.6,
              ha='center', va='center', color=GREY)
-    ax4.add_patch(FancyBboxPatch((1.20, 0.90), 7.20, 1.90,
+    ax4.text(4.80, 3.82, r'absolute quantification requires $\kappa\Omega = KVN_A$',
+             fontsize=5.3, ha='center', va='center', color=INK)
+    ax4.text(4.80, 3.27, 'to be independently known', fontsize=5.3,
+             ha='center', va='center', color=INK)
+    ax4.add_patch(FancyBboxPatch((1.20, 0.55), 7.20, 1.80,
                   boxstyle='round,pad=0.02,rounding_size=0.22',
                   fc=BOX_FC, ec=BOX_EC, lw=1.5, zorder=3))
-    ax4.text(4.80, 1.85, r'estimator:  $\hat{M} = \kappa\,\Omega\,\hat{\xi}$',
-             fontsize=8.8, weight='bold', ha='center', va='center', color=NAVY,
+    ax4.text(4.80, 1.45, r'$M = \kappa\,\Omega\,\xi$',
+             fontsize=12, weight='bold', ha='center', va='center', color=NAVY,
              zorder=4)
+    ax4.text(4.80, 2.72, 'absolute count, any readout (equation 4)',
+             fontsize=5.6, color=GREY, ha='center', va='center')
 
     # ----------------------------------------------- chevrons between cards
     fig.canvas.draw()
