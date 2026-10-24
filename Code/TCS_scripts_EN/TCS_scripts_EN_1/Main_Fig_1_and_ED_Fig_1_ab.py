@@ -560,9 +560,9 @@ def figure2_li_number_collapse(K_nM=1.0, V_uL=100.0,
 
 
 
-    plt.suptitle('Extended Data Fig. 1a: Universality of the TCS master equation: scale collapse, κ-dependence, and K/Ω tuning',
-                 fontsize=18, fontweight='bold')
-    plt.tight_layout(rect=[0, 0, 1, 0.97])
+    # Standalone panel letter (matches ED1b/c: bold lowercase, top-left; title lives in the docx caption)
+    fig.text(0.001, 0.999, 'a', fontsize=48, fontweight='bold', ha='left', va='top')
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = os.path.join(output_dir, f"ED_Fig_1a.svg")
@@ -749,13 +749,9 @@ def figure3_quantification_performance(kappa=1, beta=1, N=1e6, n=1e4, b=0.01, pa
     ax5.set_ylim(0, 150)
  
 
-    # plt.suptitle('Figure 3: Model Validation — Quantification Performance & Background Estimation', 
-    #          fontsize=18, y=0.99, fontweight='bold')
-
-
-    plt.suptitle(f'Extended Data Fig. 1{panel}: Model Validation — Quantification Performance and Parameter Sensitivity.', 
-             fontsize=16, y=0.99, fontweight='bold')
-    plt.tight_layout()
+    # Standalone panel letter (matches embedded ED1b/c: bold lowercase, top-left; title lives in the docx caption)
+    fig.text(0.001, 0.999, panel, fontsize=48, fontweight='bold', ha='left', va='top')
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
     
     
     
