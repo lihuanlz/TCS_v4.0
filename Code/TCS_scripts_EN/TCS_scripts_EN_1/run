@@ -18,26 +18,32 @@ mkdir -p "$RESULTS_DIR"
 # Conda starter environments provide python; fall back to python3
 PY="$(command -v python || command -v python3)"
 
-# Move generated artifacts into the results folder (runs after EVERY script,
-# so partial progress survives an interrupted run). Also sweeps one level of
-# subdirectories (Main_Fig_1_and_ED_Fig_1_ab.py writes omega_kappa_figures/).
+# Move ONLY the files generated or updated by the script that just ran (i.e.
+# newer than the per-script stamp) into the results folder. Input data that is
+# read but never rewritten (brightfield_bead_annotations.csv,
+# brightfield_droplet_annotations.csv, fig4a_brightfield.png,
+# fig4a_fluorescence.png, fonts/) is therefore never swept away, which a
+# plain extension-based sweep would break (ED_Fig_3 reads the annotation CSVs
+# only after ED_Fig_2a has already run).
 collect() {
-  find . -mindepth 1 -maxdepth 2 -type f \
+  find . -mindepth 1 -maxdepth 2 -type f -newer "$STAMP" \
     \( -name '*.pdf' -o -name '*.png' -o -name '*.svg' \
        -o -name '*.xlsx' -o -name '*.csv' -o -name '*.txt' \) \
     ! -name 'requirements.txt' \
-    ! -name 'fig4a_brightfield.png' \
-    ! -name 'fig4a_fluorescence.png' \
     -exec mv -f {} "$RESULTS_DIR/" \;
   find . -mindepth 1 -maxdepth 1 -type d -empty -delete
 }
 
+STAMP=".run_stamp"
 for f in *.py; do
   echo "================================================"
   echo "Running $f"
   echo "================================================"
+  touch "$STAMP"
+  sleep 1
   "$PY" -u "$f" || echo "WARNING: $f exited with an error; continuing."
   collect
+  rm -f "$STAMP"
 done
 
 echo "All scripts finished. Outputs collected in $RESULTS_DIR"
