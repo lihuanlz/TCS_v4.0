@@ -170,10 +170,8 @@ def run_experiment1():
         ax.legend(fontsize=8)
         ax.grid(True, alpha=0.3)
 
-    fig.suptitle('Fig. S9.1. Parameter recovery under known truth: '
-                 'linearised vs. nonlinear PSO fits to TCS data at '
-                 'κ = 0.01, 0.1, 1.0, 10',
-                 fontsize=14, fontweight='bold', y=1.02)
+    # Title removed: the figure title is carried by the Word caption in the SI document.
+    # fig.suptitle('Fig. S9.1. Parameter recovery under known truth: ...', fontsize=14, fontweight='bold', y=1.02)
 
     plt.tight_layout()
     plt.savefig('ESI_S9_Table_S9_1_and_Figure_S9_1.svg', dpi=150, bbox_inches='tight')

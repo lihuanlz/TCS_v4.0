@@ -179,8 +179,8 @@ def run_noisy_demo():
         ax2.set_xlabel('τ'); ax2.set_ylabel('Residual')
         ax2.legend()
 
-    fig.suptitle('Fig. S9.2. True TCS (black), κ→∞ limit (green dashed), and fits',
-                 fontweight='bold', fontsize=14, y=1)
+    # Title removed: the figure title is carried by the Word caption in the SI document.
+    # fig.suptitle('Fig. S9.2. True TCS (black), κ→∞ limit (green dashed), and fits', fontweight='bold', fontsize=14, y=1)
     plt.tight_layout()
 
     plt.savefig('SI_S9_Table_S9_2_and_Figure_S9_2.svg', dpi=100)

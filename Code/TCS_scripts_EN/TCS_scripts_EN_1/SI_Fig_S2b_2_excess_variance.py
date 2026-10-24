@@ -167,11 +167,8 @@ def make_figure(Omega=2520, out="Fig_S2b_2.svg"):
 
     ax.set_xlabel('$u = M/\\Omega$', fontsize=11)
     ax.set_ylabel('$\\beta = \\Omega/N$ (sites per partition)', fontsize=11)
-    ax.set_title('Fig.S2b.2. $V_R^{4L}-1$ phase diagram (digital limit $\\kappa\\to0$, '
-                 f'$\\Omega={Omega}$)\n'
-                 'white: exact digital computation; '
-                 'black: $g_0$ boundary estimate',
-                 fontsize=15,fontweight='bold', y=1)
+    # Title removed: the figure title is carried by the Word caption in the SI document.
+    # (Former baked-in title also noted: white = exact digital computation, black = g0 boundary estimate.)
     ax.set_xlim(0.29, 1.0)
     ax.set_ylim(0, 52)
     plt.tight_layout()

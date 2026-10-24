@@ -675,9 +675,8 @@ def print_etcm_data():
 def figure_panels_A_F():
     """Fig. S10.2 (upper): panels A–F"""
     fig, axes = plt.subplots(3, 2, figsize=(14, 18))
-    fig.suptitle(
-        'Fig. S10.2. TCS Unification of Pharmacological Receptor Theories (A–F)',
-        fontsize=16, fontweight='bold', y=0.98)
+    # Title removed: the figure title is carried by the Word caption in the SI document.
+    # fig.suptitle('Fig. S10.2. TCS Unification of Pharmacological Receptor Theories (A–F)', ...)
 
     # A: Unit-site
     ax = axes[0, 0]
@@ -775,9 +774,8 @@ def figure_panels_A_F():
 def figure_panels_G_L():
     """Fig. S10.2 (lower): panels G–L"""
     fig, axes = plt.subplots(3, 2, figsize=(14, 18))
-    fig.suptitle(
-        'Fig. S10.2 (continued). TCS Unification of Pharmacological Receptor Theories (G–L)',
-        fontsize=16, fontweight='bold', y=0.98)
+    # Title removed: the figure title is carried by the Word caption in the SI document.
+    # fig.suptitle('Fig. S10.2 (continued). TCS Unification of Pharmacological Receptor Theories (G–L)', ...)
 
     # G: KNF alpha
     ax = axes[0, 0]

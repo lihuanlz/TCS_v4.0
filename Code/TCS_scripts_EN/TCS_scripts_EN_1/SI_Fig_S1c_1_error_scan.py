@@ -75,8 +75,9 @@ ax.axvline(x=50, color='blue', linestyle=':', linewidth=1, alpha=0.5, label=r'$N
 ax.set_yscale('log')
 ax.set_xlabel(r'$N_{\mathrm{eff}} \equiv \min(M, \Omega)$')
 ax.set_ylabel(r'$\kappa$')
-ax.set_title('Fig. S1c.1. S1c.8 (exact) vs S1c.12 (master eq): relative error in ξ\n'
-             r'$M=\Omega=N_{\mathrm{eff}}$, $\Delta = \mathrm{Var}(C)/[\kappa\Omega^2(1-p)]$',fontsize=15,fontweight='bold', y=1)
+# Title removed: the figure title is carried by the Word caption in the SI document.
+# ax.set_title('Fig. S1c.1. S1c.8 (exact) vs S1c.12 (master eq): relative error in ξ\n'
+#              r'$M=\Omega=N_{\mathrm{eff}}$, $\Delta = \mathrm{Var}(C)/[\kappa\Omega^2(1-p)]$',fontsize=15,fontweight='bold', y=1)
 ax.legend(fontsize=15, loc='upper right')
 ax.set_xlim(3, 200)
 

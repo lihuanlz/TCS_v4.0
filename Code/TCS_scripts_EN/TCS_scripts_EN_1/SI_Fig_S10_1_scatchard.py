@@ -206,8 +206,8 @@ ax2.annotate('Solid: $B_{arms}/F_{arms}$ (linear)\n'
              xy=(0.62, 0.5), xycoords='axes fraction', fontsize=16, ha='center',
              bbox=dict(boxstyle='round', facecolor='lightyellow', alpha=0.9))
 
-fig.suptitle('Fig. S10.1. Scatchard plots: multivalence and cooperativity',
-             fontsize=16, fontweight='bold', y=1.01)
+# Title removed: the figure title is carried by the Word caption in the SI document.
+# fig.suptitle('Fig. S10.1. Scatchard plots: multivalence and cooperativity', fontsize=16, fontweight='bold', y=1.01)
 plt.tight_layout()
 plt.savefig('SI_S10_Fig_S10_1_Scatchard.svg', dpi=300, bbox_inches='tight')
 plt.show()
