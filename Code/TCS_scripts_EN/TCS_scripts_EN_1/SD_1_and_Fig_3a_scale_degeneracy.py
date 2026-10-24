@@ -275,6 +275,9 @@ ax3.legend()
 ax3.grid(False, alpha=0.3)
 
 plt.subplots_adjust(top=0.85)
+# panel identity within Extended Data Figure 2 (c)
+fig_res.text(0.005, 0.998, 'c', fontsize=17, fontweight='bold',
+             ha='left', va='top')
 plt.savefig('ED_Fig_2c.svg', dpi=300)
 plt.show()
 
@@ -533,6 +536,9 @@ ax_cmp.text(0.74, 0.65, textstr, transform=ax_cmp.transAxes, fontsize=12,
             bbox=dict(boxstyle='round', facecolor='white', alpha=0.85))
 
 fig_cmp.tight_layout()
+# panel identity within Extended Data Figure 2 (b)
+fig_cmp.text(0.005, 0.998, 'b', fontsize=17, fontweight='bold',
+             ha='left', va='top')
 # Modified: consistent filename with figure title
 fig_cmp.savefig('ED_Fig_2b_4PL_vs_5PL.svg', dpi=300)
 fig_cmp.savefig('ED_Fig_2b_4PL_vs_5PL.png', dpi=600)

@@ -8,8 +8,8 @@ Provenance of the data
 ----------------------
 Bright-field image of the bead monolayer acquired in the observation chip in
 the same experiments as the assay (Fig. 3c). On the full 1000 x 1000 px image
-all clearly bounded droplets were hand-circled (n = 372) and the magnetic
-beads were hand-circled separately (n = 331); circle radii are the
+all clearly bounded droplets were hand-circled (n = 387) and the magnetic
+beads were hand-circled separately (n = 342); circle radii are the
 measurements. A droplet is bead-bearing when a bead circle lies fully inside
 its circle.
 
@@ -20,7 +20,7 @@ droplet by 1/V. Droplets under the drawn scale bar were not marked.
 
 Image scale: the drawn 50 um scale bar measures 333 px
 (0.15015 um/px), independently verified against the nominal 3 um bead
-diameter (331 hand-marked beads, median 2.97 um).
+diameter (342 hand-marked beads, median 2.94 um).
 
 Inputs (raw data, same directory)
 ---------------------------------
@@ -113,8 +113,9 @@ d, v = d_all, v_all
 w = 1.0 / v                               # enrichment probability proportional to V
 
 print("\n[2] Field sample: %d droplets circled; %d bead-bearing (%.0f%%), "
-      "none with 2+ beads"
-      % (len(drop), bearing.sum(), 100 * bearing.mean()))
+      "%d with 2+ beads"
+      % (len(drop), bearing.sum(), 100 * bearing.mean(),
+         int((n_beads >= 2).sum())))
 print("    field droplets: diameter median %.2f um, CV %.0f%%; "
       "volume median %.0f fL, mean %.0f fL"
       % (np.median(d), 100 * d.std(ddof=1) / d.mean(), np.median(v), v.mean()))

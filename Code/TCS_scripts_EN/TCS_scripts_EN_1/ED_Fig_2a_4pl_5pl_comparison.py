@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Extended Data Fig. 5a: 4PL vs 5PL vs exact TCS comparison.
+Extended Data Fig. 2a: 4PL vs 5PL vs exact TCS comparison.
 
 Shows how 4PL and 5PL approximate the exact TCS root at different κ regimes.
 Three curves per κ:
@@ -120,9 +120,10 @@ for idx, (k, label, col) in enumerate(zip(kappas, kappa_labels, colors)):
     # Every subplot gets the legend
     ax.legend(fontsize=14, loc='lower right')
 
-plt.suptitle('Extended Data Fig. 5a: TCS Unified Framework — '
-             '4PL vs 5PL vs Exact TCS',
-             fontsize=16, fontweight='bold', y=1.01)
+# suptitle removed (unified style: numbering lives in captions)
+# panel identity within Extended Data Figure 2 (a)
+fig.text(0.005, 0.998, 'a', fontsize=17, fontweight='bold',
+         ha='left', va='top')
 
 plt.tight_layout()
 plt.savefig('ED_Fig_2a.svg', dpi=300, bbox_inches='tight')
