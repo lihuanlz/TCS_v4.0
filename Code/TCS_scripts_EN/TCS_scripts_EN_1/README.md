@@ -84,4 +84,4 @@ Every script can also be run standalone for inspection of a single result.
 ## Code availability
 
 Repository: https://github.com/lihuanlz/TCS_v4.0
-Archive: https://zenodo.org/records/22970538
+Archive: https://doi.org/10.5281/zenodo.23008778
