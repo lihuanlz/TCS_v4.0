@@ -39,9 +39,9 @@ V = 160e-6                # volume in L; not actually used (concentration enters
 # Used to validate the dPCR LoB/LoD/LoQ derivation under the
 # TCS framework (κ=0, b=0 limit).
 #
-# NOTE: The clinical KRAS stool samples (288 wells described in
-# Methods §3.5) are analyzed separately. This script focuses on
-# the calibration standard used to validate the dPCR framework.
+# The clinical KRAS stool assay (288 wells) is reanalysed from its
+# published aggregate counts at the end of this script and exported as
+# sheet 11_KRAS_Stool in the same Supplementary Data 5 workbook.
 # ============================================================================
 
 # PHYSICAL NOTE (why dPCR is the calibration-free limit):
@@ -590,25 +590,35 @@ for M in M_test:
     ratio = cv_mc / cv_r1 if cv_r1 > 0 else np.nan
 
     # --- CI coverage ---
-    # Delta CI
-    z = np.sqrt(chi2.ppf(0.95, 1))
-    se = N_total / (1 - P_true) * np.sqrt(P_true * (1 - P_true) / n_test)
-    delta_low = M - z * se
-    delta_up = M + z * se
-    cov_delta = np.mean((M_hat[valid] >= delta_low) & (M_hat[valid] <= delta_up))
+    # Each Monte Carlo trial must produce its OWN interval; coverage is the
+    # probability that that interval contains the true M.  The former version
+    # built one interval at the expected k and asked whether M_hat fell inside
+    # it, which is not a confidence-interval coverage calculation.
+    delta_hit = np.zeros(n_mc, dtype=bool)
+    exact_hit = np.zeros(n_mc, dtype=bool)
+    lr_hit = np.zeros(n_mc, dtype=bool)
 
-    # Exact transformation CI (Clopper-Pearson mapped)
-    # Use mean k to get CP bounds, then check coverage per trial
-    cov_exact = 0
-    # For coverage, compute CP for each trial's k (too slow for 50k)
-    # Instead: compute at the expected k level
-    k_expected = int(round(P_true * n_test))
-    ci_exact = exact_transformation_ci(k_expected, n_test)
-    cov_exact = np.mean((M_hat[valid] >= ci_exact[0]) & (M_hat[valid] <= ci_exact[1]))
+    # There are only a few distinct count outcomes at these low occupancies,
+    # so intervals can be evaluated once per distinct k rather than 50,000
+    # times.  Boundary outcomes are retained in the denominator.
+    for k_obs in np.unique(Z):
+        trial_mask = (Z == k_obs)
 
-    # Likelihood ratio CI
-    ci_lr = likelihood_ratio_ci(k_expected, n_test)
-    cov_lr = np.mean((M_hat[valid] >= ci_lr[0]) & (M_hat[valid] <= ci_lr[1]))
+        # The delta interval is undefined at k=0 or k=n; those trials remain
+        # False instead of being discarded or assigned artificial tiny limits.
+        if 0 < k_obs < n_test:
+            ci_delta = delta_ci(k_obs / n_test, n_test)
+            delta_hit[trial_mask] = ci_delta[0] <= M <= ci_delta[1]
+
+        ci_exact = exact_transformation_ci(k_obs, n_test)
+        exact_hit[trial_mask] = ci_exact[0] <= M <= ci_exact[1]
+
+        ci_lr = likelihood_ratio_ci(k_obs, n_test)
+        lr_hit[trial_mask] = ci_lr[0] <= M <= ci_lr[1]
+
+    cov_delta = np.mean(delta_hit)
+    cov_exact = np.mean(exact_hit)
+    cov_lr = np.mean(lr_hit)
 
     print(f"{M:8d} {P_true:8.6f} {cv_r1:10.4f} {cv_mc:10.4f} {ratio:8.4f} "
           f"{cov_delta:10.4f} {cov_exact:10.4f} {cov_lr:10.4f}")
@@ -631,11 +641,9 @@ print(f"\nRaw MC draws saved: dPCR_MC_samples.csv "
 
 print("\n--- Interpretation ---")
 print("CV: MC/R1 ≈ 1.0 confirms Binomial collapse (S2b.3) in dilute regime.")
-print("    Deviation at small M shows R1 slightly underestimates CV (<0.3%).")
-print("CI: Coverage ≥ 0.95 confirms valid upper bounds.")
-print("    Exact (Clopper-Pearson) is conservative for large M; at small M")
-print("    discrete counting effects reduce coverage below nominal.")
-print("    Delta may undercover at small M; LR should be closest to nominal.")
+print("CI: Clopper-Pearson is conservative at low M; delta and likelihood-ratio")
+print("    intervals can under-cover in the discrete low-count regime.")
+print("    All three are close to nominal coverage at the larger M test points.")
 
 # ============================================================================
 # 8. CV comparison figure: R1 delta vs MC exact
@@ -682,7 +690,8 @@ ax3.set_xlabel('$M$ (molecules)', fontsize=13)
 ax3.set_ylabel('Coverage', fontsize=13)
 ax3.set_title(f'dPCR CI coverage: MC validation\n'
               f'$N={N_total:,}$, $n={n_test:,}$, $\\kappa=0$, $b=0$', fontsize=12)
-ax3.set_ylim(0.85, 1.02)
+coverage_min = df_mc_ci[['cov_delta', 'cov_exact', 'cov_LR']].min().min()
+ax3.set_ylim(max(0.0, coverage_min - 0.03), 1.02)
 ax3.legend(fontsize=10, loc='lower right')
 ax3.grid(True, alpha=0.2, which='both')
 plt.tight_layout()
@@ -853,19 +862,68 @@ except Exception as e_save:
     
 # ============================================================================
 # KRAS stool DNA assay (288 clinical wells; Poisson correction at kappa=0)
+# Aggregate counts were reported by Vogelstein and Kinzler (1999); per-well
+# observations were not available.  These results belong in Supplementary
+# Data 5 together with the BRAF analysis above.
 # ============================================================================
 N_s, k_pos, k_mut = 288, 102, 5
-M_total = -N_s * np.log(1 - k_pos / N_s)          # 125.9
-M_mut   = -N_s * np.log(1 - k_mut / N_s)          # 5.04
-abund   = M_mut / M_total                          # 4.0%
+M_total = -N_s * np.log(1 - k_pos / N_s)
+M_mut   = -N_s * np.log(1 - k_mut / N_s)
+abund   = M_mut / M_total
+raw_positive_well_fraction = k_mut / k_pos
 cv = lambda k: np.sqrt((np.exp(-np.log(1-k/N_s))-1)/N_s) / (-np.log(1-k/N_s))
 lo = beta_dist.ppf(0.025, k_mut, N_s-k_mut+1)
 hi = beta_dist.ppf(0.975, k_mut+1, N_s-k_mut)
-CI  = (M_mut and N_s*(-np.log(1-lo))/M_total, N_s*(-np.log(1-hi))/M_total)
-LoB = -N_s * np.log(1 - beta_dist.ppf(0.975, 1, N_s))   # 3.7
-LoD = -np.log(0.05)                                      # 3.0 copies
-from scipy.optimize import brentq
-LoQ = brentq(lambda M: np.sqrt((np.exp(M/N_s)-1)/N_s)/(M/N_s)-0.20, 1, 500)  # 26.2
+CI = (N_s * (-np.log(1-lo)) / M_total,
+      N_s * (-np.log(1-hi)) / M_total)
+LoB = -N_s * np.log(1 - beta_dist.ppf(0.975, 1, N_s))
+LoD = -np.log(0.05)
+LoQ = brentq(lambda M: np.sqrt((np.exp(M/N_s)-1)/N_s)/(M/N_s)-0.20, 1, 500)
+LoQ_R3 = 25.0  # low-occupancy R3 approximation with n=N_s
 print(f"KRAS stool: M={M_total:.0f}, mut={M_mut:.0f}, abundance={abund:.1%}, "
       f"CV={cv(k_pos):.1%}/{cv(k_mut):.1%}, CI 95%=[{CI[0]:.1%},{CI[1]:.1%}], "
-      f"LoB={LoB:.1f}, LoD={LoD:.1f}, LoQ={LoQ:.1f}")
+      f"LoB={LoB:.1f}, LoD={LoD:.1f}, LoQ(R2)={LoQ:.1f}, LoQ(R3)={LoQ_R3:.1f}")
+
+# Add the stool-DNA inputs and derived results to the same workbook.  This
+# sheet intentionally stores aggregate published counts, not fabricated
+# per-well observations.
+try:
+    from openpyxl import load_workbook
+    wb = load_workbook("SI_Table_5.xlsx")
+    if "11_KRAS_Stool" in wb.sheetnames:
+        del wb["11_KRAS_Stool"]
+    ws11 = wb.create_sheet("11_KRAS_Stool")
+    ws11.append(["KRAS stool DNA assay: aggregate published counts and TCS reanalysis"])
+    ws11.cell(row=1, column=1).font = Font(italic=True)
+    ws11.append(["Source: Vogelstein and Kinzler (1999); per-well observations were not reported."])
+    ws11.cell(row=2, column=1).font = Font(italic=True)
+    ws11.append(["Quantity", "Value", "Definition / method"])
+    for cell in ws11[ws11.max_row]:
+        cell.font = bold; cell.fill = header_fill
+    stool_rows = [
+        ("N_stool_wells", N_s, "Stool-sample wells"),
+        ("k_PCR_positive", k_pos, "PCR-positive stool wells"),
+        ("k_mutant_positive", k_mut, "Mutant-positive stool wells"),
+        ("raw_mutant_among_PCR_positive", raw_positive_well_fraction,
+         "5/102 = 4.90%; raw positive-well ratio, not Poisson-corrected abundance"),
+        ("M_total_hat_molecules", M_total, "-288 ln(1 - 102/288)"),
+        ("M_mutant_hat_molecules", M_mut, "-288 ln(1 - 5/288)"),
+        ("mutant_abundance_hat", abund, "M_mutant_hat / M_total_hat"),
+        ("mutant_abundance_CI95_low", CI[0],
+         "CP interval for 5/288, Poisson-transformed; M_total held at its point estimate"),
+        ("mutant_abundance_CI95_up", CI[1],
+         "CP interval for 5/288, Poisson-transformed; M_total held at its point estimate"),
+        ("CV_total", cv(k_pos), "Delta-method counting CV"),
+        ("CV_mutant", cv(k_mut), "Delta-method counting CV"),
+        ("LoB_molecules", LoB, "One-sided 95% blank bound, Poisson-transformed"),
+        ("LoD_molecules", LoD, "R2/R3: -ln(0.05) at n=N"),
+        ("LoQ_low_R2_molecules", LoQ, "Exact counting CV = 20%"),
+        ("LoQ_low_R3_molecules", LoQ_R3, "Low-occupancy approximation: 25N/n = 25"),
+    ]
+    for row in stool_rows:
+        ws11.append(list(row))
+    wb.save("SI_Table_5.xlsx")
+    print(f"[OK] Sheet 11_KRAS_Stool; workbook now has {len(wb.sheetnames)} sheets")
+except Exception as e_stool:
+    print(f"[!] KRAS stool worksheet save failed: {e_stool}")
+    raise

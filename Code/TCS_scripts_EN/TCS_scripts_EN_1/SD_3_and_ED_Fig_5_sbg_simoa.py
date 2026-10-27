@@ -306,8 +306,14 @@ else:
 
 
 # ============================================================================
-# 9. Statistics: logL, AICc, BIC, R²
+# 9. Statistics: binomial-form quasi-logL, descriptive AICc/BIC, R²
 # ============================================================================
+# AEB-derived effective counts and partition counts need not be integers.
+# Throughout this script, legacy variable names containing "logL" denote the
+# binomial-form quasi-log-likelihood below, not an exact integer-count likelihood.
+# AICc/BIC, LOO scores, nested-sampling logZ and Bayes factors are therefore
+# descriptive quantities within that quasi-likelihood; deviance residuals are
+# likewise quasi-deviance diagnostics. Numerical algorithms are unchanged.
 def binom_loglik_from_AEB(AEB_pred, k, n):
     P_pos_pred = np.clip(1 - np.exp(-AEB_pred), 1e-15, 1 - 1e-15)
     return np.sum(k * np.log(P_pos_pred) + (n - k) * np.log(1 - P_pos_pred))
@@ -512,7 +518,13 @@ def delta_ci(P_pos, n_obs, b, kappa, N_total, alpha=0.05):
     return (M_hat - z * se, M_hat + z * se)
 
 
-def exact_transformation_ci(k, n_obs, b, kappa, N_total, alpha=0.05):
+def beta_transformation_ci(k, n_obs, b, kappa, N_total, alpha=0.05):
+    """Beta-quantile proportion interval mapped to M.
+
+    This is the Clopper-Pearson transformation for integer counts. For
+    AEB-derived effective counts it is a counting-interval approximation,
+    not an exact coverage guarantee.
+    """
     if k == 0:
         p_low = 0.0
         p_up = beta_dist.ppf(1 - alpha / 2, k + 1, n_obs - k)
@@ -573,13 +585,13 @@ for i in range(len(conc_aM)):
     M_hat = M_from_Ppos(P_obs_p, b_fit, kappa_fit, N_total)
     cv = calc_CV(P_obs_p, n_obs, b_fit, kappa_fit, N_total)
     ci_d = delta_ci(P_obs_p, n_obs, b_fit, kappa_fit, N_total)
-    ci_e = exact_transformation_ci(k, n_obs, b_fit, kappa_fit, N_total)
+    ci_e = beta_transformation_ci(k, n_obs, b_fit, kappa_fit, N_total)
     ci_lr = likelihood_ratio_ci(k, n_obs, b_fit, kappa_fit, N_total)
     results_tcs.append({
         'Conc (aM)': conc_aM[i], 'k_avg': k, 'P_obs': P_obs_p,
         'M_hat (molecules)': M_hat, 'CV (%)': cv,
         'Delta_low': ci_d[0], 'Delta_up': ci_d[1],
-        'Exact_low': ci_e[0], 'Exact_up': ci_e[1],
+        'BetaQ_low': ci_e[0], 'BetaQ_up': ci_e[1],
         'LR_low': ci_lr[0], 'LR_up': ci_lr[1],
     })
 
@@ -598,7 +610,7 @@ for i in range(len(conc_aM)):
     P_obs_p = k / n_obs
     M_hat = M_from_Ppos(P_obs_p, b_fit, kappa_fit, N_total)
     cv = calc_CV(P_obs_p, n_obs, b_fit, kappa_fit, N_total)
-    M_low, M_up = exact_transformation_ci(k, n_obs, b_fit, kappa_fit, N_total)
+    M_low, M_up = beta_transformation_ci(k, n_obs, b_fit, kappa_fit, N_total)
     P_low = b_fit + (1 - b_fit) * (1 - np.exp(-M_low / (N_total * (kappa_fit + 1))))
     P_up = b_fit + (1 - b_fit) * (1 - np.exp(-M_up / (N_total * (kappa_fit + 1))))
     plot_tcs_data.append((conc_aM[i], P_obs_p, M_hat, cv, P_low, P_up))
@@ -906,8 +918,8 @@ print("\nNote: R2 LoQ is a numerical solution; R3 LoQ is an analytical approxima
 # 18. Plot: 4-panel main figure
 # ============================================================================
 fig_core, axes = plt.subplots(2, 2, figsize=(13, 11))
-fig_core.suptitle('Extended Data Fig. 3: TCS reanalysis of the 2010 Simoa sβG benchmark data',
-                  fontsize=16, fontweight='bold', y=0.95)
+# Figure numbering and title live in the manuscript caption (Extended Data
+# Fig. 5); do not bake a stale figure number into the image.
 
 conc_real = conc_aM
 mu_plot = np.logspace(np.log10(mu_nz.min() * 0.5), np.log10(mu_nz.max() * 2), 200)
@@ -972,7 +984,7 @@ ax.set_title('(2) R2 Fit with Uncertainty', fontsize=14, fontweight='bold')
 eq_str = r"$\widehat{M_{\mathrm{R2}}} = -N(1+\kappa)\ln\left(1-\widehat{P_{\mathrm{specific}}}\right)$"
 ax.text(0.05, 0.95,
         f"$\\kappa$ = {kappa_tcs:.2f}\nb = {b_tcs:.6f}\n{eq_str}\n"
-        f"R$^2$ = {R2_tcs:.4f}\nError bars: Clopper-Pearson 95% CI\nT: TCS Model CV",
+        f"R$^2$ = {R2_tcs:.4f}\nError bars: beta-quantile 95% CI\nT: TCS Model CV",
         transform=ax.transAxes, fontsize=14, va='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.9))
 ax.grid(False)
@@ -1039,6 +1051,7 @@ ax.set_ylabel(r'$P_{\mathrm{specific}}$', fontsize=14)
 ax.set_title('(4) R3 Linear Approximation', fontsize=14, fontweight='bold')
 ax.legend(fontsize=8)
 fig_core.savefig('ED_Fig_5.svg', dpi=300, bbox_inches='tight')
+fig_core.savefig('ED_Fig_5.png', dpi=300, bbox_inches='tight', facecolor='white')
 plt.show()
 plt.close(fig_core)
 
@@ -1093,7 +1106,7 @@ try:
     # ---- Sheet 2: Per-point quantification ----
     ws2 = wb.create_sheet("2_TCS_PerPoint")
     ws2.append(["Conc (aM)", "k_avg", "P_obs", "M_hat (molecules)", "CV (%)",
-                "Delta_low", "Delta_up", "Exact_low", "Exact_up", "LR_low", "LR_up"])
+                "Delta_low", "Delta_up", "BetaQ_low", "BetaQ_up", "LR_low", "LR_up"])
     for cell in ws2[1]:
         cell.font = bold; cell.fill = header_fill
     for i in range(len(conc_aM)):
@@ -1103,7 +1116,7 @@ try:
         M_hat_p = M_from_Ppos(P_obs_p, b_fit, kappa_fit, N_beads)
         cv_p = calc_CV(P_obs_p, n_const, b_fit, kappa_fit, N_beads)
         ci_d = delta_ci(P_obs_p, n_const, b_fit, kappa_fit, N_beads)
-        ci_e = exact_transformation_ci(k_avg[i], n_const, b_fit, kappa_fit, N_beads)
+        ci_e = beta_transformation_ci(k_avg[i], n_const, b_fit, kappa_fit, N_beads)
         ci_lr = likelihood_ratio_ci(k_avg[i], n_const, b_fit, kappa_fit, N_beads)
         ws2.append([conc_aM[i], k_avg[i], P_obs_p, M_hat_p, cv_p,
                     ci_d[0], ci_d[1], ci_e[0], ci_e[1], ci_lr[0], ci_lr[1]])
@@ -1142,6 +1155,9 @@ try:
             lo, hi = np.percentile(arr, [2.5, 97.5])
             width = (hi - lo) / max(abs(val), 1e-12)
             ws4.append(["TCS", name, val, lo, hi, width])
+    ws4.append([])
+    ws4.append(["Case resampling", "4PL", "10 nonzero concentration means"])
+    ws4.append(["Case resampling", "TCS", "All 11 points, including the blank"])
 
     # ---- Sheet 5: Correlations ----
     ws5 = wb.create_sheet("5_Correlations")
@@ -1184,41 +1200,41 @@ try:
         ws7.append(["Relative deviation (%)", 0.0,
                     abs(gamma_fit_r3 - gamma_tcs_r3) / gamma_tcs_r3 * 100])
 
-    # ---- Sheet 8: D profile-likelihood ----
+    # ---- Sheet 8: D profile-quasi-likelihood (tab name retained for stability) ----
     ws8 = wb.create_sheet("8_D_Profile_Likelihood")
-    ws8.append(["D (fixed)", "logL (binomial)", "B (fitted)", "C (fitted)",
-                "ΔlogL", "Interpretation"])
+    ws8.append(["D (fixed)", "quasi-logL (binomial-form)", "B (fitted)", "C (fitted)",
+                "Δ quasi-logL", "Interpretation"])
     for cell in ws8[1]:
         cell.font = bold; cell.fill = header_fill
     for D_fix, logL_scan, B_scan, C_scan, delta in D_scan_results:
         if delta > -1.92:
-            note = "MLE neighbor (1σ)"
+            note = "quasi-MLE neighbor"
         elif delta > -3.84:
-            note = "within 1σ formal 95% CI"
+            note = "within nominal 95% profile-quasi interval"
         elif delta > -30:
-            note = "within 2σ but data cannot resolve"
+            note = "broader profile-quasi deviation; data cannot resolve"
         else:
             note = "essentially flat (D poorly identified)"
         ws8.append([D_fix, logL_scan, B_scan, C_scan, delta, note])
     ws8.append([])
-    ws8.append(["BEST (MLE)", "", B_4pl, C_4pl, 0.0, "ΔlogL=0 reference"])
+    ws8.append(["BEST (quasi-MLE)", "", B_4pl, C_4pl, 0.0, "Δ quasi-logL=0 reference"])
 
     # ---- Sheet 9: Shapiro-Wilk ----
     ws9 = wb.create_sheet("9_Shapiro_Wilk")
     ws9.append(["Model", "Residual type", "Shapiro-Wilk p", "Conclusion (α=0.05)"])
     for cell in ws9[1]:
         cell.font = bold; cell.fill = header_fill
-    sh_concl_4pl = ("Reject normality — overfit signature"
-                    if p_sh_4pl < 0.05 else "Cannot reject normality")
-    sh_concl_tcs = ("Cannot reject (consistent with model)"
-                    if p_sh_tcs >= 0.05 else "Reject normality")
-    ws9.append(["4PL", "Deviance (binomial)", float(p_sh_4pl), sh_concl_4pl])
-    ws9.append(["TCS", "Deviance (binomial)", float(p_sh_tcs), sh_concl_tcs])
+    sh_concl_4pl = ("Reject normality in this quasi-deviance diagnostic"
+                    if p_sh_4pl < 0.05 else "Cannot reject normality in this diagnostic")
+    sh_concl_tcs = ("Cannot reject normality in this diagnostic"
+                    if p_sh_tcs >= 0.05 else "Reject normality in this quasi-deviance diagnostic")
+    ws9.append(["4PL", "Deviance (binomial-form quasi)", float(p_sh_4pl), sh_concl_4pl])
+    ws9.append(["TCS", "Deviance (binomial-form quasi)", float(p_sh_tcs), sh_concl_tcs])
 
-    # ---- Sheet 10: Deviance residuals per point ----
+    # ---- Sheet 10: Quasi-deviance residuals per point ----
     ws10 = wb.create_sheet("10_Deviance_Residuals")
-    ws10.append(["Concentration (aM)", "4PL deviance residual",
-                 "TCS deviance residual", "Note"])
+    ws10.append(["Concentration (aM)", "4PL quasi-deviance residual",
+                 "TCS quasi-deviance residual", "Note"])
     for cell in ws10[1]:
         cell.font = bold; cell.fill = header_fill
     for i in range(len(conc_aM)):
@@ -1226,7 +1242,7 @@ try:
         if conc_aM[i] == 7000 and abs(dr_4pl[i]) < 1 and abs(dr_tcs[i]) > 5:
             note = "leverage: 4PL fits exactly via D, TCS over-predicts 2.2%"
         elif conc_aM[i] == 350 and abs(dr_4pl[i]) > 4:
-            note = "high deviance residual under 4PL"
+            note = "high quasi-deviance residual under 4PL"
         elif conc_aM[i] == 700:
             note = "TCS P_pos plateau miss"
         ws10.append([conc_aM[i], float(dr_4pl[i]),
@@ -1234,7 +1250,7 @@ try:
 
     # ---- Sheet 11: κ scan ----
     ws11 = wb.create_sheet("11_Kappa_Scan")
-    ws11.append(["κ (fixed)", "logL (binomial)", "R² (AEB scale)",
+    ws11.append(["κ (fixed)", "quasi-logL (binomial-form)", "R² (AEB scale)",
                  "max |AEB residual|", "low-conc max |resid|",
                  "high-conc max |resid|", "Note"])
     for cell in ws11[1]:
@@ -1242,10 +1258,10 @@ try:
     mle_row = None
     for idx, (k_fix, logL_k, r2_k, max_resid, low_resid,
               high_resid) in enumerate(kappa_scan_data):
-        note = "MLE" if abs(k_fix - 0.5793) < 0.001 else ""
+        note = "quasi-MLE" if abs(k_fix - 0.5793) < 0.001 else ""
         ws11.append([k_fix, logL_k, r2_k, max_resid,
                      low_resid, high_resid, note])
-        if note == "MLE":
+        if note == "quasi-MLE":
             mle_row = idx + 2
     if mle_row is not None:
         for cell in ws11[mle_row]:
@@ -1254,7 +1270,7 @@ try:
     # ---- Sheet 12: per-point residual heatmap ----
     ws12 = wb.create_sheet("12_Resid_vs_Kappa")
     header_row = ["Concentration (aM)"] + [
-        ("κ=0.579 (MLE)" if abs(k - 0.5793) < 1e-3 else f"κ={k:.3f}")
+        ("κ=0.579 (quasi-MLE)" if abs(k - 0.5793) < 1e-3 else f"κ={k:.3f}")
         for k in kappa_show
     ]
     ws12.append(header_row)
@@ -1268,11 +1284,11 @@ try:
     mle_col_idx = kappa_show.index(0.5793) + 2
     ws12.cell(row=1, column=mle_col_idx).fill = mle_fill
 
-    # ---- Sheet 13: LOO per-fold ----
+    # ---- Sheet 13: LOO per-fold predictive quasi-scores ----
     ws13 = wb.create_sheet("13_LOO_PerFold")
     ws13.append(["Fold", "Concentration (aM)",
-                 "logL (4PL hold-out)", "logL (TCS hold-out)",
-                 "ΔlogL (4PL - TCS)", "Note"])
+                 "quasi-logL (4PL hold-out)", "quasi-logL (TCS hold-out)",
+                 "Δ quasi-logL (4PL - TCS)", "Note"])
     for cell in ws13[1]:
         cell.font = bold; cell.fill = header_fill
     for idx, (l4, lt) in enumerate(zip(loo_4pl_vals, loo_tcs_vals)):
@@ -1284,7 +1300,7 @@ try:
             d = l4 - lt
             note = ""
             if idx + 1 == 11:
-                note = "leverage fold (7000 aM, 73% of AICc gap)"
+                note = "leverage fold (7000 aM, 73% of total LOO quasi-score gap)"
             elif idx + 1 == 9:
                 note = "high conc, 4PL advantage"
             elif idx + 1 == 10:
@@ -1293,9 +1309,10 @@ try:
                          float(d), note])
     ws13.append([])
     ws13.append(["SUMMARY", "", "", "", "", ""])
-    ws13.append(["Mean Δ", "", "", "", float(mean_diff), ""])
+    ws13.append(["Mean Δ", "", "", "", float(mean_diff),
+                 "Positive = 4PL higher; negative = TCS higher"])
     ws13.append(["SE Δ",   "", "", "", float(se_diff),   ""])
-    ws13.append(["t-statistic", "", "", "", float(t_stat), "n.s. (|t|<2)"])
+    ws13.append(["t-statistic", "", "", "", float(t_stat), "paired test on predictive quasi-scores"])
     ws13.append(["Median Δ", "", "", "", float(median_diff),
                  "robust to leverage"])
     ws13.append(["N (valid folds)", "", "", "",
@@ -1308,15 +1325,15 @@ try:
 
     ws13.append([])
     ws13.append(["TOST equivalence test", "", "", "", "", ""])
-    ws13.append(["Margin (±logL)", "", "", "", float(delta),
-                 "1% of mean per-fold |logL|"])
+    ws13.append(["Margin (±quasi-logL)", "", "", "", float(delta),
+                 "1% of mean per-fold |quasi-logL|"])
     ws13.append(["Mean Δ 90% CI", "", "", "",
                  f"[{ci90[0]:.3f}, {ci90[1]:.3f}]", ""])
     ws13.append(["TOST p", "", "", "", float(p_tost),
                  "EQUIVALENT" if p_tost < 0.05 else "NOT equivalent"])
-    ws13.append(["Smallest passing margin (logL)", "", "", "",
+    ws13.append(["Smallest passing margin (quasi-logL)", "", "", "",
                  float(delta_min),
-                 f"{100*delta_min/mean_abs_logL:.3f}% of per-fold |logL|"])
+                 f"{100*delta_min/mean_abs_logL:.3f}% of per-fold |quasi-logL|"])
 
 
 
@@ -1892,9 +1909,12 @@ try:
     _ws14 = _wb14.create_sheet("14_R1_Model")
 
     _ws14.append(['R1 Model Fit (nested sampling) vs R2 Model (beta->inf) — sβG dataset'])
-    _ws14.append(['Method: dynesty nested sampling, nlive=500, bound=multi'])
+    _ws14.append(['Method: dynesty nested sampling of the binomial-form quasi-likelihood, '
+                  'nlive=500, bound=multi; logZ and Bayes factors below are descriptive '
+                  'quasi-evidence measures, not exact integer-count Bayesian evidence'])
     _ws14.append([])
-    _ws14.append(['Parameter', 'R2 (beta->inf)', 'R1 (beta free)', 'R1 95% CI'])
+    _ws14.append(['Parameter', 'R2 (beta->inf)', 'R1 (beta free)',
+                  'R1 nominal 95% interval (quasi)'])
     _ws14.append(['kappa', f'{kappa_tcs:.4f}', f'{kappa_med:.4f}',
                   f'[{kappa_ci[0]:.4f}, {kappa_ci[1]:.4f}]'])
     _ws14.append(['beta', 'inf (R2 approx)', f'{beta_med:.2f}',
@@ -1905,20 +1925,22 @@ try:
 
     _ws14.append(['Model Comparison'])
     _ws14.append(['Metric', 'R2', 'R1', 'Difference / Interpretation'])
-    _ws14.append(['logL (MLE)', f'{logL_tcs:.2f}', f'{logL_R1:.2f}',
+    _ws14.append(['quasi-logL (quasi-MLE)', f'{logL_tcs:.2f}', f'{logL_R1:.2f}',
                   f'{logL_R1 - logL_tcs:.2f}'])
     _ws14.append(['n_params', '2', '3', '1'])
-    _ws14.append(['AICc', f'{AICc_tcs:.2f}', f'{AICc(logL_R1, 3, n_all):.2f}',
+    _ws14.append(['AICc (descriptive, quasi)', f'{AICc_tcs:.2f}',
+                  f'{AICc(logL_R1, 3, n_all):.2f}',
                   f'Δ = {AICc(logL_R1, 3, n_all) - AICc_tcs:.2f}'])
-    _ws14.append(['logZ (nested)', f'{logZ_R2:.2f}', f'{logZ_R1:.2f}',
-                  f'logBF = {logBF:.2f} ± {logZ_err:.2f}'])
-    _ws14.append(['Bayes factor', '', '', f'B_12 = {np.exp(logBF):.4f} ({bf_conclusion})'])
+    _ws14.append(['quasi-logZ (nested)', f'{logZ_R2:.2f}', f'{logZ_R1:.2f}',
+                  f'quasi-logBF = {logBF:.2f} ± {logZ_err:.2f}'])
+    _ws14.append(['Descriptive quasi-Bayes factor', '', '',
+                  f'B_12 = {np.exp(logBF):.4f} ({bf_conclusion}); not exact count-data evidence'])
     _ws14.append(['R2_AEB', f'{R2_tcs:.6f}', f'{R2_R1:.6f}', ''])
     _ws14.append([])
 
     _ws14.append(['Nested Sampling Diagnostics'])
     _ws14.append(['Quantity', 'R1', 'R2'])
-    _ws14.append(['logZ', f'{results_R1.logz[-1]:.2f} ± {results_R1.logzerr[-1]:.2f}',
+    _ws14.append(['quasi-logZ', f'{results_R1.logz[-1]:.2f} ± {results_R1.logzerr[-1]:.2f}',
                   f'{results_R2.logz[-1]:.2f} ± {results_R2.logzerr[-1]:.2f}'])
     _ws14.append(['niter', f'{results_R1.niter}', f'{results_R2.niter}'])
     _ws14.append(['ncall', f'{results_R1.ncall}', f'{results_R2.ncall}'])

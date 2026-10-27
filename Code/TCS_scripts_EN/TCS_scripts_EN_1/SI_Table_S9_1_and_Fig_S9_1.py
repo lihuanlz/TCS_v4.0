@@ -127,7 +127,7 @@ def run_experiment1():
 
     # save CSV file
     csv_filename = "experiment1_results.csv"
-    with open(csv_filename, "w", newline="") as f:
+    with open(csv_filename, "w", newline="", encoding="utf-8-sig") as f:
         writer = csv.writer(f)
         writer.writerows(csv_rows)
     print(f"Results saved to {csv_filename}\n")

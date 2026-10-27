@@ -532,6 +532,34 @@ def plot_results_M0beta(results, param_name, M0_true, kappa_true, beta_true):
 # 8. Main
 # ---------------------------------------------------------------------------
 
+def load_cached_results(param_name):
+    """Reload a completed parameter group after an interrupted local run."""
+    cache_file = f'profile_likelihood_{param_name}.npz'
+    if not os.path.exists(cache_file):
+        return None
+    keys = (
+        'ci_M0', 'ci_kappa', 'ci_beta',
+        'pl_M0', 'pl_kappa', 'pl_beta',
+        'M0_grid', 'kappa_grid', 'beta_grid',
+        'pl_2d', 'M0_grid_2d', 'kappa_grid_2d',
+        'pl_2d_Mb', 'beta_grid_2d',
+        'ridge_M0', 'ridge_kappa', 'ridge_M0_b', 'ridge_beta', 'll_true',
+    )
+    with np.load(cache_file, allow_pickle=True) as cached:
+        results = {key: cached[key] for key in keys}
+    for key in ('ci_M0', 'ci_kappa', 'ci_beta'):
+        results[key] = tuple(results[key].tolist())
+    results['ridge_slope'] = (
+        np.polyfit(results['ridge_M0'], results['ridge_kappa'], 1)[0]
+        if len(results['ridge_M0']) > 5 else None
+    )
+    results['ridge_slope_Mb'] = (
+        np.polyfit(results['ridge_M0_b'], results['ridge_beta'], 1)[0]
+        if len(results['ridge_M0_b']) > 5 else None
+    )
+    return results
+
+
 def main():
     np.random.seed(42)
 
@@ -553,12 +581,16 @@ def main():
         print(f"# β = {beta}")
         print(f"{'#'*80}")
 
-        results = run_analysis(
-            M0_true=M0_true, kappa_true=kappa_true, beta_true=beta,
-            N_true=N_true, n_per_point=n_per_point, n_dilution=n_dilution,
-            f_range=f_range, b=b, param_name=param_name,
-            n_grid_1d=n_grid_1d, n_grid_2d=n_grid_2d,
-        )
+        results = load_cached_results(param_name)
+        if results is None:
+            results = run_analysis(
+                M0_true=M0_true, kappa_true=kappa_true, beta_true=beta,
+                N_true=N_true, n_per_point=n_per_point, n_dilution=n_dilution,
+                f_range=f_range, b=b, param_name=param_name,
+                n_grid_1d=n_grid_1d, n_grid_2d=n_grid_2d,
+            )
+        else:
+            print(f"Loaded completed analysis: {param_name}")
         plot_results(results, param_name, M0_true, kappa_true, beta)
         plot_results_M0beta(results, param_name, M0_true, kappa_true, beta)
         all_results[beta] = results

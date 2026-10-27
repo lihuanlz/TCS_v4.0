@@ -21,8 +21,8 @@ PY="$(command -v python || command -v python3)"
 # Move ONLY the files generated or updated by the script that just ran (i.e.
 # newer than the per-script stamp) into the results folder. Input data that is
 # read but never rewritten (brightfield_bead_annotations.csv,
-# brightfield_droplet_annotations.csv, fig4a_brightfield.png,
-# fig4a_fluorescence.png, fonts/) is therefore never swept away, which a
+# brightfield_droplet_annotations.csv, fig3c_brightfield.png,
+# fig3c_fluorescence.png, fonts/) is therefore never swept away, which a
 # plain extension-based sweep would break (ED_Fig_3 reads the annotation CSVs
 # only after ED_Fig_2a has already run).
 collect() {

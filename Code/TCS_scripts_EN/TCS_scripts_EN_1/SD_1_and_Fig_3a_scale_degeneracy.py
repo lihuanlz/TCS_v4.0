@@ -204,7 +204,7 @@ except ImportError:
     print("arviz not installed; cannot compute R-hat and ESS. Install with: pip install arviz")
     rhat = ess = None
 
-# posterior medians and 95% HDI (the first 7 are physical parameters)
+# posterior medians and 95% ETI (the first 7 are physical parameters)
 theta_mcmc = np.median(samples[:, :7], axis=0)
 sigma_mcmc = np.exp(np.median(samples[:, 7]))
 lower = np.percentile(samples[:, :7], 2.5, axis=0)
@@ -223,14 +223,14 @@ residuals_final = y_obs - y_pred
 
 param_names = ['ξ₀', 'A₁', 'κ₁', 'A₂', 'κ₂', 'A₃', 'κ₃']
 print("\n" + "="*60)
-print("MCMC posterior medians and 95% HDI (D locked to the measured blank)")
+print("MCMC posterior medians and 95% ETI (D locked to the measured blank)")
 print("="*60)
 for name, val, low, up in zip(param_names, theta_mcmc, lower, upper):
-    print(f"{name:5s} = {val:.4f}  (95% HDI: [{low:.4f}, {up:.4f}])")
+    print(f"{name:5s} = {val:.4f}  (95% ETI: [{low:.4f}, {up:.4f}])")
 print(f"D₁ = {D1:.4f}  (FIXED)")
 print(f"D₂ = {D2:.4f}  (FIXED)")
 print(f"D₃ = {D3:.4f}  (FIXED)")
-print(f"sigma = {sigma_mcmc:.4f}  (95% HDI on log σ: [{lower_sigma:.4f}, {upper_sigma:.4f}])")
+print(f"sigma = {sigma_mcmc:.4f}  (95% ETI on log σ: [{lower_sigma:.4f}, {upper_sigma:.4f}])")
 
 
 # ========== 1. Residual diagnostic plots ==========
@@ -683,7 +683,7 @@ try:
 
     # ----- Sheet 2: MCMC posterior summary (8 parameters + 3 fixed D) -----
     ws2 = wb.create_sheet("2_MCMC_Parameters")
-    ws2.append(["Parameter", "Median (posterior)", "2.5% HDI", "97.5% HDI", "Description"])
+    ws2.append(["Parameter", "Median (posterior)", "2.5% posterior quantile", "97.5% posterior quantile", "Description"])
     for cell in ws2[1]:
         cell.font = bold
         cell.fill = header_fill
@@ -716,8 +716,8 @@ try:
     ws2.append(["Total free physical parameters: 7 (xi0 + A1,k1,A2,k2,A3,k3).",
                 "", "", "", ""])
     ws2.append(["NOTE: k3 sits on the high-kappa (zero-depletion) plateau; the upper end",
-                "of its 95% HDI is set by the prior ceiling (1e3), not by the data, so k3",
-                "is reported as a one-sided lower bound (>= 18.8). Only the lower HDI",
+                "of its 95% ETI is set by the prior ceiling (1e3), not by the data, so k3",
+                "is reported as a one-sided lower bound (>= 18.8). Only the lower ETI",
                 "bound is data-driven (kappa-independent regime, SI S10.10).", ""])
 
     # ----- Sheet 3: Convergence diagnostics (R-hat, ESS) -----
@@ -754,8 +754,8 @@ try:
     ws4.append(["Note: 2 = no autocorrelation; <1 or >3 indicates concern"])
     ws4.append([""])
     ws4.append(["RMSE comparison:"])
-    ws4.append(["RMSE 4PL (all 72 points)", rmse_4])
-    ws4.append(["RMSE 5PL constrained B=1/G (all 72 points)", rmse_5])
+    ws4.append(["RMSE 4PL (63 nonblank points)", rmse_4])
+    ws4.append(["RMSE 5PL constrained B=1/G (63 nonblank points)", rmse_5])
 
     # ----- Sheet 5: 4PL / 5PL per-group fits + bootstrap CIs -----
     ws5 = wb.create_sheet("5_4PL_5PL_Fits")
@@ -1147,7 +1147,7 @@ try:
     wb3 = load_workbook("SI_Table_1.xlsx")
     ws8 = wb3.create_sheet("8_Bayesian_R2")
     ws8.append(["Bayesian R² (posterior predictive, n=2000 samples)"])
-    ws8.append(["Group", "Median", "2.5% HDI", "97.5% HDI"])
+    ws8.append(["Group", "Median", "2.5% posterior quantile", "97.5% posterior quantile"])
     for cell in ws8[2]:
         cell.font = _Font(bold=True)
 
@@ -1434,7 +1434,21 @@ def profile_likelihood_2d(param_x_name, param_y_name,
     ll_2d = np.full((len(y_grid), len(x_grid)), -np.inf)
     xi0_opt, A1_opt, k1_opt, A2_opt, k2_opt, A3_opt, k3_opt = theta_hat
 
+    # Save completed columns so an interrupted run can resume without changing
+    # the grids, optimizer settings, or any numerical tolerance.
+    cache_path = '.cache_sd1/profile_2d.npz'
+    start_col = 0
+    if _os.path.exists(cache_path):
+        with np.load(cache_path) as cached:
+            if (cached['ll_2d'].shape == ll_2d.shape):
+                ll_2d[:] = cached['ll_2d']
+                start_col = min(int(cached['completed_columns']), len(x_grid))
+                if start_col:
+                    print(f"Resuming 2D profile from column {start_col + 1}/{len(x_grid)}")
+
     for j, xval in enumerate(x_grid):
+        if j < start_col:
+            continue
         for i, yval in enumerate(y_grid):
             # fix param_x = xval, param_y = yval
             # the remaining 5 free params
@@ -1480,6 +1494,7 @@ def profile_likelihood_2d(param_x_name, param_y_name,
             except:
                 pass
 
+        np.savez(cache_path, ll_2d=ll_2d, completed_columns=j + 1)
         print(f"  2D profile: col {j+1}/{len(x_grid)} done")
 
     return ll_2d
@@ -1558,7 +1573,7 @@ k3_opt = theta_hat[6]
 
 # the κ₃ posterior is wide; the upper bound must extend to 1500
 k3_range_low = max(k3_opt * 0.01, 1e-3)
-k3_range_high = max(k3_opt * 50, 1500)   # make sure the MCMC 95% HDI upper bound is covered
+k3_range_high = max(k3_opt * 50, 1500)   # make sure the MCMC 95% ETI upper bound is covered
 k3_grid = np.linspace(k3_range_low, k3_range_high, 100)
 
 
@@ -1846,7 +1861,7 @@ with open('profile_summary.txt', 'w', encoding='utf-8') as f:
         else:
             f.write(f"{label}: UNBOUNDED CI -> NOT practically identifiable\n")
             if name == 'kappa3':
-                f.write(f"  (MCMC HDI is prior-limited [1e-4, 1e4]; data cannot constrain kappa3 at zero-depletion regime)\n")
+                f.write(f"  (MCMC ETI is prior-limited [1e-4, 1e4]; data cannot constrain kappa3 at zero-depletion regime)\n")
 
     f.write("\n")
     f.write("Key insight: xi0 (= M0/(K*V*NA)) is identifiable, but M0 itself\n")
@@ -1881,7 +1896,7 @@ try:
         if res[3]:  # bounded
             _ws9.append([label, res[0], res[1], res[2], res[2]/res[1] if res[1] > 0 else None, "YES", ""])
         else:
-            note = "MCMC HDI is prior-limited [1e-4, 1e4]; data cannot constrain at zero-depletion" if name == 'kappa3' else ""
+            note = "MCMC ETI is prior-limited [1e-4, 1e4]; data cannot constrain at zero-depletion" if name == 'kappa3' else ""
             _ws9.append([label, res[0] if res[0] else "N/A", "", "", "INF", "NO", note])
 
     _ws9.append([""])

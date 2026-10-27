@@ -421,6 +421,12 @@ AEB_pred_train_tcs = predict_AEB_tcs(mu_train, kappa_tcs, b_tcs)
 # ============================================================================
 # 3. Model comparison statistics (full printout)
 # ============================================================================
+# AEB-derived effective counts and partition counts need not be integers.
+# Throughout this script, legacy variable names containing "logL" denote the
+# binomial-form quasi-log-likelihood below, not an exact integer-count likelihood.
+# AICc/BIC, LOO scores, nested-sampling logZ and Bayes factors are therefore
+# descriptive quantities within that quasi-likelihood; deviance residuals are
+# likewise quasi-deviance diagnostics. Numerical algorithms are unchanged.
 # def normal_loglik(AEB_obs, AEB_pred, weights):
 #     resid = AEB_obs - AEB_pred
 #     return -0.5 * np.sum(weights * resid**2 + np.log(2*np.pi/weights))
@@ -752,9 +758,9 @@ print(f"TCS: min={np.nanmin(conc_tcs_back):.4f}, max={np.nanmax(conc_tcs_back):.
 print(f"4PL: # above ULOQ (NaN) = {above_4pl}")
 print(f"TCS: # above ULOQ (NaN) = {above_tcs}")
 
-# Save LOO per-fold differences to file
+# Save LOO per-fold predictive quasi-scores to file
 with open('LOO_per_fold.txt', 'w') as f:
-    f.write("Fold\t4PL_logL\tTCS_logL\tDiff(4PL-TCS)\n")
+    f.write("Fold\t4PL_quasi_logL\tTCS_quasi_logL\tDiff_quasi_logL(4PL-TCS)\n")
     for idx, (l4, lt) in enumerate(zip(loo_4pl_vals, loo_tcs_vals)):
         if np.isnan(l4) or np.isnan(lt):
             f.write(f"{idx+1}\tFAIL\tFAIL\tFAIL\n")
@@ -821,8 +827,13 @@ def delta_ci(P_pos, n_i, b, kappa, N_total, alpha=0.05):
     z = np.sqrt(chi2.ppf(1 - alpha, 1))
     return (M_hat - z * se, M_hat + z * se)
 
-def exact_transformation_ci(k, n_i, b, kappa, N_total, alpha=0.05):
-    """Clopper-Pearson proportion interval -> mapped to M"""
+def beta_transformation_ci(k, n_i, b, kappa, N_total, alpha=0.05):
+    """Beta-quantile proportion interval mapped to M.
+
+    This is the Clopper-Pearson transformation for integer counts. For
+    AEB-derived effective counts it is a counting-interval approximation,
+    not an exact coverage guarantee.
+    """
     if k == 0:
         p_low = 0.0
         p_up = beta_dist.ppf(1 - alpha/2, k + 1, n_i - k)
@@ -890,7 +901,7 @@ for i in range(len(conc_subset)):
     cv = calc_CV(P_obs, n_i, b_fit, kappa_fit, N_total)
 
     ci_d = delta_ci(P_obs, n_i, b_fit, kappa_fit, N_total)
-    ci_e = exact_transformation_ci(k, n_i, b_fit, kappa_fit, N_total)
+    ci_e = beta_transformation_ci(k, n_i, b_fit, kappa_fit, N_total)
     ci_lr = likelihood_ratio_ci(k, n_i, b_fit, kappa_fit, N_total)
 
     results_tcs.append({
@@ -901,7 +912,7 @@ for i in range(len(conc_subset)):
         'M_hat': M_hat,
         'CV (%)': cv,
         'Delta_low': ci_d[0], 'Delta_up': ci_d[1],
-        'Exact_low': ci_e[0], 'Exact_up': ci_e[1],
+        'BetaQ_low': ci_e[0], 'BetaQ_up': ci_e[1],
         'LR_low': ci_lr[0], 'LR_up': ci_lr[1]
     })
 
@@ -936,7 +947,7 @@ for i in range(len(test_AEB)):
     cv = calc_CV(P_obs_i, n_i, b_fit, kappa_fit, N_total)
 
     ci_d = delta_ci(P_obs_i, n_i, b_fit, kappa_fit, N_total)
-    ci_e = exact_transformation_ci(k_i, n_i, b_fit, kappa_fit, N_total)
+    ci_e = beta_transformation_ci(k_i, n_i, b_fit, kappa_fit, N_total)
     ci_lr = likelihood_ratio_ci(k_i, n_i, b_fit, kappa_fit, N_total)
 
     test_results.append({
@@ -948,7 +959,7 @@ for i in range(len(test_AEB)):
         'M_hat': M_hat,
         'CV (%)': cv,
         'Delta_low': ci_d[0], 'Delta_up': ci_d[1],
-        'Exact_low': ci_e[0], 'Exact_up': ci_e[1],
+        'BetaQ_low': ci_e[0], 'BetaQ_up': ci_e[1],
         'LR_low': ci_lr[0], 'LR_up': ci_lr[1]
     })
 
@@ -1466,7 +1477,7 @@ ax.grid(False)
 #         f"b = {b_tcs:.4f}\n"
 #         f"TCS: P = b + (1−b)·(1−e$^{{-x/(1+κ)}}$)\n"
 #         f"R$^2$ = {R2_tcs:.4f}",
-#         f"Error bars: Clopper-Pearson 95% CI\nT: TCS Model CV",
+#         f"Error bars: beta-quantile 95% CI\nT: TCS Model CV",
 #         transform=ax.transAxes, fontsize=11, va='top',
 #         bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8))
 
@@ -1475,7 +1486,7 @@ ax.grid(False)
 #         f"b = {b_tcs:.4f}\n"
 #         f"TCS: \widehat{M_{\mathrm{R2}}}=-N(1+\kappa)\ln{\left(1-\widehat{P_{\mathrm{specific}}}\right)}\n"
 #         f"R$^2$ = {R2_tcs:.4f}\n"
-#         f"Error bars: Clopper-Pearson 95% CI\nT: TCS Model CV",
+#         f"Error bars: beta-quantile 95% CI\nT: TCS Model CV",
 #         transform=ax.transAxes, fontsize=11, va='top',
 #         bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8))
 # Define new equation (no variables, LaTeX math only)
@@ -1486,7 +1497,7 @@ ax.grid(False)
 #         f"b = {b_tcs:.4f}\n"
 #         f"{eq_str}\n"
 #         f"R$^2$ = {R2_tcs:.4f}\n"
-#         f"Error bars: Clopper-Pearson 95% CI\nT: TCS Model CV",
+#         f"Error bars: beta-quantile 95% CI\nT: TCS Model CV",
 #         transform=ax.transAxes, fontsize=11, va='top',
 #         bbox=dict(boxstyle='round', facecolor='lightcoral', alpha=0.8))
 eq_str = r"$\widehat{M_{\mathrm{R2}}} = -N(1+\kappa)\ln\left(1-\widehat{P_{\mathrm{specific}}}\right)$"
@@ -1496,11 +1507,11 @@ ax.text(0.05, 0.95,
         f"b = {b_tcs:.4f}\n"
         f"{eq_str}\n"
         f"R$^2$ = {R2_tcs:.4f}\n"
-        f"Error bars: Clopper-Pearson 95% CI\nT: TCS Model CV",
+        f"Error bars: beta-quantile 95% CI\nT: TCS Model CV",
         transform=ax.transAxes, fontsize=9, va='top',
         bbox=dict(boxstyle='round', facecolor='white', alpha=0.9))
 
-# ax.text(0.75, 0.9, "Error bars: Clopper-Pearson 95% CI\nT: TCS Model CV",
+# ax.text(0.75, 0.9, "Error bars: beta-quantile 95% CI\nT: TCS Model CV",
 #         transform=ax.transAxes, fontsize=14, ha='right', va='bottom',
 #         bbox=dict(boxstyle='round', facecolor='white', alpha=0.7))
 
@@ -2219,7 +2230,7 @@ try:
             lo, hi = np.percentile(arr, [2.5, 97.5])
             ws5.append(["TCS", name, val, lo, hi, hi-lo, (hi-lo)/abs(val) if abs(val)>1e-12 else np.nan])
     ws5.append([""])
-    ws5.append(["== Correlations ρ (KEY CLAIM) ==", "", "", "", "", "", ""])
+    ws5.append(["Correlations ρ (bootstrap)", "", "", "", "", "", ""])
     if len(boot_B) > 0 and len(boot_C) > 0:
         ws5.append(["4PL", "ρ(B, C)", np.corrcoef(boot_B, boot_C)[0, 1], "", "", "", ""])
     if len(boot_B) > 0 and len(boot_D) > 0:
@@ -2228,24 +2239,33 @@ try:
         ws5.append(["4PL", "ρ(C, D)", np.corrcoef(boot_C, boot_D)[0, 1], "", "", "", ""])
     if len(boot_kappa) > 0 and len(boot_b) > 0:
         ws5.append(["TCS", "ρ(κ, b)", np.corrcoef(boot_kappa, boot_b)[0, 1], "", "", "", ""])
+    ws5.append(["Case resampling", "4PL", "14 nonblank wells", "", "", "", ""])
+    ws5.append(["Case resampling", "TCS", "All 16 wells, including the blank", "", "", "", ""])
 
     # ============================================================
     # Sheet 6: Model comparison statistics
+    # AEB-derived effective counts need not be integers. The binomial-form
+    # objective is therefore a quasi-likelihood, and AICc/BIC are descriptive
+    # within that common quasi-likelihood rather than exact count-data criteria.
     # ============================================================
     ws6 = wb.create_sheet("6_Model_Comparison")
     ws6.append(["Metric", "4PL", "TCS", "Winner / Note"])
     for cell in ws6[1]:
         cell.font = bold; cell.fill = header_fill
     if 'logL_4pl' in dir() and 'logL_tcs' in dir():
-        ws6.append(["logL", logL_4pl, logL_tcs, "Higher = better fit"])
+        ws6.append(["quasi-logL (binomial-form)", logL_4pl, logL_tcs,
+                    "Higher = better; AEB-derived effective counts"])
     if 'AICc_4pl' in dir() and 'AICc_tcs' in dir():
-        ws6.append(["AICc", AICc_4pl, AICc_tcs, "Lower = better (penalizes complexity)"])
+        ws6.append(["AICc (descriptive, quasi)", AICc_4pl, AICc_tcs,
+                    "Lower within the same quasi-likelihood"])
     if 'BIC_4pl' in dir() and 'BIC_tcs' in dir():
-        ws6.append(["BIC", BIC_4pl, BIC_tcs, "Lower = better"])
+        ws6.append(["BIC (descriptive, quasi)", BIC_4pl, BIC_tcs,
+                    "Lower within the same quasi-likelihood"])
     if 'R2_4pl' in dir() and 'R2_tcs' in dir():
         ws6.append(["R² (weighted, AEB scale)", R2_4pl, R2_tcs, "Higher = better"])
     if 'p_shapiro_4pl' in dir() and 'p_shapiro_tcs' in dir():
-        ws6.append(["Shapiro-Wilk p (residuals)", p_shapiro_4pl, p_shapiro_tcs, "Higher = more normal"])
+        ws6.append(["Shapiro-Wilk p (quasi-deviance residuals)", p_shapiro_4pl, p_shapiro_tcs,
+                    "Descriptive residual diagnostic"])
 
     # ============================================================
     # Sheet 7: LOO cross-validation statistics
@@ -2256,23 +2276,26 @@ try:
         cell.font = bold; cell.fill = header_fill
     if 'fail_4pl' in dir(): ws7.append(["4PL LOO failures", fail_4pl, "out of 16 wells"])
     if 'fail_tcs' in dir(): ws7.append(["TCS LOO failures", fail_tcs, "out of 16 wells"])
-    if 'loo_sum_4pl' in dir(): ws7.append(["LOO total logL (4PL)", loo_sum_4pl, "Sum across wells"])
-    if 'loo_sum_tcs' in dir(): ws7.append(["LOO total logL (TCS)", loo_sum_tcs, "Sum across wells"])
-    if 'mean_diff' in dir(): ws7.append(["Mean diff (4PL - TCS)", mean_diff, "Positive = TCS better"])
+    if 'loo_sum_4pl' in dir(): ws7.append(["LOO total predictive quasi-score (4PL)", loo_sum_4pl,
+                                          "Sum of held-out quasi-log-likelihoods"])
+    if 'loo_sum_tcs' in dir(): ws7.append(["LOO total predictive quasi-score (TCS)", loo_sum_tcs,
+                                          "Sum of held-out quasi-log-likelihoods"])
+    if 'mean_diff' in dir(): ws7.append(["Mean Δ predictive quasi-score (4PL - TCS)", mean_diff,
+                                        "Positive = 4PL higher; negative = TCS higher"])
     if 'se_diff' in dir(): ws7.append(["SE of diff", se_diff, ""])
-    if 't_stat' in dir(): ws7.append(["t-statistic", t_stat, "Paired t-test LOO"])
+    if 't_stat' in dir(): ws7.append(["t-statistic", t_stat, "Paired t-test on predictive quasi-scores"])
 
 
 
 
     if 'p_tost' in dir():
-        ws7.append(["TOST margin (±logL)", float(delta),
-                    "1% of mean per-fold |logL|"])
+        ws7.append(["TOST margin (±quasi-logL)", float(delta),
+                    "1% of mean per-fold |quasi-logL|"])
         ws7.append(["Mean diff 90% CI", f"[{ci90[0]:.3f}, {ci90[1]:.3f}]", ""])
         ws7.append(["TOST p", float(p_tost),
                     "EQUIVALENT" if p_tost < 0.05 else "NOT equivalent"])
-        ws7.append(["Smallest passing margin (logL)", float(delta_min),
-                    f"{100*delta_min/mean_abs_logL:.3f}% of per-fold |logL|"])
+        ws7.append(["Smallest passing margin (quasi-logL)", float(delta_min),
+                    f"{100*delta_min/mean_abs_logL:.3f}% of per-fold |quasi-logL|"])
 
 
 
@@ -2425,7 +2448,8 @@ try:
 
         loo_df = pd.read_csv('LOO_per_fold.txt', sep='\t')
         ws = wb.create_sheet('13_LOO_PerFold')
-        ws.append(['LOO per-fold logL: positive Diff = 4PL better, negative = TCS better'])
+        ws.append(['LOO per-fold predictive quasi-score (quasi-logL): '
+                   'positive Diff = 4PL higher, negative = TCS higher'])
         ws.cell(row=1, column=1).font = Font(italic=True)
         ws.append(list(loo_df.columns))
         for cell in ws[ws.max_row]:
@@ -2550,9 +2574,9 @@ try:
                    '', '', '', '', '', ''])
         ws.append(['Max (pg/mL)', np.nanmax(conc_4pl_back), np.nanmax(conc_tcs_back),
                    '', '', '', '', '', ''])
-        ws.append(['# NaN (above ULOQ)', np.sum(np.isnan(conc_4pl_back)),
+        ws.append(['Count NaN (above ULOQ)', np.sum(np.isnan(conc_4pl_back)),
                    np.sum(np.isnan(conc_tcs_back)), '', '', '', '', '', ''])
-        ws.append(['# =0 (below LLOQ)', np.sum(conc_4pl_back == 0),
+        ws.append(['Count = 0 (below LLOQ)', np.sum(conc_4pl_back == 0),
                    np.sum(conc_tcs_back == 0), '', '', '', '', '', ''])
         print('[OK] Added 15_TestSet_BackCalc')
 
@@ -2613,10 +2637,10 @@ try:
         print(f'[FAIL v2] {e_v2}')
         import traceback; traceback.print_exc()
 
-    # Save with 17 sheets (R1 sheet 18 added later after MCMC)
+    # Save with 17 sheets (clinical sheet 18 and R1 sheet 19 added later)
     wb.save("SI_Table_4.xlsx")
     print("\n" + "=" * 70)
-    print(f"SI Table 4 saved with {len(wb.sheetnames)} sheets (18_R1_Model added after R1 MCMC)")
+    print(f"SI Table 4 saved with {len(wb.sheetnames)} sheets (19_R1_Model added after R1 MCMC)")
     print("=" * 70)
     for i, s in enumerate(wb.sheetnames, 1):
         print(f'  {i:2d}. {s}')
@@ -3362,20 +3386,24 @@ else:
 print("="*80)
 
 # ====================================================================
-# Sheet 18: R1 Model Results
+# Sheet 19: R1 Model Results
 # ====================================================================
 try:
     from openpyxl import load_workbook as _lwb
     _wb18 = _lwb("SI_Table_4.xlsx")
-    if "18_R1_Model" in _wb18.sheetnames:
-        del _wb18["18_R1_Model"]
-    _ws18 = _wb18.create_sheet("18_R1_Model")
+    for _r1_sheet in ("18_R1_Model", "19_R1_Model"):
+        if _r1_sheet in _wb18.sheetnames:
+            del _wb18[_r1_sheet]
+    _ws18 = _wb18.create_sheet("19_R1_Model")
 
     _ws18.append(['R1 Model Fit (nested sampling) vs R2 Model (beta->inf) — IL-6 dataset'])
-    _ws18.append(['Method: dynesty nested sampling, nlive=500, bound=multi'])
+    _ws18.append(['Method: dynesty nested sampling of the binomial-form quasi-likelihood, '
+                  'nlive=500, bound=multi; logZ and Bayes factors below are descriptive '
+                  'quasi-evidence measures, not exact integer-count Bayesian evidence'])
     _ws18.append(['Physical prior: beta >= 1 (each bead has at least 1 binding site)'])
     _ws18.append([])
-    _ws18.append(['Parameter', 'R2 (beta->inf)', 'R1 (beta free)', 'R1 95% CI'])
+    _ws18.append(['Parameter', 'R2 (beta->inf)', 'R1 (beta free)',
+                  'R1 nominal 95% interval (quasi)'])
     _ws18.append(['kappa', f'{kappa_tcs:.4f}', f'{kappa_med:.4f}',
                   f'[{kappa_ci[0]:.4f}, {kappa_ci[1]:.4f}]'])
     _ws18.append(['beta', 'inf (R2 approx)', f'{beta_med:.2f}',
@@ -3386,20 +3414,22 @@ try:
 
     _ws18.append(['Model Comparison'])
     _ws18.append(['Metric', 'R2', 'R1', 'Difference / Interpretation'])
-    _ws18.append(['logL (MLE)', f'{logL_tcs:.2f}', f'{logL_R1:.2f}',
+    _ws18.append(['quasi-logL (quasi-MLE)', f'{logL_tcs:.2f}', f'{logL_R1:.2f}',
                   f'{logL_R1 - logL_tcs:.2f}'])
     _ws18.append(['n_params', '2', '3', '1'])
-    _ws18.append(['AICc', f'{AICc_tcs:.2f}', f'{AICc(logL_R1, 3, n_all):.2f}',
+    _ws18.append(['AICc (descriptive, quasi)', f'{AICc_tcs:.2f}',
+                  f'{AICc(logL_R1, 3, n_all):.2f}',
                   f'Δ = {AICc(logL_R1, 3, n_all) - AICc_tcs:.2f}'])
-    _ws18.append(['logZ (nested)', f'{logZ_R2:.2f}', f'{logZ_R1:.2f}',
-                  f'logBF = {logBF:.2f} ± {logZ_err:.2f}'])
-    _ws18.append(['Bayes factor', '', '', f'{bf_conclusion}'])
+    _ws18.append(['quasi-logZ (nested)', f'{logZ_R2:.2f}', f'{logZ_R1:.2f}',
+                  f'quasi-logBF = {logBF:.2f} ± {logZ_err:.2f}'])
+    _ws18.append(['Descriptive quasi-Bayes factor', '', '',
+                  f'{bf_conclusion}; not exact count-data evidence'])
     _ws18.append(['R2_AEB', f'{R2_tcs:.6f}', f'{R2_R1:.6f}', ''])
     _ws18.append([])
 
     _ws18.append(['Nested Sampling Diagnostics'])
     _ws18.append(['Quantity', 'R1', 'R2'])
-    _ws18.append(['logZ', f'{results_R1.logz[-1]:.2f} ± {results_R1.logzerr[-1]:.2f}',
+    _ws18.append(['quasi-logZ', f'{results_R1.logz[-1]:.2f} ± {results_R1.logzerr[-1]:.2f}',
                   f'{results_R2.logz[-1]:.2f} ± {results_R2.logzerr[-1]:.2f}'])
     _ws18.append(['niter', f'{results_R1.niter}', f'{results_R2.niter}'])
     _ws18.append(['ncall', f'{results_R1.ncall}', f'{results_R2.ncall}'])
@@ -3459,7 +3489,7 @@ try:
                       f'{AEB_R2_pred[i]:.4f}', f'{AEB_R1_pred[i]:.4f}'])
 
     _wb18.save("SI_Table_4.xlsx")
-    print(f"\n[OK] Sheet 18_R1_Model added to SI_Table_4.xlsx (now {len(_wb18.sheetnames)} sheets)")
+    print(f"\n[OK] Sheet 19_R1_Model added to SI_Table_4.xlsx (now {len(_wb18.sheetnames)} sheets)")
 except Exception as e_s18:
-    print(f"\n[FAIL] Sheet 18: {e_s18}")
+    print(f"\n[FAIL] Sheet 19: {e_s18}")
     import traceback; traceback.print_exc()

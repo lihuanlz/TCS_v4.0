@@ -123,7 +123,7 @@ def run_noisy_demo():
 
     # ---- Save CSV (column names in TCS terminology) ----
     csv_filename = "experiment2_results.csv"
-    with open(csv_filename, 'w', newline='') as f:
+    with open(csv_filename, 'w', newline='', encoding='utf-8-sig') as f:
         writer = csv.writer(f)
         writer.writerow(['κ', 'p_eq',
                          'k_PSO', 'R²_PSO', 'DW_PSO',

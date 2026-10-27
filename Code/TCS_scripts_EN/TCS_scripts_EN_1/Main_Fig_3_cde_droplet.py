@@ -17,9 +17,8 @@ Panels:
      channel top view drawn from the CAD geometry (Drawing1.dxf: 20 x 70 mm
      tape, 10 x 35 mm channel, 6 mm wells), plus bright-field (bead monolayer)
      and two-channel fluorescence micrographs of the 10,000 fg/mL standard
-     (green: all beads, FITC channel; red: positives). Micrograph assets are
-     built by build_fig4_panel_a_assets.py (fig4a_brightfield.png /
-     fig4a_fluorescence.png).
+     (green: all beads, FITC channel; red: positives). Micrograph assets use
+     the Fig. 3c names (fig3c_brightfield.png / fig3c_fluorescence.png).
   d  equilibrium response: mean occupancy lambda vs nominal IL-6 concentration,
      saturation hyperbola fitted by the R2 binomial counting likelihood with
      the background b estimated jointly (SI S2f), counting-statistics
@@ -300,16 +299,16 @@ axs.text(1.10, 0.034, 'OCA spacer, 50 µm', fontsize=7.5, color='#7a5b12',
 # cross-validated on 140 hand-marked 3 um beads; identical bead FWHM here)
 # fluorescence: 800x800 px at 0.733496 um/px
 axb1 = fig.add_axes([0.555, 0.715, 0.195, 0.26])
-axb1.imshow(Image.open(os.path.join(_here, 'fig4a_brightfield.png')))
-axb1.plot([800 - 28 - 133.2, 800 - 28], [800 - 34, 800 - 34], color='black',
+axb1.imshow(Image.open(os.path.join(_here, 'fig3c_brightfield.png')))
+axb1.plot([800 - 28 - 133.2, 800 - 28], [800 - 34, 800 - 34], color='white',
           lw=3.2, solid_capstyle='butt')
-axb1.text(800 - 28 - 66.6, 800 - 66, '20 µm', fontsize=9.5, color='black',
+axb1.text(800 - 28 - 66.6, 800 - 66, '20 µm', fontsize=9.5, color='white',
           ha='center')
 axb1.axis('off')
 axb1.set_title('bright field: bead-bearing droplets', fontsize=9.5, pad=3)
 
 axf1 = fig.add_axes([0.770, 0.715, 0.195, 0.26])
-axf1.imshow(Image.open(os.path.join(_here, 'fig4a_fluorescence.png')))
+axf1.imshow(Image.open(os.path.join(_here, 'fig3c_fluorescence.png')))
 axf1.plot([800 - 96, 800 - 28], [800 - 34, 800 - 34], color='white', lw=3.2,
           solid_capstyle='butt')
 axf1.text(800 - 62, 800 - 66, '50 µm', fontsize=9.5, color='white',
@@ -545,7 +544,8 @@ with _pd.ExcelWriter(_xlsx) as _xw:
          '-'),
         ('kappa', kappa, *np.percentile(_kap_bs, [2.5, 97.5]),
          'platform binding-regime parameter'),
-        ('R_squared_fit', r2, np.nan, np.nan, 'all seven standards + blank'),
+        ('R_squared_fit', r2, np.nan, np.nan,
+         'seven non-zero standards; blank included in the joint fit'),
         ('R_squared_vs_Cobas', r2_cb, np.nan, np.nan, 'n = 12'),
         ('R_squared_vs_Simoa', r2_sm, np.nan, np.nan, 'n = 10 in range'),
         ('degeneracy_major_slope', _evec[0, 0] / _evec[1, 0], np.nan, np.nan,
