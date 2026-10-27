@@ -20,6 +20,8 @@ Python 3.13 (tested with Python 3.13.9, Anaconda distribution) with standard sci
 
 ## Code Ocean capsule
 
+The published capsule is available at https://doi.org/10.24433/CO.4598965.v3.
+
 The Python code directory is Code Ocean ready: `Code/TCS_scripts_EN/TCS_scripts_EN_1/` contains a `requirements.txt` pinning all third-party packages, an executable `run` script that executes every analysis script in sequence and collects all generated figures, workbooks and CSV summaries into `../results`, and a `README.md` mapping each script to the figure, table or in-text numerical result it reproduces.
 
 ## Citation
