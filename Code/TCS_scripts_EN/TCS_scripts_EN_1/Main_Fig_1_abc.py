@@ -413,18 +413,15 @@ def render_b():
     v8.2 — kappa_1 ~= 0.1 / kappa_2 ~= 10 threshold lines added
       (text: asymptotic-analysis thresholds); bars anchor on them.
 
-    v8.1 — two-colour scheme (the main text defines no third,
-      "boundary-straddling" category): dELISA is a digital/counting
-      technology (Table 1: "digital readout but finite kappa") -> counting
-      green; ELISA 5PL is analog sensing at intermediate kappa -> sensing
-      blue; DigitISA/Singulex unchanged (counting green).  Legend orange
-      row removed; diagonal, tints and all Table-1 ranges as in v8.
+    Current design — one platform colour and the same uniform #F5F7FA
+      background as the panel-a cards; no background grid, binary
+      counting/sensing regions, diagonal separator or regime legend.
+      The kappa_1 and kappa_2 threshold lines and all platform-specific
+      kappa, beta, N and operating-range annotations are retained.
 
     Fact base (manuscript only — no invented coordinates):
       Caption: x = kappa (binding regime parameter), y = beta (capture sites
-               per partition), dashed diagonal divides two complementary
-               regimes (high-beta/low-kappa counting vs low-beta/high-kappa
-               sensing); bubble size = total partitions N.
+               per partition); bubble size = total partitions N.
       Table 1: qPCR   N=1,   beta->inf,   kappa->0 ("strong depletion, yet
                                                     calibration-bound by
                                                     amplification efficiency")
@@ -482,10 +479,12 @@ def render_b():
     plt.rcParams['mathtext.rm'] = 'Liberation Sans'
 
     NAVY   = '#1F2D4E'
-    C_TGT  = '#009E73'   # counting regime
-    C_ON   = '#E69F00'   # (unused in the v8.1 two-colour scheme)
-    C_AB   = '#0072B2'   # sensing regime
+    # One platform colour: the map does not define binary counting/sensing classes.
+    C_TGT  = '#0072B2'
+    C_ON   = '#E69F00'   # unused
+    C_AB   = '#0072B2'
     GREY   = '#5A6577'
+    CARD_FC = '#F5F7FA'  # same light blue-grey as the panel-a cards
     BOX_FC, BOX_EC = '#FFF4D6', '#D9BC5F'
 
     def lighten(hexcol, f=0.45):
@@ -493,7 +492,8 @@ def render_b():
         return (r + (1 - r) * f, g + (1 - g) * f, b + (1 - b) * f)
 
     # ------------------------------------------------------------- canvas
-    fig, ax = plt.subplots(figsize=(5.8, 5.0))
+    fig, ax = plt.subplots(figsize=(5.8, 5.0), facecolor=CARD_FC)
+    ax.set_facecolor(CARD_FC)
     ax.set_xlim(-2.55, 2.75)          # log10 kappa
     ax.set_ylim(3.3, 10.5)            # log10 beta (bottom strip: this work)
     ax.set_xticks(range(-2, 3))
@@ -514,14 +514,7 @@ def render_b():
     ax.tick_params(colors=NAVY, length=3.5, width=1.0, direction='out')
     ax.tick_params(which='minor', colors=NAVY, length=2.0, width=0.8,
                    direction='out')
-    ax.grid(True, ls=':', lw=0.5, color='#C9D2DC', zorder=0)
-
-    # ------------------------------------------------- regime boundary + tints
-    Xs = np.linspace(-2.55, 2.75, 50)
-    Yline = np.clip(Xs + 6.6, 3.3, 10.5)
-    ax.fill_between(Xs, Yline, 10.5, color=C_TGT, alpha=0.07, zorder=0)
-    ax.fill_between(Xs, 3.3, Yline, color=C_AB, alpha=0.07, zorder=0)
-    ax.plot(Xs, Yline, ls=(0, (5, 3)), color=NAVY, lw=1.4, zorder=1)
+    ax.grid(False)
 
     # kappa thresholds kappa_1 ~= 0.1, kappa_2 ~= 10 (text, asymptotic
     # analysis): vertical dotted lines; Table-1 bars anchor on them
@@ -556,7 +549,7 @@ def render_b():
                                     alpha=0.55, mutation_scale=8))
 
     S_SMALL, S_BIG, S_HUGE = 260, 850, 1350
-    _KO = dict(fc='white', ec='none', alpha=0.8, pad=0.15)    # line knockout
+    _KO = dict(fc=CARD_FC, ec='none', alpha=0.92, pad=0.15)  # line knockout
 
     # --- counting side (Table 1 rows) ---
     bubble(-2.15, 9.10, S_SMALL, C_TGT)                       # qPCR
@@ -642,22 +635,6 @@ def render_b():
     ax.text(2.70, 5.30, r'$\kappa \geq 100$ · depletion $< 1\%$', fontsize=6,
             color=GREY, ha='right')
 
-    # ------------------------------------------------------- region titles
-    ax.text(-2.42, 10.32, 'MOLECULE COUNTING', fontsize=9, weight='bold',
-            color='#0B6B52', bbox=_KO)
-    ax.text(-2.42, 10.06, r'high $\beta$ · low $\kappa$ — near-complete'
-            ' target depletion', fontsize=6.3, color='#0B6B52', bbox=_KO)
-    ax.text(-2.42, 9.80, r'$\rightarrow$ absolute single-molecule counting',
-            fontsize=6.3, color='#0B6B52', bbox=_KO)
-
-    ax.text(-1.35, 4.12, 'CONCENTRATION SENSING', fontsize=9, weight='bold',
-            color='#0B4E7A', ha='center', bbox=_KO)
-    ax.text(-1.35, 3.88, r'low $\beta$ · high $\kappa$ — minimal target'
-            ' perturbation', fontsize=6.3, color='#0B4E7A', ha='center',
-            bbox=_KO)
-    ax.text(-1.35, 3.64, r'$\rightarrow$ ultrasensitive ambient sensing',
-            fontsize=6.3, color='#0B4E7A', ha='center', bbox=_KO)
-
     # -------------------------------------------- this work: droplet dELISA
     # kappa ~ 3.5e3, beta -> 1 (~1 effective site per bead -> tiny Omega ->
     # kappa huge): drawn AAI-style as a dashed box at the bottom strip,
@@ -680,28 +657,20 @@ def render_b():
 
     # -------------------------------------------------------------- legend
     lx, ly = 1.28, 10.28
-    ax.scatter([lx], [ly], s=110, c=[C_TGT], edgecolors=NAVY, linewidths=1,
-               zorder=7)
-    ax.text(lx + 0.14, ly, 'counting regime', fontsize=6.5, va='center',
-            color=NAVY)
-    ax.scatter([lx], [ly - 0.34], s=110, c=[C_AB], edgecolors=NAVY,
+    ax.scatter([lx], [ly], s=40, c=['white'], edgecolors=NAVY,
                linewidths=1, zorder=7)
-    ax.text(lx + 0.14, ly - 0.34, 'sensing regime', fontsize=6.5,
+    ax.text(lx + 0.14, ly, 'N = 1 (one partition)', fontsize=6.5,
             va='center', color=NAVY)
-    ax.scatter([lx], [ly - 0.68], s=40, c=['white'], edgecolors=NAVY,
+    ax.scatter([lx], [ly - 0.34], s=150, c=['white'], edgecolors=NAVY,
                linewidths=1, zorder=7)
-    ax.text(lx + 0.14, ly - 0.68, 'N = 1 (one partition)', fontsize=6.5,
+    ax.text(lx + 0.14, ly - 0.34, 'N > 1 (partitioned)', fontsize=6.5,
             va='center', color=NAVY)
-    ax.scatter([lx], [ly - 1.02], s=150, c=['white'], edgecolors=NAVY,
-               linewidths=1, zorder=7)
-    ax.text(lx + 0.14, ly - 1.02, 'N > 1 (partitioned)', fontsize=6.5,
-            va='center', color=NAVY)
-    ax.plot([lx - 0.08, lx + 0.02], [ly - 1.36, ly - 1.36], color=GREY,
+    ax.plot([lx - 0.08, lx + 0.02], [ly - 0.68, ly - 0.68], color=GREY,
             lw=2.2, alpha=0.55, solid_capstyle='round', zorder=7)
-    ax.annotate('', xy=(lx + 0.10, ly - 1.36), xytext=(lx + 0.02, ly - 1.36),
+    ax.annotate('', xy=(lx + 0.10, ly - 0.68), xytext=(lx + 0.02, ly - 0.68),
                 arrowprops=dict(arrowstyle='-|>', color=GREY, lw=2.2,
                                 alpha=0.55, mutation_scale=8))
-    ax.text(lx + 0.14, ly - 1.36, r'$\kappa$ / $\beta$ operating range',
+    ax.text(lx + 0.14, ly - 0.68, r'$\kappa$ / $\beta$ operating range',
             fontsize=6.5, va='center', color=NAVY, bbox=_KO)
 
     # ------------------------------------------------------------ axis labels
