@@ -496,9 +496,9 @@ def render_b():
     ax.set_facecolor(CARD_FC)
     ax.set_xlim(-2.55, 2.75)          # log10 kappa
     ax.set_ylim(3.3, 10.5)            # log10 beta (bottom strip: this work)
-    ax.set_xticks(range(-2, 3))
-    ax.set_xticklabels(['$10^{-2}$', '$10^{-1}$', '$10^{0}$', '$10^{1}$',
-                        '$10^{2}$'], fontsize=8)
+    ax.set_xticks(range(-2, 2))
+    ax.set_xticklabels(['$10^{-2}$', '$10^{-1}$', '$10^{0}$', '$10^{1}$'],
+                       fontsize=8)
     ax.set_yticks(range(5, 11))
     ax.set_yticklabels([f'$10^{{{d}}}$' for d in range(5, 11)], fontsize=8)
     for s in ('top', 'right'):
@@ -680,6 +680,9 @@ def render_b():
                   fontsize=9, color=NAVY, weight='bold')
     ax.annotate('', xy=(2.75, 3.3), xytext=(2.45, 3.3),
                 arrowprops=dict(arrowstyle='-|>', color=NAVY, lw=1.3))
+    ax.annotate(r'$\kappa\rightarrow\infty$', xy=(2.70, 3.3),
+                xytext=(0, -5), textcoords='offset points', ha='right',
+                va='top', fontsize=8, color=NAVY, annotation_clip=False)
     ax.annotate('', xy=(-2.55, 10.5), xytext=(-2.55, 10.2),
                 arrowprops=dict(arrowstyle='-|>', color=NAVY, lw=1.3))
 
