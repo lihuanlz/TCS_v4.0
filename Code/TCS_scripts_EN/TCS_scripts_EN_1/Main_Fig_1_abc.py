@@ -304,9 +304,9 @@ def render_a():
     mol(ax3, 1.75, 8.52, 0.15, motif_deg=180, seed=7)
     ax3.text(0.55, 6.62, r'analog ($N = 1$):', fontsize=5.3,
              ha='left', va='center', color=GREY)
-    ax3.text(0.55, 6.05, r'all $\Omega$ sites', fontsize=5.3,
+    ax3.text(0.65, 6.05, r'all $\Omega$ sites', fontsize=5.3,
              ha='left', va='center', color=INK)
-    ax3.text(0.55, 5.48, 'in one unit', fontsize=5.3, ha='left',
+    ax3.text(0.65, 5.48, 'in one unit', fontsize=5.3, ha='left',
              va='center', color=INK)
     ax3.add_patch(FancyArrowPatch((3.35, 8.60), (4.85, 8.60), arrowstyle='-|>',
                                   mutation_scale=11, color=NAVY, lw=1.6, zorder=5))
@@ -321,11 +321,11 @@ def render_a():
             ax3.add_patch(Circle((xw, yw), 0.25,
                                  fc=('#D99400' if pos else 'white'),
                                  ec=NAVY, lw=1.0, zorder=3))
-    ax3.text(8.50, 6.62, r'digital ($N > 1$):', fontsize=5.3,
+    ax3.text(8.50, 6.62, r'Type 1 digital ($N > 1$):', fontsize=5.3,
              ha='right', va='center', color=GREY)
-    ax3.text(8.50, 6.05, r'$\beta = \Omega/N$ sites', fontsize=5.3,
+    ax3.text(7.50, 6.05, r'$\beta = \Omega/N$ sites', fontsize=5.3,
              ha='right', va='center', color=INK)
-    ax3.text(8.50, 5.48, 'per partition', fontsize=5.3, ha='right',
+    ax3.text(7.50, 5.48, 'per partition', fontsize=5.3, ha='right',
              va='center', color=INK)
     bx, by, br = 7.62, 10.95, 0.84
     ax3.add_patch(Circle((bx, by), br, fc='#D99400', ec=NAVY, lw=1.3, zorder=4))
@@ -339,7 +339,7 @@ def render_a():
     ax3.plot([7.22, 7.35], [9.82, 10.02], color='#8A97A5', lw=0.9, zorder=3)
     ax3.text(6.62, 10.95, 'one\npartition', fontsize=5.8, ha='right',
              va='center', color=GREY, linespacing=1.2)
-    ax3.text(4.70, 4.50, 'C bound complexes are dealt to partitions',
+    ax3.text(4.50, 4.50, 'C bound complexes are dealt to partitions',
              fontsize=5.6, ha='center', va='center', color=INK)
     ax3.text(4.70, 3.80, 'multivariate hypergeometric', fontsize=7.2,
              ha='center', va='center', color=NAVY)
@@ -376,13 +376,13 @@ def render_a():
              fontsize=7.6, ha='center', va='center', color=NAVY)
     ax4.text(4.80, 5.20, 'calibration-free absolute count (dPCR)', fontsize=5.6,
              ha='center', va='center', color=GREY)
-    ax4.add_patch(FancyBboxPatch((1.20, 0.55), 7.20, 1.80,
+    ax4.add_patch(FancyBboxPatch((1.20, 1.55), 7.20, 1.80,
                   boxstyle='round,pad=0.02,rounding_size=0.22',
                   fc=BOX_FC, ec=BOX_EC, lw=1.5, zorder=3))
-    ax4.text(4.80, 1.45, r'$M = \kappa\,\Omega\,\xi$',
+    ax4.text(4.80, 2.45, r'$M = \kappa\,\Omega\,\xi$',
              fontsize=12, weight='bold', ha='center', va='center', color=NAVY,
              zorder=4)
-    ax4.text(4.80, 2.72, 'absolute count (equation 4)',
+    ax4.text(4.80, 3.72, 'absolute count (equation 4)',
              fontsize=5.6, color=GREY, ha='center', va='center')
 
     # ----------------------------------------------- chevrons between cards
