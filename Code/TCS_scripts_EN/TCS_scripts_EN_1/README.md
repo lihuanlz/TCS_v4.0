@@ -49,8 +49,8 @@ bash run
 | Main_Fig_1_abc.py | Fig. 1a-c (TCS framework figure) |
 | Main_Fig_1_and_ED_Fig_1_ab.py | Supplementary Figure ED1a-c (in silico master-equation validation and quantification performance) |
 | SD_1_and_Fig_3a_scale_degeneracy.py | Supplementary Data 1 and Fig. 3a (immunofluorescence scale-degeneracy experiment, 72 measurements), and Extended Data Fig. 2b-c |
-| SI_Table_4_and_Fig_3b_simoa.py | Fig. 3b (IL-6 Simoa reanalysis), SI Table 4, Supplementary Data 4 |
-| Main_Fig_3_cde_droplet.py | Fig. 3c-e (home-built droplet digital immunoassay: chip, equilibrium response, clinical correlation) and Supplementary Data 6 (SI_Table_6.xlsx: raw counts, fit parameters, LoB/LoD/LoQ, clinical values, bootstrap samples) |
+| SI_Table_4_and_Fig_3b_simoa.py | Fig. 3b (IL-6 Simoa reanalysis) and Supplementary Data 4 |
+| Main_Fig_3_cde_droplet.py | Fig. 3c-e (home-built droplet digital immunoassay: chip, equilibrium response, clinical correlation) and Supplementary Data 6 (Supplementary_Data_6.xlsx: raw counts, fit parameters, LoB/LoD/LoQ, clinical values, bootstrap samples) |
 | SD_2_ria_yalow1960.py | Supplementary Data 2 (Yalow 1960 RIA reanalysis) and Supplementary Figure ED4 |
 | SD_3_and_ED_Fig_5_sbg_simoa.py | Supplementary Data 3 and Supplementary Figure ED5 (2010 Simoa benchmark) |
 | SD_5_and_ED_Fig_6_dpcr.py | Supplementary Data 5 and Supplementary Figure ED6 (dPCR analysis) |

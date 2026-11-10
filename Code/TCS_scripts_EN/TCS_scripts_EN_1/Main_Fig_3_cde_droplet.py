@@ -501,7 +501,7 @@ def _cp_lam(_k, _n):
     return -np.log(1 - _lo), -np.log(1 - _hi)
 
 
-_xlsx = os.path.join(_here, 'SI_Table_6.xlsx')
+_xlsx = os.path.join(_here, 'Supplementary_Data_6.xlsx')
 with _pd.ExcelWriter(_xlsx) as _xw:
     _pd.DataFrame({'SI Table 6: droplet digital immunoassay workbook': [
         'Raw droplet-bead counts, TCS/R2 fit results and counting-statistics',

@@ -253,7 +253,7 @@ def plot_results(f_all: np.ndarray, p_all: np.ndarray,
 # ==========================================================
 def export_excel(f_all: np.ndarray, p_all: np.ndarray,
                  fit: Dict[str, Any], ci: Dict[str, np.ndarray],
-                 sweep: list, output_excel: str = 'SI_Table_2.xlsx'):
+                 sweep: list, output_excel: str = 'Supplementary_Data_2.xlsx'):
     """Generate a multi-sheet Excel report."""
     try:
         from openpyxl import Workbook
@@ -327,8 +327,8 @@ def export_excel(f_all: np.ndarray, p_all: np.ndarray,
         ws3.append([name, fit['popt'][i], lo, hi, width])
     ws3.append([])
     width_kappa = np.log10(ci['ci_upper'][0] / max(ci['ci_lower'][0], 1e-6))
-    ws3.append([f"κ CI spans {width_kappa:.1f} orders of magnitude; "
-                f"reported as κ ≥ {ci['ci_lower'][0]:.2f}", "", "", "", ""])
+    ws3.append([f"κ bootstrap CI spans {width_kappa:.1f} orders of magnitude; "
+                f"the reported one-sided bound is κ ≥ 1 from the fixed-κ scan.", "", "", "", ""])
 
     # ---------- Sheet 4: Kappa Sweep ----------
     ws4 = wb.create_sheet("4_Kappa_Scan")
@@ -418,7 +418,7 @@ def main():
                         help="Skip Excel output")
     parser.add_argument("--figure", default="ED_Fig_4.svg",
                         help="Output figure path")
-    parser.add_argument("--excel", default="SI_Table_2.xlsx",
+    parser.add_argument("--excel", default="Supplementary_Data_2.xlsx",
                         help="Output Excel path")
     args = parser.parse_args()
 
@@ -465,7 +465,7 @@ def main():
     print("κ unidentifiability analysis (Yalow 1960 RIA)")
     print("=" * 60)
     # Run-invariant one-sided bound from the deterministic fixed-κ scan
-    # (R² >= 0.98 plateau edge); see 4_Kappa_Scan in SI_Table_2.xlsx.
+    # (R² >= 0.98 plateau edge); see 4_Kappa_Scan in Supplementary_Data_2.xlsx.
     _sw = kappa_sweep(f_all, p_all, xi0_fit, xi_star_fit)
     _vi = [(k, r2) for (k, r2, _, _) in _sw if not np.isnan(r2)]
     kappa_bound_scan = float(min([k for k, r2 in _vi if r2 >= 0.98],

@@ -845,8 +845,8 @@ try:
         ws10.append([row["M"], row["cov_delta"], row["cov_exact"], row["cov_LR"], row["nominal"]])
     print('[OK] Sheet 10_MC_CI_Coverage')
 
-    wb.save("SI_Table_5.xlsx")
-    print(f"\nSI Table 5 saved to 'SI_Table_5.xlsx' with {len(wb.sheetnames)} sheets:")
+    wb.save("Supplementary_Data_5.xlsx")
+    print(f"\nSI Table 5 saved to 'Supplementary_Data_5.xlsx' with {len(wb.sheetnames)} sheets:")
     for s in wb.sheetnames:
         print(f'  - {s}')
 
@@ -889,7 +889,7 @@ print(f"KRAS stool: M={M_total:.0f}, mut={M_mut:.0f}, abundance={abund:.1%}, "
 # per-well observations.
 try:
     from openpyxl import load_workbook
-    wb = load_workbook("SI_Table_5.xlsx")
+    wb = load_workbook("Supplementary_Data_5.xlsx")
     if "11_KRAS_Stool" in wb.sheetnames:
         del wb["11_KRAS_Stool"]
     ws11 = wb.create_sheet("11_KRAS_Stool")
@@ -922,7 +922,7 @@ try:
     ]
     for row in stool_rows:
         ws11.append(list(row))
-    wb.save("SI_Table_5.xlsx")
+    wb.save("Supplementary_Data_5.xlsx")
     print(f"[OK] Sheet 11_KRAS_Stool; workbook now has {len(wb.sheetnames)} sheets")
 except Exception as e_stool:
     print(f"[!] KRAS stool worksheet save failed: {e_stool}")

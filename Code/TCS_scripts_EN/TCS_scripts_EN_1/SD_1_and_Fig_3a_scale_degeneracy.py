@@ -717,7 +717,7 @@ try:
                 "", "", "", ""])
     ws2.append(["NOTE: k3 sits on the high-kappa (zero-depletion) plateau; the upper end",
                 "of its 95% ETI is set by the prior ceiling (1e3), not by the data, so k3",
-                "is reported as a one-sided lower bound (>= 18.8). Only the lower ETI",
+                "is reported as a one-sided lower bound (>= 19.4). Only the lower ETI",
                 "bound is data-driven (kappa-independent regime, SI S10.10).", ""])
 
     # ----- Sheet 3: Convergence diagnostics (R-hat, ESS) -----
@@ -804,7 +804,7 @@ try:
     # NOTE: the full chain (2e6 draws) exceeds the xlsx row limit
     # (1,048,576) and takes minutes per openpyxl row-append; thinning to
     # 20000 rows loses no posterior information because the per-parameter
-    # ESS is only ~3.7e3-1.2e4 (see 3_Convergence). The full chain is
+    # ESS is only ~3.1e3-1.2e4 (see 3_Convergence). The full chain is
     # exactly reproducible from the fixed seed.
     ws10 = wb.create_sheet("10_MCMC_Samples")
     ws10.append(["xi0", "A1", "k1", "A2", "k2", "A3", "k3"])
@@ -817,12 +817,12 @@ try:
     ws10.append([])
     ws10.append([f"Thinned every {_thin}-th draw: showing {_thinned.shape[0]} "
                  f"of {samples.shape[0]} posterior samples (no information "
-                 f"loss: per-parameter ESS ~ 3.7e3-1.2e4; full chain "
+                 f"loss: per-parameter ESS ~ 3.1e3-1.2e4; full chain "
                  f"reproducible from the fixed seed)."])
 
-    wb.save("SI_Table_1.xlsx")
+    wb.save("Supplementary_Data_1.xlsx")
     print("\n" + "="*60)
-    print("SI Table 1 (v2, D locked) saved to 'SI_Table_1.xlsx'")
+    print("SI Table 1 (v2, D locked) saved to 'Supplementary_Data_1.xlsx'")
     print("="*60)
     print("Sheets:")
     print("  1. Raw_RFU           — 3 groups × 8 dilutions × 3 reps (72 data points)")
@@ -1065,7 +1065,7 @@ try:
     from openpyxl import load_workbook
     from openpyxl.styles import Font, PatternFill
 
-    wb2 = load_workbook("SI_Table_1.xlsx")
+    wb2 = load_workbook("Supplementary_Data_1.xlsx")
     if "7_LoB_LoD_LoQ" in wb2.sheetnames:
         del wb2["7_LoB_LoD_LoQ"]
     ws7 = wb2.create_sheet("7_LoB_LoD_LoQ")
@@ -1131,8 +1131,8 @@ try:
     ws7.append(["where σ_p̂ = σ_S/(A-D), Ω(κ+1) = (M₀/ξ₀)(1+1/κ)", "", "", "", "", "", "", "", "", "", ""])
     ws7.append(["ng/mL = molecules / (V × N_A) × MW × 1e6", "", "", "", "", "", "", "", "", "", ""])
 
-    wb2.save("SI_Table_1.xlsx")
-    print(f"\nSheet 7 (LoB/LoD/LoQ) appended to SI_Table_1.xlsx")
+    wb2.save("Supplementary_Data_1.xlsx")
+    print(f"\nSheet 7 (LoB/LoD/LoQ) appended to Supplementary_Data_1.xlsx")
 except Exception as e:
     print(f"\n[!] LoB/LoD/LoQ Excel export failed: {e}")
     import traceback
@@ -1144,7 +1144,7 @@ except Exception as e:
 try:
     from openpyxl import load_workbook
     from openpyxl.styles import Font as _Font, PatternFill as _Fill
-    wb3 = load_workbook("SI_Table_1.xlsx")
+    wb3 = load_workbook("Supplementary_Data_1.xlsx")
     ws8 = wb3.create_sheet("8_Bayesian_R2")
     ws8.append(["Bayesian R² (posterior predictive, n=2000 samples)"])
     ws8.append(["Group", "Median", "2.5% posterior quantile", "97.5% posterior quantile"])
@@ -1168,8 +1168,8 @@ try:
     ws8.append(["G3", R2_3])
     ws8.append(["RMSE (TCS global)", rmse_tcs if 'rmse_tcs' in dir() else 'N/A'])
 
-    wb3.save("SI_Table_1.xlsx")
-    print(f"Sheet 8 (Bayesian R²) appended to SI_Table_1.xlsx")
+    wb3.save("Supplementary_Data_1.xlsx")
+    print(f"Sheet 8 (Bayesian R²) appended to Supplementary_Data_1.xlsx")
 except Exception as e:
     print(f"[!] Bayesian R² Excel export failed: {e}")
 
@@ -1884,7 +1884,7 @@ print("=" * 70)
 try:
     from openpyxl import load_workbook as _lwb
     from openpyxl.styles import Font as _Font
-    _wb9 = _lwb("SI_Table_1.xlsx")
+    _wb9 = _lwb("Supplementary_Data_1.xlsx")
     _ws9 = _wb9.create_sheet("9_Profile_Likelihood")
     _ws9.append(["Profile Likelihood Analysis (95% CI, likelihood ratio test)"])
     _ws9.append(["Parameter", "Optimum", "CI lower", "CI upper", "CI ratio", "Bounded?", "Note"])
@@ -1914,7 +1914,7 @@ try:
     _ws9.append(["  but M₀ itself requires external knowledge of K — this is the"])
     _ws9.append(["  scale degeneracy of Theorem S2e.2, confirmed by real data."])
 
-    _wb9.save("SI_Table_1.xlsx")
-    print(f"\nSheet 9 (Profile Likelihood) appended to SI_Table_1.xlsx")
+    _wb9.save("Supplementary_Data_1.xlsx")
+    print(f"\nSheet 9 (Profile Likelihood) appended to Supplementary_Data_1.xlsx")
 except Exception as e:
     print(f"[!] Profile Likelihood Excel export failed: {e}")

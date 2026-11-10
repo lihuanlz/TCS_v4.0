@@ -1328,7 +1328,7 @@ print(f"Relative error Bland-Altman (exclude mean<=0.01): bias = {bias_rel:.2f}%
 
 
 # NOTE: the clinical back-calculation sheet (18_Clinical_BackCalc) is written
-# further below, right after SI_Table_4.xlsx is first created. In a clean
+# further below, right after Supplementary_Data_4.xlsx is first created. In a clean
 # environment the file does not exist yet at this point, so the write block
 # lives after the workbook-creation block. The variables it uses
 # (n_clin_samples, aeb_mean, P_pos_mean, dilution_clin, conc_4pl, conc_R2,
@@ -2320,9 +2320,9 @@ try:
     ws8.append(["Plasma upper bound (normal)", 4.64, "Reference range"])
     ws8.append(["Highest calibrator", 24.0, "Standard curve"])
 
-    wb.save("SI_Table_4.xlsx")
+    wb.save("Supplementary_Data_4.xlsx")
     print("\n" + "="*60)
-    print("SI Table 4 (v2) saved to 'SI_Table_4.xlsx'")
+    print("SI Table 4 (v2) saved to 'Supplementary_Data_4.xlsx'")
     print("="*60)
     print("Sheets:")
     print("  1. Raw_Training        - 16 wells × 7 columns (raw + processed)")
@@ -2335,7 +2335,7 @@ try:
     print("  8. Clinical_Reference  - manufacturer LOD, plasma normal range")
 
     # ====================================================================
-    # Save clinical back-calculation results to SI_Table_4.xlsx
+    # Save clinical back-calculation results to Supplementary_Data_4.xlsx
     # (must run AFTER the workbook is first created above; in a clean
     # environment the file does not exist earlier in this script)
     # ====================================================================
@@ -2399,8 +2399,8 @@ try:
                 _ws_clin.append([name, n_r, round(s_r, 4), '', round(r_r**2, 4),
                                  round(rho_r, 4), round(br, 2), round(lr, 2), round(ur, 2)])
 
-        _wb_clin.save("SI_Table_4.xlsx")
-        print(f"\n[OK] Sheet 18_Clinical_BackCalc added to SI_Table_4.xlsx (now {len(_wb_clin.sheetnames)} sheets)")
+        _wb_clin.save("Supplementary_Data_4.xlsx")
+        print(f"\n[OK] Sheet 18_Clinical_BackCalc added to Supplementary_Data_4.xlsx (now {len(_wb_clin.sheetnames)} sheets)")
     except Exception as e_clin:
         print(f"\n[FAIL] Clinical sheet: {e_clin}")
         import traceback; traceback.print_exc()
@@ -2412,7 +2412,7 @@ try:
     # v1 extension: merge 4 CSVs + LOO_per_fold.txt + manufacturer reference CV into Excel
     # ============================================================================
     print("\n" + "=" * 70)
-    print("EXTENSION v1: Merging CSV outputs into SI_Table_4.xlsx")
+    print("EXTENSION v1: Merging CSV outputs into Supplementary_Data_4.xlsx")
     print("=" * 70)
     try:
         bold = Font(bold=True)
@@ -2638,7 +2638,7 @@ try:
         import traceback; traceback.print_exc()
 
     # Save with 17 sheets (clinical sheet 18 and R1 sheet 19 added later)
-    wb.save("SI_Table_4.xlsx")
+    wb.save("Supplementary_Data_4.xlsx")
     print("\n" + "=" * 70)
     print(f"SI Table 4 saved with {len(wb.sheetnames)} sheets (19_R1_Model added after R1 MCMC)")
     print("=" * 70)
@@ -3390,7 +3390,7 @@ print("="*80)
 # ====================================================================
 try:
     from openpyxl import load_workbook as _lwb
-    _wb18 = _lwb("SI_Table_4.xlsx")
+    _wb18 = _lwb("Supplementary_Data_4.xlsx")
     for _r1_sheet in ("18_R1_Model", "19_R1_Model"):
         if _r1_sheet in _wb18.sheetnames:
             del _wb18[_r1_sheet]
@@ -3488,8 +3488,8 @@ try:
                       f'{P_R2_pred[i]:.6f}', f'{P_R1_pred[i]:.6f}',
                       f'{AEB_R2_pred[i]:.4f}', f'{AEB_R1_pred[i]:.4f}'])
 
-    _wb18.save("SI_Table_4.xlsx")
-    print(f"\n[OK] Sheet 19_R1_Model added to SI_Table_4.xlsx (now {len(_wb18.sheetnames)} sheets)")
+    _wb18.save("Supplementary_Data_4.xlsx")
+    print(f"\n[OK] Sheet 19_R1_Model added to Supplementary_Data_4.xlsx (now {len(_wb18.sheetnames)} sheets)")
 except Exception as e_s18:
     print(f"\n[FAIL] Sheet 19: {e_s18}")
     import traceback; traceback.print_exc()

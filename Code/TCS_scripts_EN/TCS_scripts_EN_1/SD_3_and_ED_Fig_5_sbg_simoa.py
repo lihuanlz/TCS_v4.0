@@ -13,7 +13,7 @@ Outputs:
     - Print all stats to stdout
     - Save Fig_core_sβG.png (4-panel figure)
     - Save Fig_S1_sβG.png (Q-Q plots)
-    - Save SI_Table_3.xlsx (13 sheets)
+    - Save Supplementary_Data_3.xlsx (13 sheets)
     - Save TCS_per_point_quantification.csv
     - Save R3_analysis_sβG.csv
 """
@@ -1345,9 +1345,9 @@ try:
 
 
 
-    wb.save("SI_Table_3.xlsx")
+    wb.save("Supplementary_Data_3.xlsx")
     print("\n" + "=" * 60)
-    print("[SI Table 3 saved to 'SI_Table_3.xlsx' — 13 sheets]")
+    print("[SI Table 3 saved to 'Supplementary_Data_3.xlsx' — 13 sheets]")
     print("=" * 60)
     sheet_descriptions = [
         "1. Raw_Data",
@@ -1377,7 +1377,7 @@ print("\n" + "=" * 80)
 print("DONE. Outputs:")
 print("  - Fig_S1_sβG.png     (Q-Q plot, deviance residuals)")
 print("  - Fig_core_sβG.png   (Extended Data Fig. 3, 4-panel)")
-print("  - SI_Table_3.xlsx    (13 sheets)")
+print("  - Supplementary_Data_3.xlsx    (13 sheets)")
 print("  - TCS_per_point_quantification.csv")
 print("  - R3_analysis_sβG.csv")
 print("=" * 80)
@@ -1903,7 +1903,7 @@ print("="*80)
 # ====================================================================
 try:
     from openpyxl import load_workbook as _lwb
-    _wb14 = _lwb("SI_Table_3.xlsx")
+    _wb14 = _lwb("Supplementary_Data_3.xlsx")
     if "14_R1_Model" in _wb14.sheetnames:
         del _wb14["14_R1_Model"]
     _ws14 = _wb14.create_sheet("14_R1_Model")
@@ -2009,8 +2009,8 @@ try:
                       f'{P_R2_pred[i]:.6f}', f'{P_R1_pred[i]:.6f}',
                       f'{AEB_R2_pred[i]:.4f}', f'{AEB_R1_pred[i]:.4f}'])
 
-    _wb14.save("SI_Table_3.xlsx")
-    print(f"\n[OK] Sheet 14_R1_Model added to SI_Table_3.xlsx (now {len(_wb14.sheetnames)} sheets)")
+    _wb14.save("Supplementary_Data_3.xlsx")
+    print(f"\n[OK] Sheet 14_R1_Model added to Supplementary_Data_3.xlsx (now {len(_wb14.sheetnames)} sheets)")
 except Exception as e_s14:
     print(f"\n[FAIL] Sheet 14: {e_s14}")
     import traceback; traceback.print_exc()
