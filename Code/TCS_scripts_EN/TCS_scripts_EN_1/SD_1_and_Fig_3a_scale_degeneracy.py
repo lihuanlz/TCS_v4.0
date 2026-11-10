@@ -278,7 +278,8 @@ plt.subplots_adjust(top=0.85)
 # panel identity within Extended Data Figure 2 (c)
 fig_res.text(0.005, 0.998, 'c', fontsize=17, fontweight='bold',
              ha='left', va='top')
-plt.savefig('ED_Fig_2c.svg', dpi=300)
+fig_res.savefig('ED_Fig_2c.svg', dpi=300)
+fig_res.savefig('ED_Fig_2c.png', dpi=300, facecolor='white')
 plt.show()
 
 # statistics
@@ -717,7 +718,7 @@ try:
                 "", "", "", ""])
     ws2.append(["NOTE: k3 sits on the high-kappa (zero-depletion) plateau; the upper end",
                 "of its 95% ETI is set by the prior ceiling (1e3), not by the data, so k3",
-                "is reported as a one-sided lower bound (>= 19.4). Only the lower ETI",
+                f"is reported as a one-sided lower bound (>= {lower[6]:.1f}). Only the lower ETI",
                 "bound is data-driven (kappa-independent regime, SI S10.10).", ""])
 
     # ----- Sheet 3: Convergence diagnostics (R-hat, ESS) -----
@@ -803,9 +804,13 @@ try:
     # Sheet 10: MCMC posterior samples, thinned to <= 20000 rows.
     # NOTE: the full chain (2e6 draws) exceeds the xlsx row limit
     # (1,048,576) and takes minutes per openpyxl row-append; thinning to
-    # 20000 rows loses no posterior information because the per-parameter
-    # ESS is only ~3.1e3-1.2e4 (see 3_Convergence). The full chain is
-    # exactly reproducible from the fixed seed.
+    # 20000 rows loses no posterior information relative to the ESS range
+    # reported in 3_Convergence. The full chain is exactly reproducible
+    # from the fixed seed.
+    _ess_keys = ['xi0', 'A1', 'k1', 'A2', 'k2', 'A3', 'k3', 'log_sigma']
+    _ess_values = [float(ess[key].values) for key in _ess_keys] if ess is not None else []
+    _ess_range = (f"{min(_ess_values):.3g}-{max(_ess_values):.3g}"
+                  if _ess_values else "unavailable (arviz not installed)")
     ws10 = wb.create_sheet("10_MCMC_Samples")
     ws10.append(["xi0", "A1", "k1", "A2", "k2", "A3", "k3"])
     for cell in ws10[1]:
@@ -817,7 +822,7 @@ try:
     ws10.append([])
     ws10.append([f"Thinned every {_thin}-th draw: showing {_thinned.shape[0]} "
                  f"of {samples.shape[0]} posterior samples (no information "
-                 f"loss: per-parameter ESS ~ 3.1e3-1.2e4; full chain "
+                 f"loss: per-parameter ESS ~ {_ess_range}; full chain "
                  f"reproducible from the fixed seed)."])
 
     wb.save("Supplementary_Data_1.xlsx")

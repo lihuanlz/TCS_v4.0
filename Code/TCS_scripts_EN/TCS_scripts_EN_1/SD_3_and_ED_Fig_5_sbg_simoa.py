@@ -460,18 +460,18 @@ se_d = sd_d / np.sqrt(n_f)
 tcrit = t_dist.ppf(0.95, n_f - 1)
 
 mean_abs_logL = np.mean(np.abs(loo_tcs_arr))     # per-fold logL magnitude
-delta = 0.01 * mean_abs_logL                     # equivalence margin: 1% of per-fold |logL|
+tost_margin = 0.01 * mean_abs_logL               # equivalence margin: 1% of per-fold |logL|
 
-t_lo = (mean_diff + delta) / se_d
-t_hi = (delta - mean_diff) / se_d
+t_lo = (mean_diff + tost_margin) / se_d
+t_hi = (tost_margin - mean_diff) / se_d
 p_tost = max(1 - t_dist.cdf(t_lo, n_f - 1), 1 - t_dist.cdf(t_hi, n_f - 1))
 ci90 = (mean_diff - tcrit * se_d, mean_diff + tcrit * se_d)
 delta_min = max(abs(ci90[0]), abs(ci90[1]))
 
-print(f"\nTOST equivalence test (margin = 1% of per-fold |logL| = {delta:.2f} logL):")
+print(f"\nTOST equivalence test (margin = 1% of per-fold |logL| = {tost_margin:.2f} logL):")
 print(f"  mean diff = {mean_diff:.3f}, 90% CI = [{ci90[0]:.3f}, {ci90[1]:.3f}]")
 print(f"  TOST p = {p_tost:.4f} -> "
-      f"{'EQUIVALENT within +/-' + f'{delta:.1f} logL' if p_tost < 0.05 else 'equivalence NOT established at this margin'}")
+      f"{'EQUIVALENT within +/-' + f'{tost_margin:.1f} logL' if p_tost < 0.05 else 'equivalence NOT established at this margin'}")
 print(f"  smallest passing margin: +/-{delta_min:.2f} logL/fold "
       f"({100 * delta_min / mean_abs_logL:.3f}% of per-fold |logL|)")
 
@@ -1206,16 +1206,16 @@ try:
                 "Δ quasi-logL", "Interpretation"])
     for cell in ws8[1]:
         cell.font = bold; cell.fill = header_fill
-    for D_fix, logL_scan, B_scan, C_scan, delta in D_scan_results:
-        if delta > -1.92:
+    for D_fix, logL_scan, B_scan, C_scan, profile_delta in D_scan_results:
+        if profile_delta > -1.92:
             note = "quasi-MLE neighbor"
-        elif delta > -3.84:
+        elif profile_delta > -3.84:
             note = "within nominal 95% profile-quasi interval"
-        elif delta > -30:
+        elif profile_delta > -30:
             note = "broader profile-quasi deviation; data cannot resolve"
         else:
             note = "essentially flat (D poorly identified)"
-        ws8.append([D_fix, logL_scan, B_scan, C_scan, delta, note])
+        ws8.append([D_fix, logL_scan, B_scan, C_scan, profile_delta, note])
     ws8.append([])
     ws8.append(["BEST (quasi-MLE)", "", B_4pl, C_4pl, 0.0, "Δ quasi-logL=0 reference"])
 
@@ -1325,7 +1325,7 @@ try:
 
     ws13.append([])
     ws13.append(["TOST equivalence test", "", "", "", "", ""])
-    ws13.append(["Margin (±quasi-logL)", "", "", "", float(delta),
+    ws13.append(["Margin (±quasi-logL)", "", "", "", float(tost_margin),
                  "1% of mean per-fold |quasi-logL|"])
     ws13.append(["Mean Δ 90% CI", "", "", "",
                  f"[{ci90[0]:.3f}, {ci90[1]:.3f}]", ""])

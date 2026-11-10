@@ -15,7 +15,7 @@ Exact four-layer Monte Carlo (solid) vs R1 Binomial delta-method (dashed, S2f.9)
 - Uses parallel computing (joblib) for MC trials.
 - Both panels use M as x-axis.
 
-@author: lihua
+@author: lihuan
 Fixed 2026-07-22:
   - Bug fix: P_C_4L now normalizes by partition function Q(W) for each W
   - Conclusion section checks VR_4L ~ 1.0 (the actual SI claim), not ICC_3L vs ICC_4L
